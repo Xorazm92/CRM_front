@@ -82,6 +82,11 @@ const DashboardLayout = ({ children }) => {
               label: <Link to="/courses">Courses</Link>,
             },
             {
+              key: '/groups',
+              icon: <TeamOutlined />,
+              label: <Link to="/groups">Groups</Link>,
+            },
+            {
               key: '/admin',
               icon: <SettingOutlined />,
               label: <Link to="/admin">Admin Users</Link>,
