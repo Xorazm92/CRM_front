@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Layout, Menu, theme, Button } from 'antd';
+import { Layout, Menu, theme, Button, Avatar, Dropdown } from 'antd';
 import { 
   MenuFoldOutlined, 
   MenuUnfoldOutlined,
@@ -9,82 +9,110 @@ import {
   UserOutlined,
   BookOutlined,
   CalendarOutlined,
-  LogoutOutlined
+  LogoutOutlined,
+  SettingOutlined
 } from '@ant-design/icons';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 const { Header, Sider, Content } = Layout;
 
-const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const DashboardLayout = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
-  const { token: { colorBgContainer, borderRadiusLG } } = theme.useToken();
+  const location = useLocation();
+  const { token: { colorBgContainer } } = theme.useToken();
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     navigate('/login');
   };
 
+  const userMenu = [
+    {
+      key: 'settings',
+      icon: <SettingOutlined />,
+      label: 'Settings',
+    },
+    {
+      key: 'logout',
+      icon: <LogoutOutlined />,
+      label: 'Logout',
+      onClick: handleLogout,
+    },
+  ];
+
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Sider trigger={null} collapsible collapsed={collapsed}>
-        <div className="demo-logo-vertical" style={{ height: 32, margin: 16, background: 'rgba(255,255,255,0.2)' }} />
+    <Layout>
+      <Sider trigger={null} collapsible collapsed={collapsed} width={260}>
+        <div className="logo" style={{ 
+          height: 64, 
+          margin: 16, 
+          background: 'rgba(255,255,255,0.1)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#fff',
+          fontSize: '20px'
+        }}>
+          {!collapsed && 'CRM System'}
+        </div>
         <Menu
           theme="dark"
           mode="inline"
-          defaultSelectedKeys={['1']}
+          selectedKeys={[location.pathname]}
           items={[
             {
-              key: '1',
+              key: '/dashboard',
               icon: <DashboardOutlined />,
               label: <Link to="/dashboard">Dashboard</Link>,
             },
             {
-              key: '2',
+              key: '/teachers',
               icon: <TeamOutlined />,
-              label: <Link to="/groups">Groups</Link>,
-            },
-            {
-              key: '3',
-              icon: <UserOutlined />,
               label: <Link to="/teachers">Teachers</Link>,
             },
             {
-              key: '4',
+              key: '/students',
               icon: <UserOutlined />,
               label: <Link to="/students">Students</Link>,
             },
             {
-              key: '5',
+              key: '/courses',
               icon: <BookOutlined />,
               label: <Link to="/courses">Courses</Link>,
             },
             {
-              key: '6',
-              icon: <CalendarOutlined />,
-              label: <Link to="/schedule">Schedule</Link>,
+              key: '/admin',
+              icon: <SettingOutlined />,
+              label: <Link to="/admin">Admin Users</Link>,
             },
           ]}
         />
       </Sider>
       <Layout>
-        <Header style={{ padding: 0, background: colorBgContainer }}>
+        <Header style={{ 
+          padding: '0 24px', 
+          background: colorBgContainer,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}>
           <Button
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             onClick={() => setCollapsed(!collapsed)}
-            style={{ fontSize: '16px', width: 64, height: 64 }}
           />
-          <Button 
-            type="text" 
-            icon={<LogoutOutlined />} 
-            onClick={handleLogout}
-            style={{ float: 'right', margin: '16px 24px' }}
-          >
-            Logout
-          </Button>
+          <Dropdown menu={{ items: userMenu }} placement="bottomRight">
+            <Avatar style={{ cursor: 'pointer' }} icon={<UserOutlined />} />
+          </Dropdown>
         </Header>
-        <Content style={{ margin: '24px 16px', padding: 24, background: colorBgContainer, borderRadius: borderRadiusLG }}>
+        <Content style={{
+          margin: '24px 16px',
+          padding: 24,
+          minHeight: 280,
+          background: colorBgContainer,
+          borderRadius: token.borderRadius,
+        }}>
           {children}
         </Content>
       </Layout>

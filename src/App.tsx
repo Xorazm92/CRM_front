@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ConfigProvider } from 'antd';
 import { Routes, Route, Navigate } from 'react-router-dom';
@@ -19,8 +20,19 @@ const App = () => {
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary: '#1677ff',
+          colorPrimary: '#1890ff',
           borderRadius: 6,
+          colorBgContainer: '#f0f2f5',
+          colorBgLayout: '#f0f2f5',
+        },
+        components: {
+          Layout: {
+            siderBg: '#001529',
+            headerBg: '#fff',
+          },
+          Menu: {
+            darkItemBg: '#001529',
+          },
         },
       }}
     >
