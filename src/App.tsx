@@ -8,7 +8,7 @@ import Teachers from './pages/teacher';
 import Students from './pages/student';
 import Courses from './pages/course';
 import AdminUsers from './pages/admin';
-import Groups from './pages/groups'; // Added import for Groups component
+import Groups from './pages/group'; // Added import for Groups component
 
 const PrivateRoute = ({ children }) => {
   const token = localStorage.getItem('token');
