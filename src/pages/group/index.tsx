@@ -1,24 +1,72 @@
+
 import React, { useState, useEffect } from 'react';
 import { Table, Space, Button, Modal, Form, Input, message } from 'antd';
-import { TeamOutlined } from '@ant-design/icons';
+import { TeamOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 
 const Groups = () => {
   const [groups, setGroups] = useState([]);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [loading, setLoading] = useState(false); // Added loading state
+  const [loading, setLoading] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
   const [form] = Form.useForm();
-
-  useEffect(() => {
-    fetchGroups();
-  }, []);
+  const [editingId, setEditingId] = useState(null);
 
   const fetchGroups = async () => {
     try {
+      setLoading(true);
       const response = await fetch('/api/groups');
       const data = await response.json();
       setGroups(data);
     } catch (error) {
       message.error('Failed to fetch groups');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchGroups();
+  }, []);
+
+  const handleSubmit = async (values) => {
+    try {
+      const url = editingId ? `/api/groups/${editingId}` : '/api/groups';
+      const method = editingId ? 'PUT' : 'POST';
+      
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(values)
+      });
+
+      if (response.ok) {
+        message.success(`Group ${editingId ? 'updated' : 'created'} successfully`);
+        setModalVisible(false);
+        form.resetFields();
+        fetchGroups();
+      }
+    } catch (error) {
+      message.error('Operation failed');
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      const response = await fetch(`/api/groups/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      if (response.ok) {
+        message.success('Group deleted successfully');
+        fetchGroups();
+      }
+    } catch (error) {
+      message.error('Delete failed');
     }
   };
 
@@ -29,93 +77,82 @@ const Groups = () => {
       key: 'name',
     },
     {
-      title: 'Teacher',
-      dataIndex: ['teacher', 'full_name'],
-      key: 'teacher',
+      title: 'Description',
+      dataIndex: 'description',
+      key: 'description',
     },
     {
       title: 'Actions',
       key: 'actions',
       render: (_, record) => (
         <Space>
-          <Button onClick={() => handleEdit(record)}>Edit</Button>
-          <Button danger onClick={() => handleDelete(record.id)}>Delete</Button>
+          <Button 
+            icon={<EditOutlined />}
+            onClick={() => {
+              setEditingId(record.id);
+              form.setFieldsValue(record);
+              setModalVisible(true);
+            }}
+          />
+          <Button 
+            danger 
+            icon={<DeleteOutlined />}
+            onClick={() => handleDelete(record.id)}
+          />
         </Space>
       ),
     },
   ];
 
-  const handleSubmit = async (values) => {
-    try {
-      setLoading(true);
-      const response = await fetch('/api/groups', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(values),
-      });
-
-      if (!response.ok) throw new Error('Failed to create group');
-
-      message.success('Group created successfully');
-      setIsModalVisible(false);
-      form.resetFields();
-      fetchGroups();
-    } catch (error) {
-      message.error(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleEdit = async (record) => {
-    form.setFieldsValue(record);
-    setIsModalVisible(true);
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      setLoading(true);
-      const response = await fetch(`/api/groups/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-
-      if (!response.ok) throw new Error('Failed to delete group');
-
-      message.success('Group deleted successfully');
-      fetchGroups();
-    } catch (error) {
-      message.error(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div>
-      <h2>Groups</h2>
-      <Button type="primary" onClick={() => setIsModalVisible(true)} style={{ marginBottom: 16 }}>
-        Add Group
-      </Button>
-      <Table columns={columns} dataSource={groups} rowKey="id" loading={loading} /> {/* Added loading prop */}
+      <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h2><TeamOutlined /> Groups</h2>
+        <Button 
+          type="primary"
+          onClick={() => {
+            setEditingId(null);
+            form.resetFields();
+            setModalVisible(true);
+          }}
+        >
+          Add Group
+        </Button>
+      </div>
+
+      <Table 
+        loading={loading}
+        columns={columns} 
+        dataSource={groups}
+        rowKey="id"
+      />
 
       <Modal
-        title="Group Form"
-        open={isModalVisible}
-        onOk={() => form.submit()}
-        onCancel={() => setIsModalVisible(false)}
+        title={editingId ? "Edit Group" : "Add Group"}
+        open={modalVisible}
+        onOk={form.submit}
+        onCancel={() => {
+          setModalVisible(false);
+          form.resetFields();
+        }}
       >
-        <Form form={form} onFinish={handleSubmit}> {/* Added onFinish prop */}
-          <Form.Item name="name" rules={[{ required: true }]}>
-            <Input placeholder="Group Name" />
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmit}
+        >
+          <Form.Item
+            name="name"
+            label="Name"
+            rules={[{ required: true, message: 'Please input group name!' }]}
+          >
+            <Input />
           </Form.Item>
-          <Form.Item name="teacherId" rules={[{ required: true }]}>
-            <Input placeholder="Teacher ID" />
+          <Form.Item
+            name="description"
+            label="Description"
+          >
+            <Input.TextArea />
           </Form.Item>
         </Form>
       </Modal>
