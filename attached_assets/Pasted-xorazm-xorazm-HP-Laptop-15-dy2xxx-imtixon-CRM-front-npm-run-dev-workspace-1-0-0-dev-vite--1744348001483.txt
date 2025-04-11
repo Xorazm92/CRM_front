@@ -1,0 +1,39 @@
+xorazm@xorazm-HP-Laptop-15-dy2xxx:~/imtixon/CRM_front$ npm run dev
+
+> workspace@1.0.0 dev
+> vite
+
+
+  VITE v6.2.6  ready in 167 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: http://10.10.3.185:5173/
+  ➜  press h + enter to show help
+10:06:13 AM [vite] (client) Pre-transform error: Failed to resolve import "./pages/course" from "src/App.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/xorazm/imtixon/CRM_front/src/App.tsx:9:20
+  22 |  import Teachers from "./pages/teacher";
+  23 |  import Students from "./pages/student";
+  24 |  import Courses from "./pages/course";
+     |                       ^
+  25 |  import AdminUsers from "./pages/admin";
+  26 |  import Groups from "./pages/groups";
+10:06:14 AM [vite] Internal server error: Failed to resolve import "./pages/course" from "src/App.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/xorazm/imtixon/CRM_front/src/App.tsx:9:20
+  22 |  import Teachers from "./pages/teacher";
+  23 |  import Students from "./pages/student";
+  24 |  import Courses from "./pages/course";
+     |                       ^
+  25 |  import AdminUsers from "./pages/admin";
+  26 |  import Groups from "./pages/groups";
+      at TransformPluginContext._formatLog (file:///home/xorazm/imtixon/CRM_front/node_modules/vite/dist/node/chunks/dep-Bid9ssRr.js:47897:41)
+      at TransformPluginContext.error (file:///home/xorazm/imtixon/CRM_front/node_modules/vite/dist/node/chunks/dep-Bid9ssRr.js:47894:16)
+      at normalizeUrl (file:///home/xorazm/imtixon/CRM_front/node_modules/vite/dist/node/chunks/dep-Bid9ssRr.js:46027:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async file:///home/xorazm/imtixon/CRM_front/node_modules/vite/dist/node/chunks/dep-Bid9ssRr.js:46146:37
+      at async Promise.all (index 10)
+      at async TransformPluginContext.transform (file:///home/xorazm/imtixon/CRM_front/node_modules/vite/dist/node/chunks/dep-Bid9ssRr.js:46073:7)
+      at async EnvironmentPluginContainer.transform (file:///home/xorazm/imtixon/CRM_front/node_modules/vite/dist/node/chunks/dep-Bid9ssRr.js:47692:18)
+      at async loadAndTransform (file:///home/xorazm/imtixon/CRM_front/node_modules/vite/dist/node/chunks/dep-Bid9ssRr.js:41327:27)
+      at async viteTransformMiddleware (file:///home/xorazm/imtixon/CRM_front/node_modules/vite/dist/node/chunks/dep-Bid9ssRr.js:42807:24)
