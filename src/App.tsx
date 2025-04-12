@@ -6,9 +6,9 @@ import Login from './pages/auth/Login';
 import Dashboard from './pages/dashboard';
 import Teachers from './pages/teacher';
 import Students from './pages/student';
-import Courses from './pages/course';
+// import Courses from './pages/course';
 import AdminUsers from './pages/admin';
-import Groups from './pages/groups'; // Added import for Groups component
+// import Groups from './pages/groups'; // Added import for Groups component
 
 const PrivateRoute = ({ children }) => {
   const token = localStorage.getItem('token');
@@ -48,8 +48,8 @@ const App = () => {
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/teachers/*" element={<Teachers />} />
                   <Route path="/students/*" element={<Students />} />
-                  <Route path="/courses/*" element={<Courses />} />
-                  <Route path="/groups/*" element={<Groups />} /> {/* Added Groups route */}
+                  {/* <Route path="/courses/*" element={<Courses />} /> */}
+                  {/* <Route path="/groups/*" element={<Groups />} /> Added Groups route */}
                   <Route path="/admin/*" element={<AdminUsers />} />
                 </Routes>
               </AdminLayout>
