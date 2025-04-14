@@ -1,10 +1,38 @@
 
-import { Table, Button, Space, Input } from 'antd';
+import { Table, Button, Space, Input, Modal, Form, message } from 'antd';
 import { useState } from 'react';
 import { SearchOutlined, PlusOutlined } from '@ant-design/icons';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { studentsService } from '../../services/students';
 
 const Students = () => {
   const [searchText, setSearchText] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [form] = Form.useForm();
+  const queryClient = useQueryClient();
+
+  const { data: students, isLoading } = useQuery({
+    queryKey: ['students'],
+    queryFn: () => studentsService.getAll().then(res => res.data)
+  });
+
+  const createMutation = useMutation({
+    mutationFn: studentsService.create,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['students'] });
+      message.success("O'quvchi muvaffaqiyatli qo'shildi");
+      setIsModalOpen(false);
+      form.resetFields();
+    }
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: studentsService.delete,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['students'] });
+      message.success("O'quvchi muvaffaqiyatli o'chirildi");
+    }
+  });
 
   const columns = [
     {
@@ -28,23 +56,19 @@ const Students = () => {
     {
       title: 'Amallar',
       key: 'action',
-      render: () => (
+      render: (_: any, record: any) => (
         <Space size="middle">
           <Button type="link">Tahrirlash</Button>
-          <Button type="link" danger>O'chirish</Button>
+          <Button 
+            type="link" 
+            danger 
+            onClick={() => deleteMutation.mutate(record.id)}
+          >
+            O'chirish
+          </Button>
         </Space>
       ),
     },
-  ];
-
-  const dummyData = [
-    {
-      key: '1',
-      full_name: 'Abdullayev Abror',
-      phone: '+998901234567',
-      group: 'Frontend-1',
-    },
-    // Keyinchalik backend dan kelgan ma'lumotlar bilan to'ldiriladi
   ];
 
   return (
@@ -56,11 +80,56 @@ const Students = () => {
           style={{ width: 200 }}
           onChange={(e) => setSearchText(e.target.value)}
         />
-        <Button type="primary" icon={<PlusOutlined />}>
+        <Button 
+          type="primary" 
+          icon={<PlusOutlined />}
+          onClick={() => setIsModalOpen(true)}
+        >
           Yangi o'quvchi
         </Button>
       </div>
-      <Table columns={columns} dataSource={dummyData} />
+      
+      <Table 
+        columns={columns} 
+        dataSource={students} 
+        loading={isLoading}
+        rowKey="id"
+      />
+
+      <Modal
+        title="Yangi o'quvchi qo'shish"
+        open={isModalOpen}
+        onOk={form.submit}
+        onCancel={() => setIsModalOpen(false)}
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={(values) => createMutation.mutate(values)}
+        >
+          <Form.Item
+            name="full_name"
+            label="Ism Familiya"
+            rules={[{ required: true, message: "Iltimos, to'ldiring" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="phone"
+            label="Telefon"
+            rules={[{ required: true, message: "Iltimos, to'ldiring" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="group"
+            label="Guruh"
+            rules={[{ required: true, message: "Iltimos, to'ldiring" }]}
+          >
+            <Input />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };
