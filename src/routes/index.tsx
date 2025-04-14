@@ -3,6 +3,7 @@ import Login from "../pages/auth/login";
 import Dashboard from "../pages/dashboard";
 import Students from "../pages/students";
 import Teachers from "../pages/teachers";
+import Settings from "../pages/settings";
 
 interface RouteT {
     path: string;
@@ -36,5 +37,9 @@ export const routes: RouteT[] = [
     {
         path: "/teachers",
         element: <Teachers />
+    },
+    {
+        path: "/settings",
+        element: <Settings />
     }
 ]
