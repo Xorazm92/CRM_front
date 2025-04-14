@@ -1,8 +1,10 @@
+<<<<<<< HEAD
 import React from 'react';
 import { ConfigProvider } from 'antd';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import AdminLayout from './components/layout/AdminLayout';
 import Login from './pages/auth/Login';
+import Register from './pages/auth/Register';
 import Dashboard from './pages/dashboard';
 import Teachers from './pages/teacher';
 import Students from './pages/student';
@@ -38,6 +40,7 @@ const App = () => {
     >
       <Routes>
         <Route path="/login" element={<Login />} />
+<Route path="/register" element={<Register />} />
         <Route
           path="/*"
           element={
@@ -62,3 +65,40 @@ const App = () => {
 };
 
 export default App;
+=======
+
+import { Routes, Route } from 'react-router-dom';
+import { routes } from './routes';
+import MainLayout from './components/MainLayout';
+
+function App() {
+  return (
+    <Routes>
+      {routes.map((route) => (
+        <Route
+          key={route.path}
+          path={route.path}
+          element={
+            route.path === '/login' ? (
+              route.element
+            ) : (
+              <MainLayout>{route.element}</MainLayout>
+            )
+          }
+        >
+          {route.children?.map((child) => (
+            <Route
+              key={child.path || 'index'}
+              index={child.index}
+              path={child.path}
+              element={child.element}
+            />
+          ))}
+        </Route>
+      ))}
+    </Routes>
+  );
+}
+
+export default App;
+>>>>>>> 77295ba93bb605cd34f38b0a12d7ff0a6660c9c9
