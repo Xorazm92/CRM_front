@@ -1,33 +1,48 @@
 
 import { Table, Button, Modal, Form, Input, Select, message } from 'antd';
 import { useState } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { groupService } from '../../services/groups';
+import { courseService } from '../../services/courses';
 
 const GroupsPage = () => {
   const [form] = Form.useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const queryClient = useQueryClient();
 
-  const { data: groups, refetch } = useQuery({
+  const { data: groups, isLoading } = useQuery({
     queryKey: ['groups'],
-    queryFn: groupService.getAll
+    queryFn: () => groupService.getAll()
+  });
+
+  const { data: courses } = useQuery({
+    queryKey: ['courses'],
+    queryFn: () => courseService.getAll()
   });
 
   const createMutation = useMutation({
     mutationFn: groupService.create,
     onSuccess: () => {
-      message.success('Guruh yaratildi');
+      queryClient.invalidateQueries({ queryKey: ['groups'] });
+      message.success("Guruh muvaffaqiyatli qo'shildi");
       setIsModalOpen(false);
-      refetch();
+      form.resetFields();
+    }
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: groupService.delete,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['groups'] });
+      message.success("Guruh muvaffaqiyatli o'chirildi");
     }
   });
 
   const columns = [
     { title: 'Nomi', dataIndex: 'name' },
-    { title: 'Kurs', dataIndex: 'course_name' },
-    { title: "O'quvchilar soni", dataIndex: 'students_count' },
+    { title: 'Kurs', dataIndex: ['course', 'name'] },
     {
-      title: 'Action',
+      title: 'Amallar',
       render: (_, record) => (
         <Button danger onClick={() => deleteMutation.mutate(record.id)}>
           O'chirish
@@ -38,11 +53,20 @@ const GroupsPage = () => {
 
   return (
     <div>
-      <Button type="primary" onClick={() => setIsModalOpen(true)} style={{marginBottom: 16}}>
-        Guruh qo'shish
+      <Button 
+        type="primary" 
+        onClick={() => setIsModalOpen(true)} 
+        style={{ marginBottom: 16 }}
+      >
+        Yangi guruh qo'shish
       </Button>
-      
-      <Table columns={columns} dataSource={groups} />
+
+      <Table 
+        loading={isLoading}
+        columns={columns} 
+        dataSource={groups} 
+        rowKey="id"
+      />
 
       <Modal 
         title="Yangi guruh"
@@ -51,10 +75,16 @@ const GroupsPage = () => {
         onCancel={() => setIsModalOpen(false)}
       >
         <Form form={form} onFinish={createMutation.mutate}>
-          <Form.Item name="name" rules={[{ required: true }]}>
+          <Form.Item 
+            name="name" 
+            rules={[{ required: true, message: "Guruh nomini kiriting" }]}
+          >
             <Input placeholder="Guruh nomi" />
           </Form.Item>
-          <Form.Item name="course_id" rules={[{ required: true }]}>
+          <Form.Item 
+            name="course_id" 
+            rules={[{ required: true, message: "Kursni tanlang" }]}
+          >
             <Select placeholder="Kursni tanlang">
               {courses?.map(course => (
                 <Select.Option key={course.id} value={course.id}>

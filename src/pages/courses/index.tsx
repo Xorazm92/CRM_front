@@ -1,24 +1,34 @@
 
 import { Table, Button, Modal, Form, Input, message } from 'antd';
 import { useState } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { courseService } from '../../services/courses';
 
 const CoursesPage = () => {
   const [form] = Form.useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const queryClient = useQueryClient();
 
-  const { data: courses, refetch } = useQuery({
+  const { data: courses, isLoading } = useQuery({
     queryKey: ['courses'],
-    queryFn: courseService.getAll
+    queryFn: () => courseService.getAll()
   });
 
   const createMutation = useMutation({
     mutationFn: courseService.create,
     onSuccess: () => {
-      message.success('Kurs yaratildi');
+      queryClient.invalidateQueries({ queryKey: ['courses'] });
+      message.success("Kurs muvaffaqiyatli qo'shildi");
       setIsModalOpen(false);
-      refetch();
+      form.resetFields();
+    }
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: courseService.delete,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['courses'] });
+      message.success("Kurs muvaffaqiyatli o'chirildi");
     }
   });
 
@@ -27,7 +37,7 @@ const CoursesPage = () => {
     { title: 'Davomiyligi', dataIndex: 'duration' },
     { title: 'Narxi', dataIndex: 'price' },
     {
-      title: 'Action',
+      title: 'Amallar',
       render: (_, record) => (
         <Button danger onClick={() => deleteMutation.mutate(record.id)}>
           O'chirish
@@ -38,11 +48,20 @@ const CoursesPage = () => {
 
   return (
     <div>
-      <Button type="primary" onClick={() => setIsModalOpen(true)} style={{marginBottom: 16}}>
-        Kurs qo'shish
+      <Button 
+        type="primary" 
+        onClick={() => setIsModalOpen(true)} 
+        style={{ marginBottom: 16 }}
+      >
+        Yangi kurs qo'shish
       </Button>
-      
-      <Table columns={columns} dataSource={courses} />
+
+      <Table 
+        loading={isLoading}
+        columns={columns} 
+        dataSource={courses} 
+        rowKey="id"
+      />
 
       <Modal 
         title="Yangi kurs"
@@ -51,13 +70,22 @@ const CoursesPage = () => {
         onCancel={() => setIsModalOpen(false)}
       >
         <Form form={form} onFinish={createMutation.mutate}>
-          <Form.Item name="name" rules={[{ required: true }]}>
+          <Form.Item 
+            name="name" 
+            rules={[{ required: true, message: "Kurs nomini kiriting" }]}
+          >
             <Input placeholder="Kurs nomi" />
           </Form.Item>
-          <Form.Item name="duration" rules={[{ required: true }]}>
+          <Form.Item 
+            name="duration" 
+            rules={[{ required: true, message: "Davomiyligini kiriting" }]}
+          >
             <Input placeholder="Davomiyligi" />
           </Form.Item>
-          <Form.Item name="price" rules={[{ required: true }]}>
+          <Form.Item 
+            name="price" 
+            rules={[{ required: true, message: "Narxini kiriting" }]}
+          >
             <Input type="number" placeholder="Narxi" />
           </Form.Item>
         </Form>
