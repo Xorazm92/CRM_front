@@ -1,8 +1,19 @@
 
-import { Card, Row, Col, Statistic } from 'antd';
+import { Card, Row, Col, Statistic, Spin } from 'antd';
 import { UserOutlined, TeamOutlined, BookOutlined } from '@ant-design/icons';
+import { useQuery } from '@tanstack/react-query';
+import { dashboardService } from '../../services/dashboard';
 
 const Dashboard = () => {
+    const { data: stats, isLoading } = useQuery({
+        queryKey: ['dashboard-stats'],
+        queryFn: () => dashboardService.getStats().then(res => res.data)
+    });
+
+    if (isLoading) {
+        return <Spin size="large" />;
+    }
+
     return (
         <div>
             <h1>Dashboard</h1>
@@ -10,8 +21,8 @@ const Dashboard = () => {
                 <Col span={8}>
                     <Card>
                         <Statistic
-                            title="Total Students"
-                            value={42}
+                            title="Jami O'quvchilar"
+                            value={stats?.totalStudents}
                             prefix={<UserOutlined />}
                         />
                     </Card>
@@ -19,8 +30,8 @@ const Dashboard = () => {
                 <Col span={8}>
                     <Card>
                         <Statistic
-                            title="Total Teachers"
-                            value={8}
+                            title="Jami O'qituvchilar"
+                            value={stats?.totalTeachers}
                             prefix={<TeamOutlined />}
                         />
                     </Card>
@@ -28,8 +39,8 @@ const Dashboard = () => {
                 <Col span={8}>
                     <Card>
                         <Statistic
-                            title="Active Courses"
-                            value={12}
+                            title="Faol Kurslar"
+                            value={stats?.activeCourses}
                             prefix={<BookOutlined />}
                         />
                     </Card>
