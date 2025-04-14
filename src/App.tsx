@@ -1,18 +1,35 @@
-import { Route, Routes } from "react-router-dom"
-import { routes } from "./routes"
 
-const App = () => {
+import { Routes, Route } from 'react-router-dom';
+import { routes } from './routes';
+import MainLayout from './components/MainLayout';
+
+function App() {
   return (
     <Routes>
-      {routes.map((element, index) => {
-        return <Route key={index} path={element.path} element={element.element}>
-          {element.children?.map((item, childIndex) => {
-            return <Route key={childIndex} index={!item.path ? true : false} path={item.path} element={item.element} />
-          })}
+      {routes.map((route) => (
+        <Route
+          key={route.path}
+          path={route.path}
+          element={
+            route.path === '/login' ? (
+              route.element
+            ) : (
+              <MainLayout>{route.element}</MainLayout>
+            )
+          }
+        >
+          {route.children?.map((child) => (
+            <Route
+              key={child.path || 'index'}
+              index={child.index}
+              path={child.path}
+              element={child.element}
+            />
+          ))}
         </Route>
-      })}
+      ))}
     </Routes>
-  )
+  );
 }
 
-export default App
+export default App;

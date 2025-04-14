@@ -1,25 +1,73 @@
-import { Link } from "react-router-dom"
-import { useAuthStore } from "../../store/useAuthStore"
-import { instance } from "../../config/axios-instance"
+
+import { Form, Input, Button, Card, message } from 'antd';
+import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { useAuthStore } from "../../store/useAuthStore";
+import { instance } from "../../config/axios-instance";
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-    const { user, setUser, setToken, token } = useAuthStore((store) => store)
-    const loginHandler = async () => {
-        const res = await instance.post("/auth/login", {
-            username: "johndoe",
-            password: "password123"
-        })
-        console.log(res);
+    const { setUser, setToken } = useAuthStore();
+    const navigate = useNavigate();
 
-        setUser(res.data.user)
-        setToken(res.data.data.accessToken)
-    }
+    const onFinish = async (values: { username: string; password: string }) => {
+        try {
+            const res = await instance.post("/auth/login", values);
+            setUser(res.data.user);
+            setToken(res.data.data.accessToken);
+            navigate('/');
+            message.success('Successfully logged in!');
+        } catch (error) {
+            message.error('Invalid credentials');
+        }
+    };
+
     return (
-        <div>Login
-            {token ? <p>{user.full_name}</p> : <button onClick={loginHandler}>Login</button>}
-            <Link to="/dashboard">Dashboard</Link>
-        </div>
-    )
-}
+        <div style={{ 
+            height: '100vh', 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center',
+            background: '#f0f2f5' 
+        }}>
+            <Card style={{ width: 400 }}>
+                <h1 style={{ textAlign: 'center', marginBottom: 24 }}>CRM Login</h1>
+                <Form
+                    name="login"
+                    onFinish={onFinish}
+                    autoComplete="off"
+                    layout="vertical"
+                >
+                    <Form.Item
+                        name="username"
+                        rules={[{ required: true, message: 'Please input your username!' }]}
+                    >
+                        <Input 
+                            prefix={<UserOutlined />} 
+                            placeholder="Username" 
+                            size="large"
+                        />
+                    </Form.Item>
 
-export default Login
+                    <Form.Item
+                        name="password"
+                        rules={[{ required: true, message: 'Please input your password!' }]}
+                    >
+                        <Input.Password
+                            prefix={<LockOutlined />}
+                            placeholder="Password"
+                            size="large"
+                        />
+                    </Form.Item>
+
+                    <Form.Item>
+                        <Button type="primary" htmlType="submit" block size="large">
+                            Log in
+                        </Button>
+                    </Form.Item>
+                </Form>
+            </Card>
+        </div>
+    );
+};
+
+export default Login;
