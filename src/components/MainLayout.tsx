@@ -1,17 +1,32 @@
 
 import { Layout, Menu } from 'antd';
-import { HomeOutlined, UserOutlined, TeamOutlined, SettingOutlined } from '@ant-design/icons';
+import { 
+  HomeOutlined, 
+  UserOutlined, 
+  TeamOutlined, 
+  SettingOutlined,
+  BookOutlined,
+  GroupOutlined,
+  UserSwitchOutlined
+} from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../store/useAuthStore';
 
 const { Sider, Content } = Layout;
 
 const MainLayout = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
+  const { user } = useAuthStore();
 
   const menuItems = [
     { key: '/', icon: <HomeOutlined />, label: 'Dashboard' },
     { key: '/students', icon: <UserOutlined />, label: 'Students' },
     { key: '/teachers', icon: <TeamOutlined />, label: 'Teachers' },
+    { key: '/courses', icon: <BookOutlined />, label: 'Courses' },
+    { key: '/groups', icon: <GroupOutlined />, label: 'Groups' },
+    ...(user.role === 'admin' ? [
+      { key: '/admin', icon: <UserSwitchOutlined />, label: 'Admins' }
+    ] : []),
     { key: '/settings', icon: <SettingOutlined />, label: 'Settings' },
   ];
 
