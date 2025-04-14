@@ -4,6 +4,9 @@ import Dashboard from "../pages/dashboard";
 import Students from "../pages/students";
 import Teachers from "../pages/teachers";
 import Settings from "../pages/settings";
+import Admin from "../pages/admin";
+import Groups from "../pages/groups";
+import Courses from "../pages/courses";
 
 interface RouteT {
     path: string;

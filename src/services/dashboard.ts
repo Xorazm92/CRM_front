@@ -1,15 +1,5 @@
-import { instance } from "../config/axios-instance";
 
-interface DashboardStatsT {
-  totalStudents: number;
-  totalTeachers: number;
-  activeCourses: number;
-}
-
-export const dashboardService = {
-  getStats: () => instance.get<DashboardStatsT>("/dashboard/stats"),
-};
-import { instance } from "../config/axios-instance";
+import { instance } from '../config/axios-instance';
 
 interface StatsResponse {
   studentsCount: number;
@@ -19,5 +9,5 @@ interface StatsResponse {
 }
 
 export const dashboardService = {
-  getStats: () => instance.get<StatsResponse>("/dashboard/stats"),
+  getStats: () => instance.get<StatsResponse>('/dashboard/stats'),
 };
