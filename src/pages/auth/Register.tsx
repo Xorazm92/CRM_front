@@ -42,6 +42,9 @@ const Register = () => {
             </Button>
           </Form.Item>
         </Form>
+        <div style={{ textAlign: 'center', marginTop: 16 }}>
+          Already have an account? <a href="/login">Login now!</a>
+        </div>
       </Card>
     </div>
   );
