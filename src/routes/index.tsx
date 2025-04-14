@@ -27,19 +27,31 @@ export const routes: RouteT[] = [
             {
                 index: true,
                 element: <Dashboard />
+            },
+            {
+                path: "students",
+                element: <Students />
+            },
+            {
+                path: "teachers", 
+                element: <Teachers />
+            },
+            {
+                path: "settings",
+                element: <Settings />
+            },
+            {
+                path: "admin",
+                element: <RoleChecker roles={["admin"]}><Admin /></RoleChecker>
+            },
+            {
+                path: "groups",
+                element: <Groups />
+            },
+            {
+                path: "courses",
+                element: <Courses />
             }
         ]
-    },
-    {
-        path: "/students",
-        element: <Students />
-    },
-    {
-        path: "/teachers",
-        element: <Teachers />
-    },
-    {
-        path: "/settings",
-        element: <Settings />
     }
 ]
