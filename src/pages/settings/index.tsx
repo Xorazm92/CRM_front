@@ -6,9 +6,24 @@ const Settings = () => {
   const { user } = useAuthStore();
   const [form] = Form.useForm();
 
+  const updateProfileMutation = useMutation({
+    mutationFn: authService.updateProfile,
+    onSuccess: () => {
+      message.success('Profil muvaffaqiyatli yangilandi');
+      // Update local user data
+      setUser({
+        ...user,
+        full_name: form.getFieldValue('full_name'),
+        username: form.getFieldValue('username'),
+      });
+    },
+    onError: () => {
+      message.error('Xatolik yuz berdi');
+    }
+  });
+
   const handleProfileUpdate = (values: any) => {
-    console.log('Profile update values:', values);
-    message.success('Profil muvaffaqiyatli yangilandi');
+    updateProfileMutation.mutate(values);
   };
 
   const items = [

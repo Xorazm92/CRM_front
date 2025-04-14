@@ -11,7 +11,7 @@ const Login = () => {
 
     const onFinish = async (values: { username: string; password: string }) => {
         try {
-            const res = await instance.post("/auth/login", values);
+            const res = await authService.login(values);
             setUser(res.data.user);
             setToken(res.data.data.accessToken);
             navigate('/');
