@@ -20,6 +20,7 @@ interface LoginResponseT {
 
 export const authService = {
   login: (data: LoginDataT) => instance.post<LoginResponseT>("/auth/login", data),
+  register: (data: LoginDataT) => instance.post<LoginResponseT>("/auth/register", data),
   updateProfile: (data: { full_name: string; username: string; password?: string }) =>
     instance.put("/auth/profile", data),
 };
