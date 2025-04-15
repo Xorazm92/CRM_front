@@ -1,8 +1,9 @@
 
 import React, { useState } from 'react';
-import { Table, Button, Modal, Form, Input, message, Space } from 'antd';
+import { Table, Button, Modal, Form, Input, Select, message, Card, Row, Col } from 'antd';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { groupsService } from '../../services/groups';
+import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 
 const Groups = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -20,36 +21,76 @@ const Groups = () => {
     },
   });
 
+  const deleteMutation = useMutation(groupsService.delete, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('groups');
+      message.success('Guruh muvaffaqiyatli o\'chirildi');
+    },
+  });
+
   const columns = [
-    { title: 'Nomi', dataIndex: 'name', key: 'name' },
-    { title: 'O\'quvchilar soni', dataIndex: 'studentsCount', key: 'studentsCount' },
+    { 
+      title: 'Guruh nomi',
+      dataIndex: 'name',
+      key: 'name',
+      render: (text) => <span style={{ color: '#1677FF', fontWeight: 500 }}>{text}</span>
+    },
+    { 
+      title: 'O\'quvchilar soni',
+      dataIndex: 'studentsCount',
+      key: 'studentsCount',
+      render: (count) => <span style={{ color: '#52C41A' }}>{count}</span>
+    },
     { title: 'O\'qituvchi', dataIndex: 'teacherName', key: 'teacherName' },
     { title: 'Kurs', dataIndex: 'courseName', key: 'courseName' },
     {
       title: 'Amallar',
       key: 'actions',
       render: (_, record) => (
-        <Space>
-          <Button type="primary">Tahrirlash</Button>
-          <Button danger>O'chirish</Button>
+        <Space size="middle">
+          <Button 
+            type="text" 
+            icon={<EditOutlined />} 
+            style={{ color: '#1677FF' }}
+          />
+          <Button 
+            type="text" 
+            icon={<DeleteOutlined />} 
+            style={{ color: '#FF4D4F' }}
+            onClick={() => deleteMutation.mutate(record.id)}
+          />
         </Space>
       ),
     },
   ];
 
   return (
-    <div>
-      <div style={{ marginBottom: 16 }}>
-        <Button type="primary" onClick={() => setIsModalOpen(true)}>
-          Yangi guruh qo'shish
-        </Button>
-      </div>
+    <Card>
+      <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
+        <Col>
+          <h2 style={{ margin: 0 }}>Guruhlar</h2>
+        </Col>
+        <Col>
+          <Button 
+            type="primary" 
+            icon={<PlusOutlined />}
+            onClick={() => setIsModalOpen(true)}
+          >
+            Yangi guruh
+          </Button>
+        </Col>
+      </Row>
 
       <Table 
         columns={columns} 
         dataSource={groups} 
         loading={isLoading}
-        rowKey="id" 
+        rowKey="id"
+        pagination={{
+          position: ['bottomRight'],
+          showSizeChanger: true,
+          showTotal: (total) => `Jami ${total} ta`,
+        }}
       />
 
       <Modal
@@ -57,9 +98,12 @@ const Groups = () => {
         open={isModalOpen}
         onOk={form.submit}
         onCancel={() => setIsModalOpen(false)}
+        okText="Saqlash"
+        cancelText="Bekor qilish"
       >
         <Form
           form={form}
+          layout="vertical"
           onFinish={(values) => createMutation.mutate(values)}
         >
           <Form.Item
@@ -75,7 +119,9 @@ const Groups = () => {
             label="O'qituvchi"
             rules={[{ required: true, message: 'O\'qituvchini tanlang!' }]}
           >
-            <Input />
+            <Select placeholder="O'qituvchini tanlang">
+              {/* O'qituvchilar ro'yxati */}
+            </Select>
           </Form.Item>
 
           <Form.Item
@@ -83,11 +129,13 @@ const Groups = () => {
             label="Kurs"
             rules={[{ required: true, message: 'Kursni tanlang!' }]}
           >
-            <Input />
+            <Select placeholder="Kursni tanlang">
+              {/* Kurslar ro'yxati */}
+            </Select>
           </Form.Item>
         </Form>
       </Modal>
-    </div>
+    </Card>
   );
 };
 
