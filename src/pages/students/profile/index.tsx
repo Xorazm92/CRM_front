@@ -1,84 +1,80 @@
 
 import React from 'react';
-import { Card, Row, Col, Descriptions, Table, Tag, Statistic } from 'antd';
+import { Card, Descriptions, Tabs, Table, Tag } from 'antd';
 import { useParams } from 'react-router-dom';
-import { useQuery } from 'react-query';
-import { studentService } from '../../../services/students';
+import { useQuery } from '@tanstack/react-query';
+import { studentsService } from '../../../services/students';
+import { paymentsService } from '../../../services/payments';
 
 const StudentProfile = () => {
   const { id } = useParams();
-  
-  const { data: student, isLoading } = useQuery(['student', id], () => 
-    studentService.getById(id as string)
-  );
 
-  const paymentColumns = [
-    { title: 'Sana', dataIndex: 'date', key: 'date' },
-    { title: 'Summa', dataIndex: 'amount', key: 'amount' },
-    { title: 'Status', dataIndex: 'status', key: 'status',
-      render: (status: string) => (
-        <Tag color={status === 'paid' ? 'green' : 'red'}>
-          {status === 'paid' ? "To'langan" : "To'lanmagan"}
-        </Tag>
-      )
-    }
+  const { data: student, isLoading: studentLoading } = useQuery({
+    queryKey: ['student', id],
+    queryFn: () => studentsService.getById(id)
+  });
+
+  const { data: payments, isLoading: paymentsLoading } = useQuery({
+    queryKey: ['student-payments', id],
+    queryFn: () => paymentsService.getByStudentId(id)
+  });
+
+  const items = [
+    {
+      key: '1',
+      label: 'Asosiy ma\'lumotlar',
+      children: (
+        <Descriptions bordered column={2}>
+          <Descriptions.Item label="Ism Familiya">{student?.full_name}</Descriptions.Item>
+          <Descriptions.Item label="Telefon">{student?.phone}</Descriptions.Item>
+          <Descriptions.Item label="Guruh">{student?.group?.name}</Descriptions.Item>
+          <Descriptions.Item label="Holati">
+            <Tag color={student?.status === 'active' ? 'green' : 'red'}>
+              {student?.status === 'active' ? 'Faol' : 'Nofaol'}
+            </Tag>
+          </Descriptions.Item>
+        </Descriptions>
+      ),
+    },
+    {
+      key: '2',
+      label: 'To\'lovlar tarixi',
+      children: (
+        <Table 
+          loading={paymentsLoading}
+          dataSource={payments} 
+          columns={[
+            {
+              title: 'Sana',
+              dataIndex: 'payment_date',
+              key: 'payment_date',
+            },
+            {
+              title: 'Summa',
+              dataIndex: 'amount',
+              key: 'amount',
+              render: (amount) => `${amount.toLocaleString()} so'm`,
+            },
+            {
+              title: 'Holat',
+              dataIndex: 'status',
+              key: 'status',
+              render: (status) => (
+                <Tag color={status === 'completed' ? 'green' : 'orange'}>
+                  {status === 'completed' ? 'To\'langan' : 'Kutilmoqda'}
+                </Tag>
+              ),
+            },
+          ]} 
+        />
+      ),
+    },
   ];
-
-  const attendanceColumns = [
-    { title: 'Sana', dataIndex: 'date', key: 'date' },
-    { title: 'Status', dataIndex: 'status', key: 'status',
-      render: (status: string) => (
-        <Tag color={status === 'present' ? 'green' : 'red'}>
-          {status === 'present' ? 'Kelgan' : 'Kelmagan'}
-        </Tag>
-      )
-    }
-  ];
-
-  if (isLoading) return <div>Yuklanmoqda...</div>;
 
   return (
-    <div>
-      <Card>
-        <Row gutter={[16, 16]}>
-          <Col span={16}>
-            <Descriptions title="O'quvchi ma'lumotlari" bordered>
-              <Descriptions.Item label="Ism">{student?.firstName}</Descriptions.Item>
-              <Descriptions.Item label="Familiya">{student?.lastName}</Descriptions.Item>
-              <Descriptions.Item label="Telefon">{student?.phone}</Descriptions.Item>
-              <Descriptions.Item label="Guruh">{student?.group?.name}</Descriptions.Item>
-            </Descriptions>
-          </Col>
-          <Col span={8}>
-            <Card>
-              <Statistic title="To'lovlar" value={student?.totalPayments} suffix="so'm" />
-              <Statistic title="Davomat" value={student?.attendanceRate} suffix="%" />
-            </Card>
-          </Col>
-        </Row>
-
-        <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
-          <Col span={12}>
-            <Card title="To'lovlar tarixi">
-              <Table 
-                columns={paymentColumns} 
-                dataSource={student?.payments} 
-                pagination={false}
-              />
-            </Card>
-          </Col>
-          <Col span={12}>
-            <Card title="Davomat tarixi">
-              <Table 
-                columns={attendanceColumns} 
-                dataSource={student?.attendance} 
-                pagination={false}
-              />
-            </Card>
-          </Col>
-        </Row>
-      </Card>
-    </div>
+    <Card loading={studentLoading}>
+      <Tabs defaultActiveKey="1" items={items} />
+    </Card>
   );
 };
 

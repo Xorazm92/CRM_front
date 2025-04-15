@@ -1,4 +1,3 @@
-
 import { instance } from "../config/axios-instance";
 
 interface PaymentT {
@@ -14,7 +13,7 @@ interface PaymentT {
 
 export const paymentsService = {
   getAll: () => instance.get<PaymentT[]>("/payments"),
-  getById: (id: string) => instance.get<PaymentT>(`/payments/${id}`),
+  getByStudentId: (studentId: string) => instance.get<PaymentT[]>(`/payments/student/${studentId}`),
   create: (data: Omit<PaymentT, "id">) => instance.post("/payments", data),
   update: (id: string, data: Partial<PaymentT>) => 
     instance.put(`/payments/${id}`, data),
