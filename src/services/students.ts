@@ -28,6 +28,11 @@ export const studentService = {
     return data;
   },
 
+  getGrades: async (id: string) => {
+    const { data } = await axiosInstance.get(`/students/${id}/grades`);
+    return data;
+  },
+
   create: async (values: any) => {
     const { data } = await axiosInstance.post('/students', values);
     return data;

@@ -24,6 +24,11 @@ const StudentProfile = () => {
     queryFn: () => studentsService.getAttendance(id)
   });
 
+  const { data: grades, isLoading: gradesLoading } = useQuery({
+    queryKey: ['student-grades', id],
+    queryFn: () => studentsService.getGrades(id)
+  });
+
   const items = [
     {
       key: '1',
@@ -76,6 +81,42 @@ const StudentProfile = () => {
     },
     {
       key: '3',
+      label: 'Baholar',
+      children: (
+        <Table 
+          loading={gradesLoading}
+          dataSource={grades} 
+          columns={[
+            {
+              title: 'Fan',
+              dataIndex: 'subject',
+              key: 'subject',
+            },
+            {
+              title: 'Baho',
+              dataIndex: 'grade',
+              key: 'grade',
+              render: (grade) => (
+                <Tag color={
+                  grade >= 90 ? 'green' : 
+                  grade >= 70 ? 'blue' :
+                  grade >= 60 ? 'orange' : 'red'
+                }>
+                  {grade}
+                </Tag>
+              ),
+            },
+            {
+              title: 'Sana',
+              dataIndex: 'date',
+              key: 'date',
+            }
+          ]} 
+        />
+      ),
+    },
+    {
+      key: '4',
       label: 'Davomat',
       children: (
         <Table 
