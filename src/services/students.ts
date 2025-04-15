@@ -1,4 +1,3 @@
-
 import axiosInstance from '../config/axios-instance';
 
 export const studentService = {
@@ -9,6 +8,16 @@ export const studentService = {
 
   getById: async (id: string) => {
     const { data } = await axiosInstance.get(`/students/${id}`);
+    return data;
+  },
+
+  getPayments: async (id: string) => {
+    const { data } = await axiosInstance.get(`/students/${id}/payments`);
+    return data;
+  },
+
+  getAttendance: async (id: string) => {
+    const { data } = await axiosInstance.get(`/students/${id}/attendance`);
     return data;
   },
 

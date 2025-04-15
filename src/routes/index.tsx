@@ -8,6 +8,7 @@ import Admin from "../pages/admin";
 import Groups from "../pages/groups";
 import Courses from "../pages/courses";
 import Attendance from "../pages/attendance"; // Import the Attendance component
+import StudentProfile from "../pages/students/profile"; // Import the StudentProfile component
 
 interface RouteT {
     path: string;
@@ -97,7 +98,14 @@ export const routes: RouteT[] = [
                 path: "settings",
                 element: <Settings />
             },
-
+            {
+                path: "students",
+                element: <Students />
+            },
+            {
+                path: "students/profile/:id",
+                element: <StudentProfile />
+            },
 
         ]
     }

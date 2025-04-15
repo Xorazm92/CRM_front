@@ -3,11 +3,13 @@ import { Table, Button, Modal, Form, Input, message, Select } from 'antd';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { studentService } from '../../services/students';
 import { SearchOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom'; // Added import statement
 
 const Students = () => {
+  const navigate = useNavigate(); // Added useNavigate hook
   const [form] = Form.useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [searchText, setSearchText] = useState(''); // Added from original code
+  const [searchText, setSearchText] = useState(''); 
   const queryClient = useQueryClient();
 
   const { data: students, isLoading } = useQuery({
@@ -42,7 +44,10 @@ const Students = () => {
       title: 'Amallar',
       render: (_, record) => (
         <>
-          <Button type="link" style={{marginRight:8}}>Tahrirlash</Button> {/* Added from original code */}
+          <Button type="link" onClick={() => navigate(`/students/profile/${record.id}`)}>
+            Profil
+          </Button>
+          <Button type="link" style={{marginRight:8}}>Tahrirlash</Button>
           <Button danger onClick={() => deleteMutation.mutate(record.id)}>
             O'chirish
           </Button>
@@ -53,7 +58,7 @@ const Students = () => {
 
   return (
     <div>
-      <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}> {/*Added from original code*/}
+      <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}> 
         <Input
           placeholder="Qidirish..."
           prefix={<SearchOutlined />}
@@ -72,7 +77,7 @@ const Students = () => {
         columns={columns} 
         dataSource={students?.filter(student => 
           `${student.firstName} ${student.lastName}`.toLowerCase().includes(searchText.toLowerCase())
-        )} {/*Added search functionality from original code*/}
+        )} 
         loading={isLoading}
         rowKey="id" 
       />
