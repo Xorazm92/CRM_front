@@ -1,18 +1,29 @@
 
-import { instance } from "../config/axios-instance";
+import axiosInstance from '../config/axios-instance';
 
-interface StudentT {
-  id: string;
-  full_name: string;
-  phone: string;
-  group: string;
-}
+export const studentService = {
+  getAll: async () => {
+    const { data } = await axiosInstance.get('/students');
+    return data;
+  },
 
-export const studentsService = {
-  getAll: () => instance.get<StudentT[]>("/students"),
-  getById: (id: string) => instance.get<StudentT>(`/students/${id}`),
-  create: (data: Omit<StudentT, "id">) => instance.post("/students", data),
-  update: (id: string, data: Partial<StudentT>) => 
-    instance.put(`/students/${id}`, data),
-  delete: (id: string) => instance.delete(`/students/${id}`),
+  getById: async (id: string) => {
+    const { data } = await axiosInstance.get(`/students/${id}`);
+    return data;
+  },
+
+  create: async (values: any) => {
+    const { data } = await axiosInstance.post('/students', values);
+    return data;
+  },
+
+  update: async (id: string, values: any) => {
+    const { data } = await axiosInstance.put(`/students/${id}`, values);
+    return data;
+  },
+
+  delete: async (id: string) => {
+    const { data } = await axiosInstance.delete(`/students/${id}`);
+    return data;
+  }
 };

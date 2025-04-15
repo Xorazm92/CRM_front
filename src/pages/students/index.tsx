@@ -1,23 +1,22 @@
-
-import { Table, Button, Space, Input, Modal, Form, message } from 'antd';
-import { useState } from 'react';
-import { SearchOutlined, PlusOutlined } from '@ant-design/icons';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { studentsService } from '../../services/students';
+import React, { useState } from 'react';
+import { Table, Button, Modal, Form, Input, message, Select } from 'antd';
+import { useQuery, useMutation, useQueryClient } from 'react-query';
+import { studentService } from '../../services/students';
+import { SearchOutlined } from '@ant-design/icons';
 
 const Students = () => {
-  const [searchText, setSearchText] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchText, setSearchText] = useState(''); // Added from original code
   const queryClient = useQueryClient();
 
   const { data: students, isLoading } = useQuery({
     queryKey: ['students'],
-    queryFn: () => studentsService.getAll().then(res => res.data)
+    queryFn: () => studentService.getAll()
   });
 
   const createMutation = useMutation({
-    mutationFn: studentsService.create,
+    mutationFn: studentService.create,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['students'] });
       message.success("O'quvchi muvaffaqiyatli qo'shildi");
@@ -27,7 +26,7 @@ const Students = () => {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: studentsService.delete,
+    mutationFn: studentService.delete,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['students'] });
       message.success("O'quvchi muvaffaqiyatli o'chirildi");
@@ -35,45 +34,26 @@ const Students = () => {
   });
 
   const columns = [
-    {
-      title: 'Ism Familiya',
-      dataIndex: 'full_name',
-      key: 'full_name',
-      filteredValue: [searchText],
-      onFilter: (value: string, record: any) => 
-        record.full_name.toLowerCase().includes(value.toLowerCase()),
-    },
-    {
-      title: 'Telefon',
-      dataIndex: 'phone',
-      key: 'phone',
-    },
-    {
-      title: 'Guruh',
-      dataIndex: 'group',
-      key: 'group',
-    },
+    { title: 'Ism', dataIndex: 'firstName' },
+    { title: 'Familiya', dataIndex: 'lastName' },
+    { title: 'Telefon', dataIndex: 'phone' },
+    { title: 'Guruh', dataIndex: ['group', 'name'] },
     {
       title: 'Amallar',
-      key: 'action',
-      render: (_: any, record: any) => (
-        <Space size="middle">
-          <Button type="link">Tahrirlash</Button>
-          <Button 
-            type="link" 
-            danger 
-            onClick={() => deleteMutation.mutate(record.id)}
-          >
+      render: (_, record) => (
+        <>
+          <Button type="link" style={{marginRight:8}}>Tahrirlash</Button> {/* Added from original code */}
+          <Button danger onClick={() => deleteMutation.mutate(record.id)}>
             O'chirish
           </Button>
-        </Space>
-      ),
-    },
+        </>
+      )
+    }
   ];
 
   return (
-    <div style={{ padding: '24px' }}>
-      <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
+    <div>
+      <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}> {/*Added from original code*/}
         <Input
           placeholder="Qidirish..."
           prefix={<SearchOutlined />}
@@ -82,18 +62,19 @@ const Students = () => {
         />
         <Button 
           type="primary" 
-          icon={<PlusOutlined />}
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => setIsModalOpen(true)} 
         >
-          Yangi o'quvchi
+          Yangi o'quvchi qo'shish
         </Button>
       </div>
-      
+
       <Table 
         columns={columns} 
-        dataSource={students} 
+        dataSource={students?.filter(student => 
+          `${student.firstName} ${student.lastName}`.toLowerCase().includes(searchText.toLowerCase())
+        )} {/*Added search functionality from original code*/}
         loading={isLoading}
-        rowKey="id"
+        rowKey="id" 
       />
 
       <Modal
@@ -105,28 +86,41 @@ const Students = () => {
         <Form
           form={form}
           layout="vertical"
-          onFinish={(values) => createMutation.mutate(values)}
+          onFinish={createMutation.mutate}
         >
           <Form.Item
-            name="full_name"
-            label="Ism Familiya"
-            rules={[{ required: true, message: "Iltimos, to'ldiring" }]}
+            name="firstName"
+            label="Ism"
+            rules={[{ required: true }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="lastName"
+            label="Familiya"
+            rules={[{ required: true }]}
           >
             <Input />
           </Form.Item>
           <Form.Item
             name="phone"
             label="Telefon"
-            rules={[{ required: true, message: "Iltimos, to'ldiring" }]}
+            rules={[{ required: true }]}
           >
             <Input />
           </Form.Item>
           <Form.Item
-            name="group"
+            name="groupId"
             label="Guruh"
-            rules={[{ required: true, message: "Iltimos, to'ldiring" }]}
+            rules={[{ required: true }]}
           >
-            <Input />
+            <Select>
+              {students?.groups?.map(group => (
+                <Select.Option key={group.id} value={group.id}>
+                  {group.name}
+                </Select.Option>
+              ))}
+            </Select>
           </Form.Item>
         </Form>
       </Modal>
