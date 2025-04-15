@@ -47,7 +47,16 @@ const Students = () => {
           <Button type="link" onClick={() => navigate(`/students/profile/${record.id}`)}>
             Profil
           </Button>
-          <Button type="link" style={{marginRight:8}}>Tahrirlash</Button>
+          <Button 
+            type="link" 
+            style={{marginRight:8}} 
+            onClick={() => {
+              form.setFieldsValue(record);
+              setIsModalOpen(true);
+            }}
+          >
+            Tahrirlash
+          </Button>
           <Button danger onClick={() => deleteMutation.mutate(record.id)}>
             O'chirish
           </Button>

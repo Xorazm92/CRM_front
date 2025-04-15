@@ -43,6 +43,11 @@ export const studentService = {
     return data;
   },
 
+  update: async (id: string, values: any) => {
+    const { data } = await axiosInstance.put(`/students/${id}`, values);
+    return data;
+  },
+
   delete: async (id: string) => {
     const { data } = await axiosInstance.delete(`/students/${id}`);
     return data;

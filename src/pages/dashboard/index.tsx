@@ -49,6 +49,26 @@ const Dashboard = () => {
           </Card>
         </Col>
       </Row>
+      <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
+        <Col span={12}>
+          <Card title="O'quvchilar soni">
+            <Line 
+              data={stats?.studentGrowth || []} 
+              xField="date" 
+              yField="count"
+            />
+          </Card>
+        </Col>
+        <Col span={12}>
+          <Card title="To'lovlar statistikasi">
+            <Bar 
+              data={stats?.payments || []} 
+              xField="month" 
+              yField="amount"
+            />
+          </Card>
+        </Col>
+      </Row>
     </div>
   );
 };
