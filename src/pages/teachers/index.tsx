@@ -1,27 +1,36 @@
 
-import { Table, Button, Space, Input, Modal, Form, message } from 'antd';
-import { useState } from 'react';
-import { SearchOutlined, PlusOutlined } from '@ant-design/icons';
+import React, { useState } from 'react';
+import { Table, Button, Modal, Form, Input, Space, message } from 'antd';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { teachersService } from '../../services/teachers';
 
 const Teachers = () => {
-  const [searchText, setSearchText] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [editingTeacher, setEditingTeacher] = useState(null);
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
 
   const { data: teachers, isLoading } = useQuery({
     queryKey: ['teachers'],
-    queryFn: () => teachersService.getAll().then(res => res.data)
+    queryFn: teachersService.getAll
   });
 
   const createMutation = useMutation({
     mutationFn: teachersService.create,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['teachers'] });
-      message.success("O'qituvchi muvaffaqiyatli qo'shildi");
-      setIsModalOpen(false);
+      queryClient.invalidateQueries(['teachers']);
+      message.success('Teacher added successfully');
+      setIsModalVisible(false);
+      form.resetFields();
+    }
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }) => teachersService.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['teachers']);
+      message.success('Teacher updated successfully');
+      setIsModalVisible(false);
       form.resetFields();
     }
   });
@@ -29,104 +38,126 @@ const Teachers = () => {
   const deleteMutation = useMutation({
     mutationFn: teachersService.delete,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['teachers'] });
-      message.success("O'qituvchi muvaffaqiyatli o'chirildi");
+      queryClient.invalidateQueries(['teachers']);
+      message.success('Teacher deleted successfully');
     }
   });
 
   const columns = [
     {
-      title: 'Ism Familiya',
+      title: 'Full Name',
       dataIndex: 'full_name',
       key: 'full_name',
-      filteredValue: [searchText],
-      onFilter: (value: string, record: any) => 
-        record.full_name.toLowerCase().includes(value.toLowerCase()),
     },
     {
-      title: 'Telefon',
+      title: 'Phone',
       dataIndex: 'phone',
       key: 'phone',
     },
     {
-      title: 'Fan',
+      title: 'Subject',
       dataIndex: 'subject',
       key: 'subject',
     },
     {
-      title: 'Amallar',
-      key: 'action',
-      render: (_: any, record: any) => (
-        <Space size="middle">
-          <Button type="link">Tahrirlash</Button>
-          <Button 
-            type="link" 
-            danger 
-            onClick={() => deleteMutation.mutate(record.id)}
-          >
-            O'chirish
+      title: 'Actions',
+      key: 'actions',
+      render: (_, record) => (
+        <Space>
+          <Button type="primary" onClick={() => handleEdit(record)}>
+            Edit
+          </Button>
+          <Button danger onClick={() => handleDelete(record.id)}>
+            Delete
           </Button>
         </Space>
       ),
     },
   ];
 
+  const handleAdd = () => {
+    setEditingTeacher(null);
+    form.resetFields();
+    setIsModalVisible(true);
+  };
+
+  const handleEdit = (teacher) => {
+    setEditingTeacher(teacher);
+    form.setFieldsValue(teacher);
+    setIsModalVisible(true);
+  };
+
+  const handleDelete = (id) => {
+    deleteMutation.mutate(id);
+  };
+
+  const handleSubmit = async (values) => {
+    if (editingTeacher) {
+      updateMutation.mutate({ id: editingTeacher.id, data: values });
+    } else {
+      createMutation.mutate(values);
+    }
+  };
+
   return (
-    <div style={{ padding: '24px' }}>
-      <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
-        <Input
-          placeholder="Qidirish..."
-          prefix={<SearchOutlined />}
-          style={{ width: 200 }}
-          onChange={(e) => setSearchText(e.target.value)}
-        />
-        <Button 
-          type="primary" 
-          icon={<PlusOutlined />}
-          onClick={() => setIsModalOpen(true)}
-        >
-          Yangi o'qituvchi
+    <div>
+      <div style={{ marginBottom: 16 }}>
+        <Button type="primary" onClick={handleAdd}>
+          Add Teacher
         </Button>
       </div>
-      
-      <Table 
-        columns={columns} 
-        dataSource={teachers} 
+
+      <Table
+        columns={columns}
+        dataSource={teachers?.data}
         loading={isLoading}
         rowKey="id"
       />
 
       <Modal
-        title="Yangi o'qituvchi qo'shish"
-        open={isModalOpen}
-        onOk={form.submit}
-        onCancel={() => setIsModalOpen(false)}
+        title={editingTeacher ? 'Edit Teacher' : 'Add Teacher'}
+        open={isModalVisible}
+        onCancel={() => setIsModalVisible(false)}
+        footer={null}
       >
         <Form
           form={form}
+          onFinish={handleSubmit}
           layout="vertical"
-          onFinish={(values) => createMutation.mutate(values)}
         >
           <Form.Item
             name="full_name"
-            label="Ism Familiya"
-            rules={[{ required: true, message: "Iltimos, to'ldiring" }]}
+            label="Full Name"
+            rules={[{ required: true, message: 'Please input full name!' }]}
           >
             <Input />
           </Form.Item>
+
           <Form.Item
             name="phone"
-            label="Telefon"
-            rules={[{ required: true, message: "Iltimos, to'ldiring" }]}
+            label="Phone"
+            rules={[{ required: true, message: 'Please input phone number!' }]}
           >
             <Input />
           </Form.Item>
+
           <Form.Item
             name="subject"
-            label="Fan"
-            rules={[{ required: true, message: "Iltimos, to'ldiring" }]}
+            label="Subject"
+            rules={[{ required: true, message: 'Please input subject!' }]}
           >
             <Input />
+          </Form.Item>
+
+          <Form.Item>
+            <Space>
+              <Button type="primary" htmlType="submit">
+                {editingTeacher ? 'Update' : 'Add'}
+              </Button>
+              <Button onClick={() => setIsModalVisible(false)}>
+                Cancel
+              </Button>
+            </Space>
           </Form.Item>
         </Form>
       </Modal>
