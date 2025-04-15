@@ -1,0 +1,71 @@
+[2:24:48 PM] Starting compilation in watch mode...
+
+[2:24:51 PM] Found 0 errors. Watching for file changes.
+
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [NestFactory] Starting Nest application...
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [InstanceLoader] PrismaModule dependencies initialized +27ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [InstanceLoader] ThrottlerModule dependencies initialized +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [InstanceLoader] ConfigHostModule dependencies initialized +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [InstanceLoader] WinstonModule dependencies initialized +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [InstanceLoader] GroupModule dependencies initialized +1ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [InstanceLoader] ConfigModule dependencies initialized +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [InstanceLoader] CustomJwtModule dependencies initialized +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [InstanceLoader] AppModule dependencies initialized +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [InstanceLoader] TeacherModule dependencies initialized +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [InstanceLoader] StudentModule dependencies initialized +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [InstanceLoader] DashboardModule dependencies initialized +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [InstanceLoader] CourseModule dependencies initialized +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [InstanceLoader] AuthModule dependencies initialized +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [InstanceLoader] AdminModule dependencies initialized +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RoutesResolver] AuthController {/auth}: +27ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/auth/register, POST} route +2ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/auth/login, POST} route +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/auth/confirmPassword, POST} route +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/auth/refresh, POST} route +1ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RoutesResolver] AdminController {/admin}: +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/admin/signin, POST} route +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/admin/createAdmin, POST} route +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/admin/addMembersToGroup, POST} route +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/admin, GET} route +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/admin/getProfile, GET} route +1ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/admin/:id, GET} route +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/admin/:id, PATCH} route +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/admin/:id, DELETE} route +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RoutesResolver] GroupController {/groups}: +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/groups, POST} route +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/groups, GET} route +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/groups/:id, GET} route +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/groups/:id, PUT} route +1ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/groups/:id, DELETE} route +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RoutesResolver] TeacherController {/teacher}: +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/teacher/createTeacher, POST} route +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/teacher, GET} route +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/teacher/getProfile, GET} route +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/teacher/:id, GET} route +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/teacher/:id, PATCH} route +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/teacher/:id, DELETE} route +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RoutesResolver] StudentController {/student}: +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/student/createStudent, POST} route +1ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/student, GET} route +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/student/getProfile, GET} route +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/student/:id, GET} route +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/student/:id, PATCH} route +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/student/:id, DELETE} route +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RoutesResolver] CourseController {/courses}: +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/courses, POST} route +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/courses, GET} route +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/courses/:id, GET} route +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/courses/:id, PUT} route +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/courses/:id, DELETE} route +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/courses/:id/groups, GET} route +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RoutesResolver] DashboardController {/dashboard}: +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/dashboard/stats, GET} route +1ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/dashboard/attendance-stats, GET} route +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/dashboard/groups-stats, GET} route +0ms
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [RouterExplorer] Mapped {/dashboard/teachers-stats, GET} route +0ms
+prisma:info Starting a postgresql pool with 9 connections.
+prisma:info Starting a postgresql pool with 9 connections.
+prisma:info Starting a postgresql pool with 9 connections.
+prisma:info Starting a postgresql pool with 9 connections.
+prisma:info Starting a postgresql pool with 9 connections.
+[Nest] 154692  - 04/14/2025, 2:24:52 PM     LOG [NestApplication] Nest application successfully started +318ms

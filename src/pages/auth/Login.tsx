@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Form, Input, Button, Card, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
@@ -43,6 +42,9 @@ const Login: React.FC = () => {
             </Button>
           </Form.Item>
         </Form>
+        <div style={{ textAlign: 'center', marginTop: 16 }}>
+          Don't have an account? <a href="/register">Register now!</a>
+        </div>
       </Card>
     </div>
   );

@@ -1,9 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { Table, Space, Button, Modal, Form, Input, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 
-const AdminUsers = () => {
+const Admin = () => {
   const [admins, setAdmins] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
@@ -38,17 +37,18 @@ const AdminUsers = () => {
       key: 'actions',
       render: (_, record) => (
         <Space>
-          <Button onClick={() => handleEdit(record)}>Edit</Button>
-          <Button danger onClick={() => handleDelete(record.id)}>Delete</Button>
+          <Button type="link">Tahrirlash</Button>
+          <Button 
+            type="link" 
+            danger 
+            onClick={() => handleDelete(record.id)}
+          >
+            O'chirish
+          </Button>
         </Space>
       ),
     },
   ];
-
-  const handleEdit = (record) => {
-    form.setFieldsValue(record);
-    setIsModalVisible(true);
-  };
 
   const handleDelete = async (id) => {
     try {
@@ -123,4 +123,4 @@ const AdminUsers = () => {
   );
 };
 
-export default AdminUsers;
+export default Admin;
