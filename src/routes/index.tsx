@@ -7,6 +7,7 @@ import Settings from "../pages/settings";
 import Admin from "../pages/admin";
 import Groups from "../pages/groups";
 import Courses from "../pages/courses";
+import Attendance from "../pages/attendance"; // Import the Attendance component
 
 interface RouteT {
     path: string;
@@ -23,7 +24,7 @@ export const routes: RouteT[] = [
         path: "/login",
         element: <Login />
     },
-  
+
     {
         path: "/",
         element: <RoleChecker roles={["MANAGER"]} />,
@@ -61,6 +62,10 @@ export const routes: RouteT[] = [
                 element: <Groups />
             },
             {
+                path: "attendance", // Added attendance route for teachers
+                element: <Attendance />
+            },
+            {
                 path: "courses",
                 element: <Courses />
             },
@@ -79,6 +84,10 @@ export const routes: RouteT[] = [
             {
                 path: "groups",
                 element: <Groups />
+            },
+            {
+                path: "attendance", // Added attendance route for students
+                element: <Attendance />
             },
             {
                 path: "courses",

@@ -24,6 +24,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
     { key: '/teachers', icon: <TeamOutlined />, label: 'Teachers' },
     { key: '/courses', icon: <BookOutlined />, label: 'Courses' },
     { key: '/groups', icon: <GroupOutlined />, label: 'Groups' },
+    { key: '/attendance', icon: <CalendarOutlined />, label: 'Davomat' },
     ...(user.role === 'admin' ? [
       { key: '/admin', icon: <UserSwitchOutlined />, label: 'Admins' }
     ] : []),
