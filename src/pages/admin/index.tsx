@@ -1,10 +1,8 @@
-
-<<<<<<< HEAD
 import React, { useState, useEffect } from 'react';
 import { Table, Space, Button, Modal, Form, Input, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 
-const AdminUsers = () => {
+const Admin = () => {
   const [admins, setAdmins] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
@@ -28,51 +26,6 @@ const AdminUsers = () => {
       title: 'Full Name',
       dataIndex: 'full_name',
       key: 'full_name',
-=======
-import { Table, Button, Space, Input, Modal, Form, message } from 'antd';
-import { useState } from 'react';
-import { SearchOutlined, PlusOutlined } from '@ant-design/icons';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { adminService } from '../../services/admin';
-
-const Admin = () => {
-  const [searchText, setSearchText] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [form] = Form.useForm();
-  const queryClient = useQueryClient();
-
-  const { data: admins, isLoading } = useQuery({
-    queryKey: ['admins'],
-    queryFn: () => adminService.getAll().then(res => res.data)
-  });
-
-  const createMutation = useMutation({
-    mutationFn: adminService.create,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admins'] });
-      message.success("Admin muvaffaqiyatli qo'shildi");
-      setIsModalOpen(false);
-      form.resetFields();
-    }
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: adminService.delete,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admins'] });
-      message.success("Admin muvaffaqiyatli o'chirildi");
-    }
-  });
-
-  const columns = [
-    {
-      title: 'Ism Familiya',
-      dataIndex: 'full_name',
-      key: 'full_name',
-      filteredValue: [searchText],
-      onFilter: (value: string, record: any) => 
-        record.full_name.toLowerCase().includes(value.toLowerCase()),
->>>>>>> 77295ba93bb605cd34f38b0a12d7ff0a6660c9c9
     },
     {
       title: 'Username',
@@ -80,37 +33,22 @@ const Admin = () => {
       key: 'username',
     },
     {
-<<<<<<< HEAD
       title: 'Actions',
       key: 'actions',
       render: (_, record) => (
         <Space>
-          <Button onClick={() => handleEdit(record)}>Edit</Button>
-          <Button danger onClick={() => handleDelete(record.id)}>Delete</Button>
-=======
-      title: 'Amallar',
-      key: 'action',
-      render: (_: any, record: any) => (
-        <Space size="middle">
           <Button type="link">Tahrirlash</Button>
           <Button 
             type="link" 
             danger 
-            onClick={() => deleteMutation.mutate(record.id)}
+            onClick={() => handleDelete(record.id)}
           >
             O'chirish
           </Button>
->>>>>>> 77295ba93bb605cd34f38b0a12d7ff0a6660c9c9
         </Space>
       ),
     },
   ];
-
-<<<<<<< HEAD
-  const handleEdit = (record) => {
-    form.setFieldsValue(record);
-    setIsModalVisible(true);
-  };
 
   const handleDelete = async (id) => {
     try {
@@ -178,64 +116,6 @@ const Admin = () => {
             <Button type="primary" htmlType="submit" block>
               Submit
             </Button>
-=======
-  return (
-    <div style={{ padding: '24px' }}>
-      <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
-        <Input
-          placeholder="Qidirish..."
-          prefix={<SearchOutlined />}
-          style={{ width: 200 }}
-          onChange={(e) => setSearchText(e.target.value)}
-        />
-        <Button 
-          type="primary" 
-          icon={<PlusOutlined />}
-          onClick={() => setIsModalOpen(true)}
-        >
-          Yangi admin
-        </Button>
-      </div>
-      
-      <Table 
-        columns={columns} 
-        dataSource={admins} 
-        loading={isLoading}
-        rowKey="id"
-      />
-
-      <Modal
-        title="Yangi admin qo'shish"
-        open={isModalOpen}
-        onOk={form.submit}
-        onCancel={() => setIsModalOpen(false)}
-      >
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={(values) => createMutation.mutate(values)}
-        >
-          <Form.Item
-            name="full_name"
-            label="Ism Familiya"
-            rules={[{ required: true, message: "Iltimos, to'ldiring" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="username"
-            label="Username"
-            rules={[{ required: true, message: "Iltimos, to'ldiring" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="password"
-            label="Parol"
-            rules={[{ required: true, message: "Iltimos, to'ldiring" }]}
-          >
-            <Input.Password />
->>>>>>> 77295ba93bb605cd34f38b0a12d7ff0a6660c9c9
           </Form.Item>
         </Form>
       </Modal>
@@ -243,8 +123,4 @@ const Admin = () => {
   );
 };
 
-<<<<<<< HEAD
-export default AdminUsers;
-=======
 export default Admin;
->>>>>>> 77295ba93bb605cd34f38b0a12d7ff0a6660c9c9
