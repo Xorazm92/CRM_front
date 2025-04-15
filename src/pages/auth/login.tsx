@@ -2,7 +2,7 @@
 import { Form, Input, Button, Card, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useAuthStore } from "../../store/useAuthStore";
-import { instance } from "../../config/axios-instance";
+import { instance } from '../../config/axios-instance';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../../services/auth';
 
@@ -17,6 +17,7 @@ const Login = () => {
             setToken(res.data.data.accessToken);
             navigate('/');
             message.success('Successfully logged in!');
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
             message.error('Invalid credentials');
         }

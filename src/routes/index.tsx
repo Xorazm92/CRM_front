@@ -23,29 +23,15 @@ export const routes: RouteT[] = [
         path: "/login",
         element: <Login />
     },
+  
     {
         path: "/",
-        element: <RoleChecker roles={["admin", "teacher"]} />,
+        element: <RoleChecker roles={["MANAGER"]} />,
         children: [
+
             {
                 index: true,
                 element: <Dashboard />
-            },
-            {
-                path: "students",
-                element: <Students />
-            },
-            {
-                path: "teachers", 
-                element: <Teachers />
-            },
-            {
-                path: "settings",
-                element: <Settings />
-            },
-            {
-                path: "admin",
-                element: <RoleChecker roles={["admin"]}><Admin /></RoleChecker>
             },
             {
                 path: "groups",
@@ -54,7 +40,56 @@ export const routes: RouteT[] = [
             {
                 path: "courses",
                 element: <Courses />
-            }
+            },
+            {
+                path: "settings",
+                element: <Settings />
+            },
+        ]
+    },
+    {  
+        path: "/teachers/",
+        element: <RoleChecker roles={["TEACHER"]} />,
+        children: [
+
+            {
+                index: true,
+                element: <Dashboard />
+            },
+            {
+                path: "groups",
+                element: <Groups />
+            },
+            {
+                path: "courses",
+                element: <Courses />
+            },
+            {
+                path: "settings",
+                element: <Settings />
+            },
+        ]
+    },
+    {
+
+        path: "/student/",
+        element: <RoleChecker roles={["STUDENT"]} />,
+        children: [
+
+            {
+                path: "groups",
+                element: <Groups />
+            },
+            {
+                path: "courses",
+                element: <Courses />
+            },
+            {
+                path: "settings",
+                element: <Settings />
+            },
+
+
         ]
     }
 ]
