@@ -1,97 +1,89 @@
 
-import { Table, Button, Modal, Form, Input, Select, message } from 'antd';
-import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { groupService } from '../../services/groups';
-import { courseService } from '../../services/courses';
+import React, { useState } from 'react';
+import { Table, Button, Modal, Form, Input, message, Space } from 'antd';
+import { useQuery, useMutation, useQueryClient } from 'react-query';
+import { groupsService } from '../../services/groups';
 
-const GroupsPage = () => {
-  const [form] = Form.useForm();
+const Groups = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [form] = Form.useForm();
   const queryClient = useQueryClient();
 
-  const { data: groups, isLoading } = useQuery({
-    queryKey: ['groups'],
-    queryFn: () => groupService.getAll()
-  });
+  const { data: groups, isLoading } = useQuery('groups', groupsService.getAll);
 
-  const { data: courses } = useQuery({
-    queryKey: ['courses'],
-    queryFn: () => courseService.getAll()
-  });
-
-  const createMutation = useMutation({
-    mutationFn: groupService.create,
+  const createMutation = useMutation(groupsService.create, {
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['groups'] });
-      message.success("Guruh muvaffaqiyatli qo'shildi");
+      queryClient.invalidateQueries('groups');
+      message.success('Guruh muvaffaqiyatli yaratildi');
       setIsModalOpen(false);
       form.resetFields();
-    }
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: groupService.delete,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['groups'] });
-      message.success("Guruh muvaffaqiyatli o'chirildi");
-    }
+    },
   });
 
   const columns = [
-    { title: 'Nomi', dataIndex: 'name' },
-    { title: 'Kurs', dataIndex: ['course', 'name'] },
+    { title: 'Nomi', dataIndex: 'name', key: 'name' },
+    { title: 'O\'quvchilar soni', dataIndex: 'studentsCount', key: 'studentsCount' },
+    { title: 'O\'qituvchi', dataIndex: 'teacherName', key: 'teacherName' },
+    { title: 'Kurs', dataIndex: 'courseName', key: 'courseName' },
     {
       title: 'Amallar',
+      key: 'actions',
       render: (_, record) => (
-        <Button danger onClick={() => deleteMutation.mutate(record.id)}>
-          O'chirish
-        </Button>
-      )
-    }
+        <Space>
+          <Button type="primary">Tahrirlash</Button>
+          <Button danger>O'chirish</Button>
+        </Space>
+      ),
+    },
   ];
 
   return (
     <div>
-      <Button 
-        type="primary" 
-        onClick={() => setIsModalOpen(true)} 
-        style={{ marginBottom: 16 }}
-      >
-        Yangi guruh qo'shish
-      </Button>
+      <div style={{ marginBottom: 16 }}>
+        <Button type="primary" onClick={() => setIsModalOpen(true)}>
+          Yangi guruh qo'shish
+        </Button>
+      </div>
 
       <Table 
-        loading={isLoading}
         columns={columns} 
         dataSource={groups} 
-        rowKey="id"
+        loading={isLoading}
+        rowKey="id" 
       />
 
-      <Modal 
-        title="Yangi guruh"
+      <Modal
+        title="Yangi guruh qo'shish"
         open={isModalOpen}
         onOk={form.submit}
         onCancel={() => setIsModalOpen(false)}
       >
-        <Form form={form} onFinish={createMutation.mutate}>
-          <Form.Item 
-            name="name" 
-            rules={[{ required: true, message: "Guruh nomini kiriting" }]}
+        <Form
+          form={form}
+          onFinish={(values) => createMutation.mutate(values)}
+        >
+          <Form.Item
+            name="name"
+            label="Guruh nomi"
+            rules={[{ required: true, message: 'Guruh nomini kiriting!' }]}
           >
-            <Input placeholder="Guruh nomi" />
+            <Input />
           </Form.Item>
-          <Form.Item 
-            name="course_id" 
-            rules={[{ required: true, message: "Kursni tanlang" }]}
+          
+          <Form.Item
+            name="teacherId"
+            label="O'qituvchi"
+            rules={[{ required: true, message: 'O\'qituvchini tanlang!' }]}
           >
-            <Select placeholder="Kursni tanlang">
-              {courses?.map(course => (
-                <Select.Option key={course.id} value={course.id}>
-                  {course.name}
-                </Select.Option>
-              ))}
-            </Select>
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            name="courseId"
+            label="Kurs"
+            rules={[{ required: true, message: 'Kursni tanlang!' }]}
+          >
+            <Input />
           </Form.Item>
         </Form>
       </Modal>
@@ -99,4 +91,4 @@ const GroupsPage = () => {
   );
 };
 
-export default GroupsPage;
+export default Groups;
