@@ -36,7 +36,7 @@ const Teachers = () => {
     {
       title: 'Actions',
       key: 'actions',
-      render: (_, record) => (
+      render: (_: any, record: { user_id: any; }) => (
         <Space>
           <Button onClick={() => handleEdit(record)}>Edit</Button>
           <Button danger onClick={() => handleDelete(record.user_id)}>Delete</Button>
@@ -45,12 +45,12 @@ const Teachers = () => {
     },
   ];
 
-  const handleEdit = (record) => {
+  const handleEdit = (record: any) => {
     form.setFieldsValue(record);
     setIsModalVisible(true);
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: any) => {
     try {
       await fetch(`/api/teacher/${id}`, { method: 'DELETE' });
       message.success('Teacher deleted successfully');
@@ -60,7 +60,7 @@ const Teachers = () => {
     }
   };
 
-  const handleSubmit = async (values) => {
+  const handleSubmit = async (values: any) => {
     try {
       const method = form.getFieldValue('user_id') ? 'PATCH' : 'POST';
       const url = form.getFieldValue('user_id') 

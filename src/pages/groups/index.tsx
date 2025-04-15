@@ -1,7 +1,7 @@
 
-import React, { useState } from 'react';
-import { Table, Button, Modal, Form, Input, Select, message, Card, Row, Col } from 'antd';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
+import  { JSXElementConstructor, ReactElement, ReactNode, ReactPortal, useState } from 'react';
+import { Table, Button, Modal, Form, Input, Select, message, Card, Row, Col, Space } from 'antd';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { groupsService } from '../../services/groups';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 
@@ -10,20 +10,22 @@ const Groups = () => {
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
 
-  const { data: groups, isLoading } = useQuery('groups', groupsService.getAll);
+  const { data: groups, isLoading } = useQuery({ queryKey: ['groups'], queryFn: groupsService.getAll });
 
-  const createMutation = useMutation(groupsService.create, {
+  const createMutation = useMutation({
+    mutationFn: groupsService.create,
     onSuccess: () => {
-      queryClient.invalidateQueries('groups');
+      queryClient.invalidateQueries({ queryKey: ['groups'] });
       message.success('Guruh muvaffaqiyatli yaratildi');
       setIsModalOpen(false);
       form.resetFields();
     },
   });
 
-  const deleteMutation = useMutation(groupsService.delete, {
+  const deleteMutation = useMutation({
+    mutationFn: groupsService.delete,
     onSuccess: () => {
-      queryClient.invalidateQueries('groups');
+      queryClient.invalidateQueries({ queryKey: ['groups'] });
       message.success('Guruh muvaffaqiyatli o\'chirildi');
     },
   });
@@ -33,20 +35,22 @@ const Groups = () => {
       title: 'Guruh nomi',
       dataIndex: 'name',
       key: 'name',
-      render: (text) => <span style={{ color: '#1677FF', fontWeight: 500 }}>{text}</span>
+      render: (text: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | null | undefined) => <span style={{ color: '#1677FF', fontWeight: 500 }}>{text}</span>
     },
     { 
       title: 'O\'quvchilar soni',
       dataIndex: 'studentsCount',
       key: 'studentsCount',
-      render: (count) => <span style={{ color: '#52C41A' }}>{count}</span>
+      render: (count: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | null | undefined) => {
+        return <span style={{ color: '#52C41A' }}>{count}</span>;
+      }
     },
     { title: 'O\'qituvchi', dataIndex: 'teacherName', key: 'teacherName' },
     { title: 'Kurs', dataIndex: 'courseName', key: 'courseName' },
     {
       title: 'Amallar',
       key: 'actions',
-      render: (_, record) => (
+      render: (_: any, record: { id: string; }) => (
         <Space size="middle">
           <Button 
             type="text" 

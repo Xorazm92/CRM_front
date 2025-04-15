@@ -1,13 +1,19 @@
 
-import React, { useState } from 'react';
+import { SetStateAction, JSXElementConstructor, ReactElement, ReactNode, ReactPortal, useState } from 'react';
 import { Table, Button, Modal, Form, Input, Select, Space, message, InputNumber } from 'antd';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { paymentsService } from '../../services/payments';
-import { studentsService } from '../../services/students';
+import { studentService } from '../../services/students';
 
 const Payments = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [editingPayment, setEditingPayment] = useState(null);
+  interface Payment {
+    id: number;
+    student_id: number;
+    amount: number;
+    status: 'pending' | 'completed' | 'failed';
+  }
+  const [editingPayment, setEditingPayment] = useState<Payment | null>(null);
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
 
@@ -16,15 +22,24 @@ const Payments = () => {
     queryFn: paymentsService.getAll
   });
 
-  const { data: students } = useQuery({
-    queryKey: ['students'],
-    queryFn: studentsService.getAll
-  });
+  interface Student {
+    id: number;
+    full_name: string;
+  }
+  
+  interface StudentResponse {
+    data: Student[];
+  }
+  
+  const { data: students } = useQuery<StudentResponse>({
+      queryKey: ['students'],
+      queryFn: studentService.getAll
+    });
 
   const createMutation = useMutation({
     mutationFn: paymentsService.create,
     onSuccess: () => {
-      queryClient.invalidateQueries(['payments']);
+      queryClient.invalidateQueries({ queryKey: ['payments'] });
       message.success('Payment added successfully');
       setIsModalVisible(false);
       form.resetFields();
@@ -32,9 +47,9 @@ const Payments = () => {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }) => paymentsService.update(id, data),
+    mutationFn: (params: { id: number; data: any }) => paymentsService.update(params.id.toString(), params.data),
     onSuccess: () => {
-      queryClient.invalidateQueries(['payments']);
+      queryClient.invalidateQueries({ queryKey: ['payments'] });
       message.success('Payment updated successfully');
       setIsModalVisible(false);
       form.resetFields();
@@ -51,7 +66,7 @@ const Payments = () => {
       title: 'Amount',
       dataIndex: 'amount',
       key: 'amount',
-      render: (amount) => `$${amount}`,
+      render: (amount: any) => `$${amount}`,
     },
     {
       title: 'Date',
@@ -66,7 +81,7 @@ const Payments = () => {
     {
       title: 'Actions',
       key: 'actions',
-      render: (_, record) => (
+      render: (_: any, record: any) => (
         <Space>
           <Button type="primary" onClick={() => handleEdit(record)}>
             Edit
@@ -82,17 +97,34 @@ const Payments = () => {
     setIsModalVisible(true);
   };
 
-  const handleEdit = (payment) => {
+  const handleEdit = (payment: Payment) => {
     setEditingPayment(payment);
     form.setFieldsValue(payment);
     setIsModalVisible(true);
   };
 
-  const handleSubmit = async (values) => {
+  interface PaymentFormValues {
+    student_id: number;
+    amount: number;
+    status: 'pending' | 'completed' | 'failed';
+    payment_date?: string;
+  }
+
+  const handleSubmit = async (values: PaymentFormValues) => {
+    const selectedStudent = students?.data?.find((s: any) => s.id === values.student_id);
+    const submitData = {
+      ...values,
+      student_id: values.student_id.toString(),
+      payment_date: values.payment_date || new Date().toISOString(),
+      student: { 
+        id: values.student_id,
+        full_name: selectedStudent?.full_name || ''
+      }
+    };
     if (editingPayment) {
-      updateMutation.mutate({ id: editingPayment.id, data: values });
+      updateMutation.mutate({ id: editingPayment.id, data: submitData });
     } else {
-      createMutation.mutate(values);
+      createMutation.mutate(submitData);
     }
   };
 
@@ -128,7 +160,7 @@ const Payments = () => {
             rules={[{ required: true, message: 'Please select student!' }]}
           >
             <Select>
-              {students?.data?.map(student => (
+              {students?.data?.map((student: { id: number; full_name: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | null | undefined; }) => (
                 <Select.Option key={student.id} value={student.id}>
                   {student.full_name}
                 </Select.Option>
@@ -143,7 +175,7 @@ const Payments = () => {
           >
             <InputNumber
               formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-              parser={value => value.replace(/\$\s?|(,*)/g, '')}
+              parser={value => (value || '').replace(/\$\s?|(,*)/g, '')}
             />
           </Form.Item>
 

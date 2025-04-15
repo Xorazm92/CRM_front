@@ -1,5 +1,4 @@
-
-import axiosInstance from '../config/axios-instance';
+import { instance as axiosInstance } from '../config/axios-instance';
 
 export const getDashboardStats = async () => {
   const { data } = await axiosInstance.get('/dashboard/stats');

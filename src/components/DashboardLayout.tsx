@@ -8,7 +8,6 @@ import {
   TeamOutlined,
   UserOutlined,
   BookOutlined,
-  CalendarOutlined,
   LogoutOutlined,
   SettingOutlined
 } from '@ant-design/icons';
@@ -16,11 +15,11 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 const { Header, Sider, Content } = Layout;
 
-const DashboardLayout = ({ children }) => {
+const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { token: { colorBgContainer } } = theme.useToken();
+  const { token: { colorBgContainer, borderRadiusLG } } = theme.useToken();
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -116,7 +115,7 @@ const DashboardLayout = ({ children }) => {
           padding: 24,
           minHeight: 280,
           background: colorBgContainer,
-          borderRadius: token.borderRadius,
+          borderRadius: borderRadiusLG,
         }}>
           {children}
         </Content>

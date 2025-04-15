@@ -1,4 +1,3 @@
-
 import { Form, Input, Button, Card, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useAuthStore } from "../../store/useAuthStore";
@@ -15,9 +14,27 @@ const Login = () => {
             const res = await authService.login(values);
             setUser(res.data.user);
             setToken(res.data.data.accessToken);
-            navigate('/');
+            
+            // Get user role from response and redirect based on role
+            const userRole = res.data.user.role;
+            switch(userRole) {
+                case 'MANAGER':
+                    navigate('/');
+                    break;
+                case 'ADMIN':
+                    navigate('/admin');
+                    break;
+                case 'TEACHER':
+                    navigate('/teachers');
+                    break;
+                case 'STUDENT':
+                    navigate('/students');
+                    break;
+                default:
+                    navigate('/');
+            }
+            
             message.success('Successfully logged in!');
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
             message.error('Invalid credentials');
         }

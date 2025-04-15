@@ -1,47 +1,83 @@
-
 import React, { useState } from 'react';
 import { Table, Button, Modal, Form, Input, Space, message } from 'antd';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { teachersService } from '../../services/teachers';
 
+interface Teacher {
+  id: string;
+  full_name: string;
+  phone: string;
+  subject: string;
+}
+
 const Teachers = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [editingTeacher, setEditingTeacher] = useState(null);
+  const [editingTeacher, setEditingTeacher] = useState<Teacher | null>(null);
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
 
   const { data: teachers, isLoading } = useQuery({
     queryKey: ['teachers'],
-    queryFn: teachersService.getAll
+    queryFn: teachersService.getAll,
   });
 
   const createMutation = useMutation({
     mutationFn: teachersService.create,
     onSuccess: () => {
-      queryClient.invalidateQueries(['teachers']);
+      queryClient.invalidateQueries({ queryKey: ['teachers'] });
       message.success('Teacher added successfully');
       setIsModalVisible(false);
       form.resetFields();
-    }
+    },
   });
 
+  interface UpdateTeacherParams {
+    id: number;
+    data: any;
+  }
+
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }) => teachersService.update(id, data),
+    mutationFn: ({ id, data }: UpdateTeacherParams) =>
+      teachersService.update(id.toString(), data),
     onSuccess: () => {
-      queryClient.invalidateQueries(['teachers']);
+      queryClient.invalidateQueries({ queryKey: ['teachers'] });
       message.success('Teacher updated successfully');
       setIsModalVisible(false);
       form.resetFields();
-    }
+    },
   });
 
   const deleteMutation = useMutation({
     mutationFn: teachersService.delete,
     onSuccess: () => {
-      queryClient.invalidateQueries(['teachers']);
+      queryClient.invalidateQueries({ queryKey: ['teachers'] });
       message.success('Teacher deleted successfully');
-    }
+    },
   });
+
+  const handleAdd = () => {
+    setEditingTeacher(null);
+    form.resetFields();
+    setIsModalVisible(true);
+  };
+
+  const handleEdit = (teacher: Teacher) => {
+    setEditingTeacher(teacher);
+    form.setFieldsValue(teacher);
+    setIsModalVisible(true);
+  };
+
+  const handleDelete = (id: string) => {
+    deleteMutation.mutate(id);
+  };
+
+  const handleSubmit = (values: any) => {
+    if (editingTeacher) {
+      updateMutation.mutate({ id: editingTeacher.id, data: values });
+    } else {
+      createMutation.mutate(values);
+    }
+  };
 
   const columns = [
     {
@@ -62,42 +98,18 @@ const Teachers = () => {
     {
       title: 'Actions',
       key: 'actions',
-      render: (_, record) => (
+      render: (_: any, record: Teacher) => (
         <Space>
           <Button type="primary" onClick={() => handleEdit(record)}>
             Edit
           </Button>
-          <Button danger onClick={() => handleDelete(record.id)}>
+          <Button danger onClick={() => handleDelete(record.id.toString())}>
             Delete
           </Button>
         </Space>
       ),
     },
   ];
-
-  const handleAdd = () => {
-    setEditingTeacher(null);
-    form.resetFields();
-    setIsModalVisible(true);
-  };
-
-  const handleEdit = (teacher) => {
-    setEditingTeacher(teacher);
-    form.setFieldsValue(teacher);
-    setIsModalVisible(true);
-  };
-
-  const handleDelete = (id) => {
-    deleteMutation.mutate(id);
-  };
-
-  const handleSubmit = async (values) => {
-    if (editingTeacher) {
-      updateMutation.mutate({ id: editingTeacher.id, data: values });
-    } else {
-      createMutation.mutate(values);
-    }
-  };
 
   return (
     <div>
@@ -120,11 +132,7 @@ const Teachers = () => {
         onCancel={() => setIsModalVisible(false)}
         footer={null}
       >
-        <Form
-          form={form}
-          onFinish={handleSubmit}
-          layout="vertical"
-        >
+        <Form form={form} onFinish={handleSubmit} layout="vertical">
           <Form.Item
             name="full_name"
             label="Full Name"
@@ -154,9 +162,7 @@ const Teachers = () => {
               <Button type="primary" htmlType="submit">
                 {editingTeacher ? 'Update' : 'Add'}
               </Button>
-              <Button onClick={() => setIsModalVisible(false)}>
-                Cancel
-              </Button>
+              <Button onClick={() => setIsModalVisible(false)}>Cancel</Button>
             </Space>
           </Form.Item>
         </Form>

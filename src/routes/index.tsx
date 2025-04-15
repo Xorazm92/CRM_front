@@ -1,5 +1,6 @@
 import RoleChecker from "../components/RoleChecker";
 import Login from "../pages/auth/login";
+import Register from "../pages/auth/Register";
 import Dashboard from "../pages/dashboard";
 import Students from "../pages/students";
 import Teachers from "../pages/teachers";
@@ -25,10 +26,14 @@ export const routes: RouteT[] = [
         path: "/login",
         element: <Login />
     },
+    {
+        path: "/register",
+        element: <Register />
+    },
 
     {
         path: "/",
-        element: <RoleChecker roles={["MANAGER"]} />,
+        element: <RoleChecker roles={["MANAGER", "ADMIN", "TEACHER", "STUDENT"]} />,
         children: [
 
             {

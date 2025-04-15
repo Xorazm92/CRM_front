@@ -1,12 +1,12 @@
-
 import React from 'react';
 import { Card, Row, Col, Statistic } from 'antd';
 import { UserOutlined, TeamOutlined, BookOutlined, DollarOutlined } from '@ant-design/icons';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { getDashboardStats } from '../../services/dashboard';
+import { Line, Bar } from '@ant-design/plots';
 
 const Dashboard = () => {
-  const { data: stats } = useQuery('dashboardStats', getDashboardStats);
+  const { data: stats } = useQuery({ queryKey: ['dashboardStats'], queryFn: getDashboardStats });
 
   return (
     <div>

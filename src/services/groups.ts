@@ -1,5 +1,5 @@
 
-import axiosInstance from '../config/axios-instance';
+import { instance as axiosInstance } from '../config/axios-instance';
 
 export const groupsService = {
   getAll: () => axiosInstance.get('/groups').then(res => res.data),

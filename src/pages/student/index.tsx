@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Table, Space, Button, Modal, Form, Input, message } from 'antd';
 import { UserOutlined, PhoneOutlined } from '@ant-design/icons';
 
@@ -41,7 +41,7 @@ const Students = () => {
     {
       title: 'Actions',
       key: 'actions',
-      render: (_, record) => (
+      render: (_: any, record: { id: any; }) => (
         <Space>
           <Button onClick={() => handleEdit(record)}>Edit</Button>
           <Button danger onClick={() => handleDelete(record.id)}>Delete</Button>
@@ -50,12 +50,12 @@ const Students = () => {
     },
   ];
 
-  const handleEdit = (record) => {
+  const handleEdit = (record: any) => {
     form.setFieldsValue(record);
     setIsModalVisible(true);
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: any) => {
     try {
       await fetch(`/api/student/${id}`, { method: 'DELETE' });
       message.success('Student deleted successfully');
@@ -65,7 +65,7 @@ const Students = () => {
     }
   };
 
-  const handleSubmit = async (values) => {
+  const handleSubmit = async (values: any) => {
     try {
       await fetch('/api/student/createStudent', {
         method: 'POST',

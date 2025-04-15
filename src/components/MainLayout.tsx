@@ -7,7 +7,8 @@ import {
   SettingOutlined,
   BookOutlined,
   GroupOutlined,
-  UserSwitchOutlined
+  UserSwitchOutlined,
+  CalendarOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Table, Space, Button, Modal, Form, Input, message } from 'antd';
 import { TeamOutlined } from '@ant-design/icons';
 
@@ -36,7 +36,7 @@ const Groups = () => {
     {
       title: 'Actions',
       key: 'actions',
-      render: (_, record) => (
+      render: (_: any, record: { id: any; }) => (
         <Space>
           <Button onClick={() => handleEdit(record)}>Edit</Button>
           <Button danger onClick={() => handleDelete(record.id)}>Delete</Button>
@@ -45,7 +45,7 @@ const Groups = () => {
     },
   ];
 
-  const handleSubmit = async (values) => {
+  const handleSubmit = async (values: any) => {
     try {
       setLoading(true);
       const response = await fetch('/api/groups', {
@@ -64,18 +64,18 @@ const Groups = () => {
       form.resetFields();
       fetchGroups();
     } catch (error) {
-      message.error(error.message);
+      message.error(error instanceof Error ? error.message : 'An error occurred');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleEdit = async (record) => {
+  const handleEdit = async (record: { id: any; }) => {
     form.setFieldsValue(record);
     setIsModalVisible(true);
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: any) => {
     try {
       setLoading(true);
       const response = await fetch(`/api/groups/${id}`, {
@@ -90,7 +90,7 @@ const Groups = () => {
       message.success('Group deleted successfully');
       fetchGroups();
     } catch (error) {
-      message.error(error.message);
+      message.error(error instanceof Error ? error.message : 'An error occurred');
     } finally {
       setLoading(false);
     }

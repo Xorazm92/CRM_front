@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Table, Button, Modal, Form, Input, message, Select } from 'antd';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { studentService } from '../../services/students';
 import { SearchOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom'; // Added import statement
@@ -42,7 +42,7 @@ const Students = () => {
     { title: 'Guruh', dataIndex: ['group', 'name'] },
     {
       title: 'Amallar',
-      render: (_, record) => (
+      render: (_: any, record: { id: string; }) => (
         <>
           <Button type="link" onClick={() => navigate(`/students/profile/${record.id}`)}>
             Profil
@@ -84,7 +84,7 @@ const Students = () => {
 
       <Table 
         columns={columns} 
-        dataSource={students?.filter(student => 
+        dataSource={students?.filter((student: { firstName: any; lastName: any; }) => 
           `${student.firstName} ${student.lastName}`.toLowerCase().includes(searchText.toLowerCase())
         )} 
         loading={isLoading}
@@ -129,7 +129,7 @@ const Students = () => {
             rules={[{ required: true }]}
           >
             <Select>
-              {students?.groups?.map(group => (
+              {students?.groups?.map((group: { id: string | number; name: string }) => (
                 <Select.Option key={group.id} value={group.id}>
                   {group.name}
                 </Select.Option>

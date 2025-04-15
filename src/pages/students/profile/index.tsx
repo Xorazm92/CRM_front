@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, Descriptions, Tabs, Table, Tag } from 'antd';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { studentsService } from '../../../services/students';
+import { studentService } from '../../../services/students';
 import { paymentsService } from '../../../services/payments';
 
 const StudentProfile = () => {
@@ -11,22 +11,34 @@ const StudentProfile = () => {
 
   const { data: student, isLoading: studentLoading } = useQuery({
     queryKey: ['student', id],
-    queryFn: () => studentsService.getById(id)
+    queryFn: () => {
+      if (!id) throw new Error('Student ID is required');
+      return studentService.getById(id);
+    }
   });
 
   const { data: payments, isLoading: paymentsLoading } = useQuery({
     queryKey: ['student-payments', id],
-    queryFn: () => paymentsService.getByStudentId(id)
+    queryFn: () => {
+      if (!id) throw new Error('Student ID is required');
+      return paymentsService.getByStudentId(id);
+    }
   });
 
   const { data: attendance, isLoading: attendanceLoading } = useQuery({
     queryKey: ['student-attendance', id],
-    queryFn: () => studentsService.getAttendance(id)
+    queryFn: () => {
+      if (!id) throw new Error('Student ID is required');
+      return studentService.getAttendance(id);
+    }
   });
 
   const { data: grades, isLoading: gradesLoading } = useQuery({
     queryKey: ['student-grades', id],
-    queryFn: () => studentsService.getGrades(id)
+    queryFn: () => {
+      if (!id) throw new Error('Student ID is required');
+      return studentService.getGrades(id);
+    }
   });
 
   const items = [
@@ -52,7 +64,7 @@ const StudentProfile = () => {
       children: (
         <Table 
           loading={paymentsLoading}
-          dataSource={payments} 
+          dataSource={payments?.data} 
           columns={[
             {
               title: 'Sana',

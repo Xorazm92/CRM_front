@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Table, DatePicker, Select, Card, Row, Col, Typography } from 'antd';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { groupsService } from '../../services/groups';
 
 const { Title } = Typography;
@@ -10,7 +10,7 @@ const Attendance = () => {
   const [selectedGroup, setSelectedGroup] = useState<string>();
   const [selectedDate, setSelectedDate] = useState<string>();
 
-  const { data: groups, isLoading: groupsLoading } = useQuery('groups', groupsService.getAll);
+  const { data: groups, isLoading: groupsLoading } = useQuery({ queryKey: ['groups'], queryFn: groupsService.getAll });
 
   const columns = [
     {
@@ -58,7 +58,7 @@ const Attendance = () => {
             placeholder="Guruhni tanlang"
             onChange={(value) => setSelectedGroup(value)}
             loading={groupsLoading}
-            options={groups?.map(group => ({
+            options={groups?.map((group: { id: any; name: any; }) => ({
               value: group.id,
               label: group.name
             }))}

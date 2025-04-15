@@ -11,7 +11,10 @@ const CoursesPage = () => {
 
   const { data: courses, isLoading } = useQuery({
     queryKey: ['courses'],
-    queryFn: () => courseService.getAll()
+    queryFn: async () => {
+      const response = await courseService.getAll();
+      return response.data;
+    }
   });
 
   const createMutation = useMutation({
@@ -38,7 +41,7 @@ const CoursesPage = () => {
     { title: 'Narxi', dataIndex: 'price' },
     {
       title: 'Amallar',
-      render: (_, record) => (
+      render: (_: any, record: { id: number; }) => (
         <Button danger onClick={() => deleteMutation.mutate(record.id)}>
           O'chirish
         </Button>

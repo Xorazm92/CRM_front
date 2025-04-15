@@ -1,4 +1,4 @@
-import axiosInstance from '../config/axios-instance';
+import { instance as axiosInstance } from '../config/axios-instance';
 
 export interface AttendanceT {
   id: string;
@@ -35,11 +35,6 @@ export const studentService = {
 
   create: async (values: any) => {
     const { data } = await axiosInstance.post('/students', values);
-    return data;
-  },
-
-  update: async (id: string, values: any) => {
-    const { data } = await axiosInstance.put(`/students/${id}`, values);
     return data;
   },
 

@@ -35,7 +35,7 @@ const Admin = () => {
     {
       title: 'Actions',
       key: 'actions',
-      render: (_, record) => (
+      render: (_: any, record: { id: any; }) => (
         <Space>
           <Button type="link">Tahrirlash</Button>
           <Button 
@@ -50,7 +50,7 @@ const Admin = () => {
     },
   ];
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: any) => {
     try {
       await fetch(`/api/admin/${id}`, { method: 'DELETE' });
       message.success('Admin deleted successfully');
@@ -60,7 +60,7 @@ const Admin = () => {
     }
   };
 
-  const handleSubmit = async (values) => {
+  const handleSubmit = async (values: any) => {
     try {
       await fetch('/api/admin/createAdmin', {
         method: 'POST',
