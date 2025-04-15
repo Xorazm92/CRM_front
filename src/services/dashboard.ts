@@ -1,13 +1,22 @@
 
-import { instance } from '../config/axios-instance';
+import axiosInstance from '../config/axios-instance';
 
-interface StatsResponse {
-  studentsCount: number;
-  teachersCount: number;
-  coursesCount: number;
-  groupsCount: number;
-}
+export const getDashboardStats = async () => {
+  const { data } = await axiosInstance.get('/dashboard/stats');
+  return data;
+};
 
-export const dashboardService = {
-  getStats: () => instance.get<StatsResponse>('/dashboard/stats'),
+export const getAttendanceStats = async () => {
+  const { data } = await axiosInstance.get('/dashboard/attendance-stats');
+  return data;
+};
+
+export const getGroupsStats = async () => {
+  const { data } = await axiosInstance.get('/dashboard/groups-stats');
+  return data;
+};
+
+export const getTeachersStats = async () => {
+  const { data } = await axiosInstance.get('/dashboard/teachers-stats');
+  return data;
 };
