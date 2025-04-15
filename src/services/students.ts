@@ -1,5 +1,12 @@
 import axiosInstance from '../config/axios-instance';
 
+export interface AttendanceT {
+  id: string;
+  date: string;
+  status: 'present' | 'late' | 'absent';
+  note?: string;
+}
+
 export const studentService = {
   getAll: async () => {
     const { data } = await axiosInstance.get('/students');

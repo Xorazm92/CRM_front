@@ -19,6 +19,11 @@ const StudentProfile = () => {
     queryFn: () => paymentsService.getByStudentId(id)
   });
 
+  const { data: attendance, isLoading: attendanceLoading } = useQuery({
+    queryKey: ['student-attendance', id],
+    queryFn: () => studentsService.getAttendance(id)
+  });
+
   const items = [
     {
       key: '1',
@@ -65,6 +70,44 @@ const StudentProfile = () => {
                 </Tag>
               ),
             },
+          ]} 
+        />
+      ),
+    },
+    {
+      key: '3',
+      label: 'Davomat',
+      children: (
+        <Table 
+          loading={attendanceLoading}
+          dataSource={attendance} 
+          columns={[
+            {
+              title: 'Sana',
+              dataIndex: 'date',
+              key: 'date',
+            },
+            {
+              title: 'Holat',
+              dataIndex: 'status',
+              key: 'status',
+              render: (status) => (
+                <Tag color={
+                  status === 'present' ? 'green' : 
+                  status === 'late' ? 'orange' : 'red'
+                }>
+                  {
+                    status === 'present' ? 'Kelgan' : 
+                    status === 'late' ? 'Kechikkan' : 'Kelmagan'
+                  }
+                </Tag>
+              ),
+            },
+            {
+              title: 'Izoh',
+              dataIndex: 'note',
+              key: 'note',
+            }
           ]} 
         />
       ),
