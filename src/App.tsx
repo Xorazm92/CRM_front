@@ -8,6 +8,7 @@ import Teachers from './pages/teachers';
 import Students from './pages/students';
 // import AdminUsers from './pages/admin-users'; //Removed import
 import AuthInitializer from './AuthInitializer';
+import React from 'react';
 
 // PrivateRoute va Outlet olib tashlandi, login sahifasi ochiq
 

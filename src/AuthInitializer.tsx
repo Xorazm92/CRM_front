@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { instance } from './config/axios-instance';
+import axiosInstance from './config/axios-instance';
 import { useAuthStore } from './store/useAuthStore';
 
 /**
@@ -14,7 +14,7 @@ const AuthInitializer = () => {
     const fetchMe = async () => {
       try {
         // POST so'rovi yuboriladi, chunki backendda faqat POST mavjud
-        const res = await instance.get('/auth/me');
+        const res = await axiosInstance.get('/auth/me');
         const newUser = res.data.data?.user || res.data.user;
         setUser(newUser);
       } catch (error) {
