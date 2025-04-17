@@ -1,4 +1,4 @@
-import { instance as axiosInstance } from '../config/axios-instance';
+import axiosInstance from '../config/axios-instance';
 
 export interface AttendanceT {
   id: string;
@@ -7,19 +7,15 @@ export interface AttendanceT {
   note?: string;
 }
 
-// Barcha requestlar cookie bilan ishlaydi, token kerak emas
-// import { instance } from "../config/axios-instance";
-// ... barcha requestlar instance orqali amalga oshiriladi
-
 export const studentService = {
   getAll: async () => {
-    const { data } = await axiosInstance.get('/students');
-    return data;
+    const response = await axiosInstance.get('/students');
+    return response.data;
   },
 
-  getById: async (id: string) => {
-    const { data } = await axiosInstance.get(`/students/${id}`);
-    return data;
+  getById: async (id: number) => {
+    const response = await axiosInstance.get(`/students/${id}`);
+    return response.data;
   },
 
   getPayments: async (id: string) => {
@@ -37,18 +33,18 @@ export const studentService = {
     return data;
   },
 
-  create: async (values: any) => {
-    const { data } = await axiosInstance.post('/students', values);
-    return data;
+  create: async (data: any) => {
+    const response = await axiosInstance.post('/students', data);
+    return response.data;
   },
 
-  update: async (id: string, values: any) => {
-    const { data } = await axiosInstance.put(`/students/${id}`, values);
-    return data;
+  update: async (id: number, data: any) => {
+    const response = await axiosInstance.put(`/students/${id}`, data);
+    return response.data;
   },
 
-  delete: async (id: string) => {
-    const { data } = await axiosInstance.delete(`/students/${id}`);
-    return data;
+  delete: async (id: number) => {
+    const response = await axiosInstance.delete(`/students/${id}`);
+    return response.data;
   }
 };
