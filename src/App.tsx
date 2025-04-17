@@ -6,7 +6,7 @@ import Login from './pages/auth/login';
 import Dashboard from './pages/dashboard';
 import Teachers from './pages/teachers';
 import Students from './pages/students';
-import AdminUsers from './pages/admin-users';
+// import AdminUsers from './pages/admin-users'; //Removed import
 import AuthInitializer from './AuthInitializer';
 
 // PrivateRoute va Outlet olib tashlandi, login sahifasi ochiq
@@ -29,8 +29,8 @@ const App = () => {
           <Route path="teachers" element={<Teachers />} />
           {/* O'quvchilar sahifasi */}
           <Route path="students" element={<Students />} />
-          {/* Admin foydalanuvchilar sahifasi */}
-          <Route path="admin" element={<AdminUsers />} />
+          {/* Admin foydalanuvchilar sahifasi - olib tashlandi */}
+          {/* <Route path="admin" element={<AdminUsers />} /> */}
         </Route>
       </Routes>
     </ConfigProvider>

@@ -13,7 +13,7 @@ export const authService = {
   },
 
   getMe: async () => {
-    const response = await axiosInstance.post('/api/v1/auth/me');
+    const response = await axiosInstance.get('/api/v1/auth/me');
     return response.data;
   },
 
