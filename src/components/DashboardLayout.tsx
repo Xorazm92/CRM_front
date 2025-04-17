@@ -1,8 +1,5 @@
-// React va kerakli hooklarni import qilamiz
 import React, { useState } from 'react';
-// Ant Design komponentlari va hooklarini import qilamiz
-import { Layout, Menu, theme, Button, Avatar, Dropdown } from 'antd';
-// Ant Design ikonlarini import qilamiz
+import { Layout, Menu, Avatar, Dropdown, Badge, theme } from 'antd';
 import { 
   MenuFoldOutlined, 
   MenuUnfoldOutlined,
@@ -11,125 +8,102 @@ import {
   UserOutlined,
   BookOutlined,
   LogoutOutlined,
+  BellOutlined,
   SettingOutlined
 } from '@ant-design/icons';
-// Router uchun kerakli hooklar va komponentlar
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useAuthStore } from '../store/useAuthStore';
 
-const { Header, Sider, Content } = Layout; // Layoutdan Header, Sider va Content qismlarini ajratib olamiz
+const { Header, Sider, Content } = Layout;
 
-// DashboardLayout - CRM tizimining asosiy boshqaruv paneli uchun layout
-const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
-  const [collapsed, setCollapsed] = useState(false); // Yon panelni yopiq/ochiq holatini saqlaydi
-  const navigate = useNavigate(); // Navigatsiya uchun
-  const location = useLocation(); // Joriy sahifa yo'lini olish uchun
-  const { token: { colorBgContainer, borderRadiusLG } } = theme.useToken(); // Ant Design mavzusi uchun tokenlar
+const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [collapsed, setCollapsed] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const user = useAuthStore(state => state.user);
+  const { token: { colorBgContainer, borderRadiusLG } } = theme.useToken();
 
-  // Logout funksiyasi - tokenni o'chirib, login sahifasiga yo'naltiradi
   const handleLogout = () => {
     localStorage.removeItem('token');
     navigate('/login');
   };
 
-  // Foydalanuvchi uchun ochiladigan menyu
-  const userMenu = [
+  const userMenuItems = [
+    {
+      key: 'profile',
+      label: 'Profil',
+      icon: <UserOutlined />,
+      onClick: () => navigate('/profile')
+    },
     {
       key: 'settings',
-      icon: <SettingOutlined />, // Sozlamalar
-      label: 'Settings',
+      label: 'Sozlamalar',
+      icon: <SettingOutlined />,
+      onClick: () => navigate('/settings')
     },
     {
       key: 'logout',
-      icon: <LogoutOutlined />, // Chiqish
-      label: 'Logout',
-      onClick: handleLogout,
-    },
+      label: 'Chiqish',
+      icon: <LogoutOutlined />,
+      onClick: handleLogout
+    }
   ];
 
   return (
     <Layout>
-      {/* Yon panel (Sider) */}
       <Sider trigger={null} collapsible collapsed={collapsed} width={260}>
-        <div className="logo" style={{ 
-          height: 64, 
-          margin: 16, 
-          background: 'rgba(255,255,255,0.1)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: '#fff',
-          fontSize: '20px'
-        }}>
-          {!collapsed && 'CRM System'} {/* Yon panel ochiq bo'lsa nomi chiqadi */}
+        <div className="logo" style={{ height: 64, padding: '16px', textAlign: 'center' }}>
+          <img src="/logo.png" alt="Logo" style={{ height: '32px' }} />
         </div>
-        {/* Yon panel menyusi */}
         <Menu
           theme="dark"
           mode="inline"
           selectedKeys={[location.pathname]}
           items={[
             {
-              key: '/dashboard',
-              icon: <DashboardOutlined />, // Dashboard
-              label: <Link to="/dashboard">Dashboard</Link>,
+              key: '/',
+              icon: <DashboardOutlined />,
+              label: <Link to="/">Dashboard</Link>,
             },
             {
               key: '/teachers',
-              icon: <TeamOutlined />, // O'qituvchilar
-              label: <Link to="/teachers">Teachers</Link>,
+              icon: <TeamOutlined />,
+              label: <Link to="/teachers">O'qituvchilar</Link>,
             },
             {
               key: '/students',
-              icon: <UserOutlined />, // O'quvchilar
-              label: <Link to="/students">Students</Link>,
+              icon: <UserOutlined />,
+              label: <Link to="/students">O'quvchilar</Link>,
             },
             {
               key: '/courses',
-              icon: <BookOutlined />, // Kurslar
-              label: <Link to="/courses">Courses</Link>,
-            },
-            {
-              key: '/groups',
-              icon: <TeamOutlined />, // Guruhlar
-              label: <Link to="/groups">Groups</Link>,
-            },
-            {
-              key: '/admin',
-              icon: <SettingOutlined />, // Adminlar
-              label: <Link to="/admin">Admin Users</Link>,
-            },
+              icon: <BookOutlined />,
+              label: <Link to="/courses">Kurslar</Link>,
+            }
           ]}
         />
       </Sider>
       <Layout>
-        {/* Yuqori panel (Header) */}
-        <Header style={{ 
-          padding: '0 24px', 
-          background: colorBgContainer,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}>
-          {/* Yon panelni ochish/yopish tugmasi */}
-          <Button
-            type="text"
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />} // Ikon o'zgaradi
-            onClick={() => setCollapsed(!collapsed)}
-          />
-          {/* Foydalanuvchi avatari va menyusi */}
-          <Dropdown menu={{ items: userMenu }} placement="bottomRight">
-            <Avatar style={{ cursor: 'pointer' }} icon={<UserOutlined />} />
-          </Dropdown>
+        <Header style={{ padding: 0, background: colorBgContainer }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 24px' }}>
+            {React.createElement(collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {
+              className: 'trigger',
+              onClick: () => setCollapsed(!collapsed),
+            })}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <Badge count={5} offset={[-10, 10]}>
+                <BellOutlined style={{ fontSize: 20, cursor: 'pointer' }} />
+              </Badge>
+              <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
+                <Avatar style={{ backgroundColor: '#1677ff', cursor: 'pointer' }}>
+                  {user?.full_name?.[0] || 'U'}
+                </Avatar>
+              </Dropdown>
+            </div>
+          </div>
         </Header>
-        {/* Asosiy kontent qismi */}
-        <Content style={{
-          margin: '24px 16px',
-          padding: 24,
-          minHeight: 280,
-          background: colorBgContainer,
-          borderRadius: borderRadiusLG,
-        }}>
-          {children} {/* Ichki sahifalar shu yerda ko'rsatiladi */}
+        <Content style={{ margin: '24px 16px', padding: 24, background: colorBgContainer, borderRadius: borderRadiusLG }}>
+          {children}
         </Content>
       </Layout>
     </Layout>

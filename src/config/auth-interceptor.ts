@@ -1,28 +1,26 @@
 
-import axios from 'axios';
-import { useAuthStore } from '../store/useAuthStore';
+import { instance } from './axios-instance';
 
-const authInterceptor = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-});
-
-authInterceptor.interceptors.request.use((config) => {
-  const token = useAuthStore.getState().token;
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+instance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
-  return config;
-});
+);
 
-authInterceptor.interceptors.response.use(
+instance.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response?.status === 401) {
-      useAuthStore.getState().logout();
+      localStorage.removeItem('token');
       window.location.href = '/login';
     }
     return Promise.reject(error);
   }
 );
-
-export { authInterceptor };
