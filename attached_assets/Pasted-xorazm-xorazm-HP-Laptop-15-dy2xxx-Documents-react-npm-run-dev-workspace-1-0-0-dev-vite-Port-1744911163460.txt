@@ -1,0 +1,39 @@
+xorazm@xorazm-HP-Laptop-15-dy2xxx:~/Documents/react$ npm run dev
+
+> workspace@1.0.0 dev
+> vite
+
+Port 5173 is in use, trying another one...
+
+  VITE v6.2.6  ready in 117 ms
+
+  ➜  Local:   http://localhost:5174/
+  ➜  Network: http://192.168.222.225:5174/
+  ➜  press h + enter to show help
+10:31:21 PM [vite] Internal server error: Failed to resolve import "./pages/admin-users" from "src/App.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/xorazm/Documents/react/src/App.tsx:9:23
+  21 |  import Teachers from "./pages/teachers";
+  22 |  import Students from "./pages/students";
+  23 |  import AdminUsers from "./pages/admin-users";
+     |                          ^
+  24 |  import AuthInitializer from "./AuthInitializer";
+  25 |  const App = () => {
+      at TransformPluginContext._formatLog (file:///home/xorazm/Documents/react/node_modules/vite/dist/node/chunks/dep-Bid9ssRr.js:47897:41)
+      at TransformPluginContext.error (file:///home/xorazm/Documents/react/node_modules/vite/dist/node/chunks/dep-Bid9ssRr.js:47894:16)
+      at normalizeUrl (file:///home/xorazm/Documents/react/node_modules/vite/dist/node/chunks/dep-Bid9ssRr.js:46027:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async file:///home/xorazm/Documents/react/node_modules/vite/dist/node/chunks/dep-Bid9ssRr.js:46146:37
+      at async Promise.all (index 9)
+      at async TransformPluginContext.transform (file:///home/xorazm/Documents/react/node_modules/vite/dist/node/chunks/dep-Bid9ssRr.js:46073:7)
+      at async EnvironmentPluginContainer.transform (file:///home/xorazm/Documents/react/node_modules/vite/dist/node/chunks/dep-Bid9ssRr.js:47692:18)
+      at async loadAndTransform (file:///home/xorazm/Documents/react/node_modules/vite/dist/node/chunks/dep-Bid9ssRr.js:41327:27)
+10:31:21 PM [vite] (client) Pre-transform error: Failed to resolve import "./pages/admin-users" from "src/App.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/xorazm/Documents/react/src/App.tsx:9:23
+  21 |  import Teachers from "./pages/teachers";
+  22 |  import Students from "./pages/students";
+  23 |  import AdminUsers from "./pages/admin-users";
+     |                          ^
+  24 |  import AuthInitializer from "./AuthInitializer";
+  25 |  const App = () => {
