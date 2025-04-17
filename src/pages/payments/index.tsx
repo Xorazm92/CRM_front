@@ -1,20 +1,12 @@
-
-import { SetStateAction, JSXElementConstructor, ReactElement, ReactNode, ReactPortal, useState } from 'react';
-import { Table, Button, Modal, Form, Input, Select, Space, message, InputNumber } from 'antd';
+import React, { useState } from 'react';
+import { Table, Button, Modal, Form, InputNumber, Select, DatePicker, message } from 'antd';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { paymentsService } from '../../services/payments';
 import { studentService } from '../../services/students';
 
 const Payments = () => {
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  interface Payment {
-    id: number;
-    student_id: number;
-    amount: number;
-    status: 'pending' | 'completed' | 'failed';
-  }
-  const [editingPayment, setEditingPayment] = useState<Payment | null>(null);
   const [form] = Form.useForm();
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: payments, isLoading } = useQuery({
@@ -22,184 +14,96 @@ const Payments = () => {
     queryFn: paymentsService.getAll
   });
 
-  interface Student {
-    id: number;
-    full_name: string;
-  }
-  
-  interface StudentResponse {
-    data: Student[];
-  }
-  
-  const { data: students } = useQuery<StudentResponse>({
-      queryKey: ['students'],
-      queryFn: studentService.getAll
-    });
+  const { data: students } = useQuery({
+    queryKey: ['students'],
+    queryFn: studentService.getAll
+  });
 
   const createMutation = useMutation({
     mutationFn: paymentsService.create,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['payments'] });
-      message.success('Payment added successfully');
-      setIsModalVisible(false);
-      form.resetFields();
-    }
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: (params: { id: number; data: any }) => paymentsService.update(params.id.toString(), params.data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['payments'] });
-      message.success('Payment updated successfully');
-      setIsModalVisible(false);
+      message.success("To'lov qo'shildi");
+      setIsModalOpen(false);
       form.resetFields();
     }
   });
 
   const columns = [
-    {
-      title: 'Student',
-      dataIndex: ['student', 'full_name'],
+    { 
+      title: "O'quvchi",
+      dataIndex: ['student', 'full_name'], //Retaining original dataIndex for consistency
       key: 'student',
+      render: (student) => student?.full_name || '' //Handling potential null values
     },
     {
-      title: 'Amount',
+      title: 'Summa',
       dataIndex: 'amount',
       key: 'amount',
-      render: (amount: any) => `$${amount}`,
+      render: (amount: any) => `$${amount}`, //Retaining original rendering for currency format
     },
     {
-      title: 'Date',
-      dataIndex: 'payment_date',
-      key: 'payment_date',
+      title: 'Sana',
+      dataIndex: 'payment_date', //Retaining original dataIndex
+      key: 'date',
+      render: (date: any) => date ? new Date(date).toLocaleDateString() : '' //Formatting date
     },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-    },
-    {
-      title: 'Actions',
-      key: 'actions',
-      render: (_: any, record: any) => (
-        <Space>
-          <Button type="primary" onClick={() => handleEdit(record)}>
-            Edit
-          </Button>
-        </Space>
-      ),
-    },
-  ];
-
-  const handleAdd = () => {
-    setEditingPayment(null);
-    form.resetFields();
-    setIsModalVisible(true);
-  };
-
-  const handleEdit = (payment: Payment) => {
-    setEditingPayment(payment);
-    form.setFieldsValue(payment);
-    setIsModalVisible(true);
-  };
-
-  interface PaymentFormValues {
-    student_id: number;
-    amount: number;
-    status: 'pending' | 'completed' | 'failed';
-    payment_date?: string;
-  }
-
-  const handleSubmit = async (values: PaymentFormValues) => {
-    const selectedStudent = students?.data?.find((s: any) => s.id === values.student_id);
-    const submitData = {
-      ...values,
-      student_id: values.student_id.toString(),
-      payment_date: values.payment_date || new Date().toISOString(),
-      student: { 
-        id: values.student_id,
-        full_name: selectedStudent?.full_name || ''
-      }
-    };
-    if (editingPayment) {
-      updateMutation.mutate({ id: editingPayment.id, data: submitData });
-    } else {
-      createMutation.mutate(submitData);
+      render: (status) => (
+        <span style={{ color: status === 'paid' ? 'green' : 'red' }}>
+          {status === 'paid' ? "To'langan" : "To'lanmagan"}
+        </span>
+      )
     }
-  };
+  ];
 
   return (
     <div>
-      <div style={{ marginBottom: 16 }}>
-        <Button type="primary" onClick={handleAdd}>
-          Add Payment
-        </Button>
-      </div>
-
+      <Button type="primary" onClick={() => setIsModalOpen(true)} style={{ marginBottom: 16 }}>
+        To'lov qo'shish
+      </Button>
       <Table
         columns={columns}
-        dataSource={payments?.data}
+        dataSource={payments?.data} //Retaining original dataSource access
         loading={isLoading}
         rowKey="id"
       />
-
       <Modal
-        title={editingPayment ? 'Edit Payment' : 'Add Payment'}
-        open={isModalVisible}
-        onCancel={() => setIsModalVisible(false)}
+        title="To'lov qo'shish"
+        open={isModalOpen}
+        onCancel={() => setIsModalOpen(false)}
         footer={null}
       >
-        <Form
-          form={form}
-          onFinish={handleSubmit}
-          layout="vertical"
-        >
-          <Form.Item
-            name="student_id"
-            label="Student"
-            rules={[{ required: true, message: 'Please select student!' }]}
-          >
-            <Select>
-              {students?.data?.map((student: { id: number; full_name: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | null | undefined; }) => (
-                <Select.Option key={student.id} value={student.id}>
-                  {student.full_name}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            name="amount"
-            label="Amount"
-            rules={[{ required: true, message: 'Please input amount!' }]}
-          >
-            <InputNumber
-              formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-              parser={value => (value || '').replace(/\$\s?|(,*)/g, '')}
+        <Form form={form} onFinish={() => createMutation.mutate(form.getFieldsValue())} layout="vertical"> {/* Using form.getFieldsValue for data submission */}
+          <Form.Item name="student_id" label="O'quvchi" rules={[{ required: true }]}>
+            <Select
+              placeholder="O'quvchini tanlang"
+              options={students?.data?.map(s => ({ 
+                value: s.id, 
+                label: `${s.full_name}` //Using full_name from original data
+              }))}
             />
           </Form.Item>
-
-          <Form.Item
-            name="status"
-            label="Status"
-            rules={[{ required: true, message: 'Please select status!' }]}
-          >
+          <Form.Item name="amount" label="Summa" rules={[{ required: true }]}>
+            <InputNumber style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="payment_date" label="Sana" rules={[{ required: true }]}> {/* Using original field name */}
+            <DatePicker style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="status" label="Status" rules={[{ required: true }]}> {/* Adding status field */}
             <Select>
               <Select.Option value="pending">Pending</Select.Option>
               <Select.Option value="completed">Completed</Select.Option>
               <Select.Option value="failed">Failed</Select.Option>
             </Select>
           </Form.Item>
-
           <Form.Item>
-            <Space>
-              <Button type="primary" htmlType="submit">
-                {editingPayment ? 'Update' : 'Add'}
-              </Button>
-              <Button onClick={() => setIsModalVisible(false)}>
-                Cancel
-              </Button>
-            </Space>
+            <Button type="primary" htmlType="submit" loading={createMutation.isPending}>
+              Saqlash
+            </Button>
           </Form.Item>
         </Form>
       </Modal>

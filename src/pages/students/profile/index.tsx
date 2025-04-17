@@ -1,175 +1,139 @@
-// Student profile page. Use this for showing a single student's details.
 import React from 'react';
-import { Card, Descriptions, Tabs, Table, Tag } from 'antd';
 import { useParams } from 'react-router-dom';
+import { Card, Tabs, Table, Tag, Descriptions, Spin } from 'antd';
 import { useQuery } from '@tanstack/react-query';
 import { studentService } from '../../../services/students';
-import { paymentsService } from '../../../services/payments';
 
 const StudentProfile = () => {
   const { id } = useParams();
 
-  const { data: student, isLoading: studentLoading } = useQuery({
+  const { data: student, isLoading } = useQuery({
     queryKey: ['student', id],
-    queryFn: () => {
-      if (!id) throw new Error('Student ID is required');
-      return studentService.getById(id);
-    }
+    queryFn: () => studentService.getById(id as string)
   });
 
   const { data: payments, isLoading: paymentsLoading } = useQuery({
     queryKey: ['student-payments', id],
-    queryFn: () => {
-      if (!id) throw new Error('Student ID is required');
-      return paymentsService.getByStudentId(id);
-    }
+    queryFn: () => studentService.getPayments(id as string)
   });
 
   const { data: attendance, isLoading: attendanceLoading } = useQuery({
     queryKey: ['student-attendance', id],
-    queryFn: () => {
-      if (!id) throw new Error('Student ID is required');
-      return studentService.getAttendance(id);
-    }
+    queryFn: () => studentService.getAttendance(id as string)
   });
 
   const { data: grades, isLoading: gradesLoading } = useQuery({
     queryKey: ['student-grades', id],
-    queryFn: () => {
-      if (!id) throw new Error('Student ID is required');
-      return studentService.getGrades(id);
-    }
+    queryFn: () => studentService.getGrades(id as string)
   });
 
-  const items = [
-    {
-      key: '1',
-      label: 'Asosiy ma\'lumotlar',
-      children: (
-        <Descriptions bordered column={2}>
-          <Descriptions.Item label="Ism Familiya">{student?.full_name}</Descriptions.Item>
-          <Descriptions.Item label="Telefon">{student?.phone}</Descriptions.Item>
-          <Descriptions.Item label="Guruh">{student?.group?.name}</Descriptions.Item>
-          <Descriptions.Item label="Holati">
-            <Tag color={student?.status === 'active' ? 'green' : 'red'}>
-              {student?.status === 'active' ? 'Faol' : 'Nofaol'}
-            </Tag>
-          </Descriptions.Item>
-        </Descriptions>
-      ),
-    },
-    {
-      key: '2',
-      label: 'To\'lovlar tarixi',
-      children: (
-        <Table 
-          loading={paymentsLoading}
-          dataSource={payments?.data} 
-          columns={[
-            {
-              title: 'Sana',
-              dataIndex: 'payment_date',
-              key: 'payment_date',
-            },
-            {
-              title: 'Summa',
-              dataIndex: 'amount',
-              key: 'amount',
-              render: (amount) => `${amount.toLocaleString()} so'm`,
-            },
-            {
-              title: 'Holat',
-              dataIndex: 'status',
-              key: 'status',
-              render: (status) => (
-                <Tag color={status === 'completed' ? 'green' : 'orange'}>
-                  {status === 'completed' ? 'To\'langan' : 'Kutilmoqda'}
-                </Tag>
-              ),
-            },
-          ]} 
-        />
-      ),
-    },
-    {
-      key: '3',
-      label: 'Baholar',
-      children: (
-        <Table 
-          loading={gradesLoading}
-          dataSource={grades} 
-          columns={[
-            {
-              title: 'Fan',
-              dataIndex: 'subject',
-              key: 'subject',
-            },
-            {
-              title: 'Baho',
-              dataIndex: 'grade',
-              key: 'grade',
-              render: (grade) => (
-                <Tag color={
-                  grade >= 90 ? 'green' : 
-                  grade >= 70 ? 'blue' :
-                  grade >= 60 ? 'orange' : 'red'
-                }>
-                  {grade}
-                </Tag>
-              ),
-            },
-            {
-              title: 'Sana',
-              dataIndex: 'date',
-              key: 'date',
-            }
-          ]} 
-        />
-      ),
-    },
-    {
-      key: '4',
-      label: 'Davomat',
-      children: (
-        <Table 
-          loading={attendanceLoading}
-          dataSource={attendance} 
-          columns={[
-            {
-              title: 'Sana',
-              dataIndex: 'date',
-              key: 'date',
-            },
-            {
-              title: 'Holat',
-              dataIndex: 'status',
-              key: 'status',
-              render: (status) => (
-                <Tag color={
-                  status === 'present' ? 'green' : 
-                  status === 'late' ? 'orange' : 'red'
-                }>
-                  {
-                    status === 'present' ? 'Kelgan' : 
-                    status === 'late' ? 'Kechikkan' : 'Kelmagan'
-                  }
-                </Tag>
-              ),
-            },
-            {
-              title: 'Izoh',
-              dataIndex: 'note',
-              key: 'note',
-            }
-          ]} 
-        />
-      ),
-    },
-  ];
+  if (isLoading) return <Spin />;
 
   return (
-    <Card loading={studentLoading}>
-      <Tabs defaultActiveKey="1" items={items} />
+    <Card>
+      <Descriptions title="O'quvchi ma'lumotlari" bordered>
+        <Descriptions.Item label="Ism">{student?.firstName}</Descriptions.Item>
+        <Descriptions.Item label="Familiya">{student?.lastName}</Descriptions.Item>
+        <Descriptions.Item label="Telefon">{student?.phone}</Descriptions.Item>
+        <Descriptions.Item label="Email">{student?.email}</Descriptions.Item>
+        <Descriptions.Item label="Guruh">{student?.group?.name}</Descriptions.Item>
+      </Descriptions>
+
+      <Tabs
+        defaultActiveKey="1"
+        items={[
+          {
+            key: '1',
+            label: 'To\'lovlar',
+            children: (
+              <Table 
+                loading={paymentsLoading}
+                dataSource={payments} 
+                columns={[
+                  {
+                    title: 'Sana',
+                    dataIndex: 'date',
+                    key: 'date',
+                  },
+                  {
+                    title: 'Summa',
+                    dataIndex: 'amount',
+                    key: 'amount',
+                  },
+                  {
+                    title: 'Status',
+                    dataIndex: 'status',
+                    key: 'status',
+                    render: (status) => (
+                      <Tag color={status === 'paid' ? 'green' : 'red'}>
+                        {status === 'paid' ? "To'langan" : "To'lanmagan"}
+                      </Tag>
+                    ),
+                  }
+                ]} 
+              />
+            ),
+          },
+          {
+            key: '2',
+            label: 'Davomat',
+            children: (
+              <Table 
+                loading={attendanceLoading}
+                dataSource={attendance} 
+                columns={[
+                  {
+                    title: 'Sana',
+                    dataIndex: 'date',
+                    key: 'date',
+                  },
+                  {
+                    title: 'Holat',
+                    dataIndex: 'status',
+                    key: 'status',
+                    render: (status) => (
+                      <Tag color={
+                        status === 'present' ? 'green' : 
+                        status === 'late' ? 'orange' : 'red'
+                      }>
+                        {status === 'present' ? 'Keldi' : 
+                         status === 'late' ? 'Kechikdi' : 'Kelmadi'}
+                      </Tag>
+                    ),
+                  }
+                ]} 
+              />
+            ),
+          },
+          {
+            key: '3',
+            label: 'Baholar',
+            children: (
+              <Table 
+                loading={gradesLoading}
+                dataSource={grades} 
+                columns={[
+                  {
+                    title: 'Fan',
+                    dataIndex: 'subject',
+                    key: 'subject',
+                  },
+                  {
+                    title: 'Baho',
+                    dataIndex: 'grade',
+                    key: 'grade',
+                  },
+                  {
+                    title: 'Sana',
+                    dataIndex: 'date',
+                    key: 'date',
+                  }
+                ]} 
+              />
+            ),
+          }
+        ]}
+      />
     </Card>
   );
 };
