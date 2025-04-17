@@ -8,15 +8,11 @@ export interface AttendanceT {
 }
 
 export const studentService = {
-  getAll: async () => {
-    const response = await axiosInstance.get('/students');
-    return response.data;
-  },
+  getAll: () => axiosInstance.get('/student'),
 
-  getById: async (id: number) => {
-    const response = await axiosInstance.get(`/students/${id}`);
-    return response.data;
-  },
+  getById: (id: string) => axiosInstance.get(`/student/${id}`),
+
+  getProfile: (id: string) => axiosInstance.get(`/student/getProfile/${id}`),
 
   getPayments: async (id: string) => {
     const { data } = await axiosInstance.get(`/students/${id}/payments`);
@@ -33,18 +29,9 @@ export const studentService = {
     return data;
   },
 
-  create: async (data: any) => {
-    const response = await axiosInstance.post('/students', data);
-    return response.data;
-  },
+  create: (data: any) => axiosInstance.post('/student/createStudent', data),
 
-  update: async (id: number, data: any) => {
-    const response = await axiosInstance.put(`/students/${id}`, data);
-    return response.data;
-  },
+  update: (id: string, data: any) => axiosInstance.patch(`/student/${id}`, data),
 
-  delete: async (id: number) => {
-    const response = await axiosInstance.delete(`/students/${id}`);
-    return response.data;
-  }
+  delete: (id: string) => axiosInstance.delete(`/student/${id}`)
 };

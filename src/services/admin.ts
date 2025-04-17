@@ -1,9 +1,20 @@
 
-import { instance } from '../config/axios-instance';
+import axiosInstance from '../config/axios-instance';
 
 export const adminService = {
-  getAll: () => instance.get('/admin'),
-  create: (data: { full_name: string; username: string; password: string }) => 
-    instance.post('/admin', data),
-  delete: (id: number) => instance.delete(`/admin/${id}`)
+  signin: (data: any) => axiosInstance.post('/admin/signin', data),
+  
+  createAdmin: (data: any) => axiosInstance.post('/admin/createAdmin', data),
+  
+  addMembersToGroup: (data: any) => axiosInstance.post('/admin/addMembersToGroup', data),
+  
+  getAll: () => axiosInstance.get('/admin'),
+  
+  getProfile: () => axiosInstance.get('/admin/getProfile'),
+  
+  getById: (id: string) => axiosInstance.get(`/admin/${id}`),
+  
+  update: (id: string, data: any) => axiosInstance.patch(`/admin/${id}`, data),
+  
+  delete: (id: string) => axiosInstance.delete(`/admin/${id}`)
 };

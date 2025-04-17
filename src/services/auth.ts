@@ -7,6 +7,11 @@ export const authService = {
     return response.data;
   },
 
+  confirmPassword: async (data: { password: string }) => {
+    const response = await axiosInstance.post('/auth/confirmPassword', data);
+    return response.data;
+  },
+
   getMe: async () => {
     const response = await axiosInstance.post('/auth/me');
     return response.data;

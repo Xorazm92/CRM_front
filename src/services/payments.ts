@@ -1,4 +1,3 @@
-
 import axiosInstance from '../config/axios-instance';
 
 export interface Payment {
@@ -16,38 +15,25 @@ export interface Payment {
 }
 
 export const paymentsService = {
-  getAll: async () => {
-    const response = await axiosInstance.get('/payments');
-    return response.data;
-  },
+  createStudentPayment: (data: any) => axiosInstance.post('/payments/student', data),
 
-  getById: async (id: number) => {
-    const response = await axiosInstance.get(`/payments/${id}`);
-    return response.data;
-  },
+  createTeacherPayment: (data: any) => axiosInstance.post('/payments/teacher', data),
 
-  create: async (data: Partial<Payment>) => {
-    const response = await axiosInstance.post('/payments', data);
-    return response.data;
-  },
+  getStudentPayments: (id: string) => axiosInstance.get(`/payments/student/${id}`),
 
-  update: async (id: number, data: Partial<Payment>) => {
-    const response = await axiosInstance.put(`/payments/${id}`, data);
-    return response.data;
-  },
+  getTeacherPayments: (id: string) => axiosInstance.get(`/payments/teacher/${id}`),
 
-  delete: async (id: number) => {
-    const response = await axiosInstance.delete(`/payments/${id}`);
-    return response.data;
-  },
+  getAllStudentPayments: () => axiosInstance.get('/payments/student-payments'),
 
-  getByStudent: async (studentId: number) => {
-    const response = await axiosInstance.get(`/students/${studentId}/payments`);
-    return response.data;
-  },
+  updateStudentPaymentStatus: (id: string, data: any) => 
+    axiosInstance.put(`/payments/student/${id}/status`, data),
 
-  getStats: async () => {
-    const response = await axiosInstance.get('/payments/stats');
-    return response.data;
-  }
+  updateTeacherPaymentStatus: (id: string, data: any) => 
+    axiosInstance.put(`/payments/teacher/${id}/status`, data),
+
+  calculateTeacherSalaries: (data: any) => 
+    axiosInstance.post('/payments/teacher/calculate-salaries', data),
+
+  payTeacherSalary: (salaryId: string) => 
+    axiosInstance.put(`/payments/teacher/${salaryId}/pay`)
 };
