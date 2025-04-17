@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { Table, Button, Modal, Form, Input, Select, InputNumber, message, Tag } from 'antd';
+import { Table, Button, Modal, Form, Input, Select, InputNumber, message, Space, Tag } from 'antd';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { paymentsService, Payment } from '../../services/payments';
 import { studentService } from '../../services/students';
@@ -35,7 +34,7 @@ const PaymentsPage = () => {
     mutationFn: paymentsService.delete,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['payments'] });
-      message.success("To'lov o'chirildi");
+      message.success("To'lov muvaffaqiyatli o'chirildi");
     }
   });
 
@@ -53,64 +52,50 @@ const PaymentsPage = () => {
   };
 
   const columns = [
-    {
-      title: "O'quvchi",
-      dataIndex: ['student', 'firstName'],
-      render: (_: any, record: Payment) => 
-        `${record.student?.firstName} ${record.student?.lastName}`
+    { title: "O'quvchi", dataIndex: ['student', 'firstName'], key: 'student',
+      render: (_: any, record: Payment) => `${record.student?.firstName} ${record.student?.lastName}`
     },
-    {
-      title: 'Summa',
-      dataIndex: 'amount',
-      render: (amount: number) => `${amount.toLocaleString()} so'm`
-    },
-    {
-      title: "To'lov turi",
-      dataIndex: 'paymentType',
-      render: (type: string) => type.toUpperCase()
-    },
-    {
-      title: 'Holat',
-      dataIndex: 'status',
-      render: (status: string) => (
-        <Tag color={getStatusColor(status)}>{status.toUpperCase()}</Tag>
-      )
-    },
-    {
-      title: 'Sana',
-      dataIndex: 'createdAt',
-      render: (date: string) => new Date(date).toLocaleDateString()
+    { title: 'Summa', dataIndex: 'amount', key: 'amount', render: (amount: number) => `${amount.toLocaleString()} so'm` },
+    { title: 'Sana', dataIndex: 'createdAt', key: 'paymentDate', render: (date: string) => new Date(date).toLocaleDateString() },
+    { title: "To'lov turi", dataIndex: 'paymentType', key: 'paymentType', render: (type: string) => type.toUpperCase() },
+    { title: 'Holati', dataIndex: 'status', key: 'status',
+      render: (status: string) => <Tag color={getStatusColor(status)}>{status.toUpperCase()}</Tag>
     },
     {
       title: 'Amallar',
-      render: (_: any, record: Payment) => (
-        <Button danger onClick={() => deleteMutation.mutate(record.id)}>
-          O'chirish
-        </Button>
-      )
-    }
+      key: 'actions',
+      render: (_, record: Payment) => (
+        <Space>
+          <Button type="link">Tahrirlash</Button>
+          <Button type="link" danger onClick={() => deleteMutation.mutate(record.id)}>
+            O'chirish
+          </Button>
+        </Space>
+      ),
+    },
   ];
 
   if (isLoading) return <LoadingSpinner />;
 
   return (
     <div>
-      <Button 
-        type="primary" 
-        onClick={() => setIsModalOpen(true)} 
+      <Button
+        type="primary"
+        onClick={() => setIsModalOpen(true)}
         style={{ marginBottom: 16 }}
       >
-        + Yangi to'lov
+        To'lov qo'shish
       </Button>
 
-      <Table 
-        columns={columns} 
-        dataSource={payments} 
+      <Table
+        columns={columns}
+        dataSource={payments}
+        loading={isLoading}
         rowKey="id"
       />
 
       <Modal
-        title="Yangi to'lov qo'shish"
+        title="To'lov qo'shish"
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         footer={null}
@@ -135,7 +120,7 @@ const PaymentsPage = () => {
             label="Summa"
             rules={[{ required: true, message: "Summani kiriting" }]}
           >
-            <InputNumber 
+            <InputNumber
               style={{ width: '100%' }}
               formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
               parser={value => value!.replace(/\$\s?|(,*)/g, '')}
