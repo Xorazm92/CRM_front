@@ -1,78 +1,72 @@
 
-import { useState } from 'react';
-import { Table, DatePicker, Select, Card, Row, Col, Typography } from 'antd';
-import { useQuery } from '@tanstack/react-query';
-import { groupsService } from '../../services/groups';
-
-const { Title } = Typography;
+import React, { useState } from 'react';
+import { Table, Button, DatePicker, Select, message } from 'antd';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { attendanceService } from '../../services/attendance';
 
 const Attendance = () => {
-  const [selectedGroup, setSelectedGroup] = useState<string>();
-  const [selectedDate, setSelectedDate] = useState<string>();
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedGroup, setSelectedGroup] = useState(null);
+  const queryClient = useQueryClient();
 
-  const { data: groups, isLoading: groupsLoading } = useQuery({ queryKey: ['groups'], queryFn: groupsService.getAll });
+  const { data: attendance, isLoading } = useQuery({
+    queryKey: ['attendance', selectedDate, selectedGroup],
+    queryFn: () => attendanceService.getAll({ date: selectedDate, groupId: selectedGroup })
+  });
+
+  const createMutation = useMutation({
+    mutationFn: attendanceService.create,
+    onSuccess: () => {
+      queryClient.invalidateQueries(['attendance']);
+      message.success('Davomat saqlandi');
+    }
+  });
 
   const columns = [
-    {
-      title: "O'quvchi",
-      dataIndex: 'studentName',
-      key: 'studentName',
-    },
-    {
+    { title: 'O\'quvchi', dataIndex: 'student_name', key: 'student_name' },
+    { 
       title: 'Holat',
       dataIndex: 'status',
       key: 'status',
-      render: (status: string) => (
+      render: (_, record) => (
         <Select
-          defaultValue={status}
-          style={{ width: 120 }}
+          defaultValue={record.status}
+          onChange={(value) => handleStatusChange(record.id, value)}
           options={[
             { value: 'present', label: 'Keldi' },
             { value: 'absent', label: 'Kelmadi' },
-            { value: 'late', label: 'Kechikdi' },
+            { value: 'late', label: 'Kechikdi' }
           ]}
         />
-      ),
-    },
-    {
-      title: 'Izoh',
-      dataIndex: 'note',
-      key: 'note',
+      )
     }
   ];
 
-  return (
-    <Card>
-      <Title level={2}>Davomat</Title>
-      <Row gutter={[16, 16]} style={{ marginBottom: 20 }}>
-        <Col span={8}>
-          <DatePicker 
-            style={{ width: '100%' }}
-            onChange={(date) => setSelectedDate(date?.toISOString())}
-            placeholder="Kunni tanlang"
-          />
-        </Col>
-        <Col span={8}>
-          <Select
-            style={{ width: '100%' }}
-            placeholder="Guruhni tanlang"
-            onChange={(value) => setSelectedGroup(value)}
-            loading={groupsLoading}
-            options={groups?.map((group: { id: any; name: any; }) => ({
-              value: group.id,
-              label: group.name
-            }))}
-          />
-        </Col>
-      </Row>
+  const handleStatusChange = (studentId, status) => {
+    createMutation.mutate({ studentId, status, date: selectedDate });
+  };
 
+  return (
+    <div>
+      <h1>Davomat</h1>
+      <div style={{ marginBottom: 16 }}>
+        <DatePicker 
+          onChange={(date) => setSelectedDate(date)} 
+          style={{ marginRight: 16 }}
+        />
+        <Select
+          placeholder="Guruhni tanlang"
+          onChange={(value) => setSelectedGroup(value)}
+          style={{ width: 200 }}
+        />
+      </div>
       <Table 
         columns={columns} 
-        dataSource={[]} 
-        loading={false}
-        pagination={false}
+        dataSource={attendance} 
+        loading={isLoading}
+        rowKey="id"
       />
-    </Card>
+    </div>
   );
 };
 

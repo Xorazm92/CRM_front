@@ -1,70 +1,50 @@
 import React from 'react';
 import { Card, Row, Col, Statistic } from 'antd';
-import { UserOutlined, TeamOutlined, BookOutlined, DollarOutlined } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
-import { getDashboardStats } from '../../services/dashboard';
-import { Line, Bar } from '@ant-design/plots';
+import { dashboardService } from '../../services/dashboard';
 
 const Dashboard = () => {
-  const { data: stats } = useQuery({ queryKey: ['dashboardStats'], queryFn: getDashboardStats });
+  const { data, isLoading } = useQuery({
+    queryKey: ['dashboard-stats'],
+    queryFn: dashboardService.getStats
+  });
+
+  if (isLoading) return <div>Loading...</div>;
 
   return (
     <div>
       <h1>Dashboard</h1>
-      <Row gutter={[16, 16]}>
+      <Row gutter={16}>
         <Col span={6}>
           <Card>
             <Statistic 
-              title="Total Students" 
-              value={stats?.totalStudents || 0} 
-              prefix={<UserOutlined />} 
-            />
-          </Card>
-        </Col>
-        <Col span={6}>
-          <Card>
-            <Statistic 
-              title="Total Teachers" 
-              value={stats?.totalTeachers || 0}
-              prefix={<TeamOutlined />} 
+              title="Jami O'quvchilar" 
+              value={data?.totalStudents || 0}
             />
           </Card>
         </Col>
         <Col span={6}>
           <Card>
             <Statistic 
-              title="Active Courses" 
-              value={stats?.activeCourses || 0}
-              prefix={<BookOutlined />} 
+              title="Faol Guruhlar" 
+              value={data?.activeGroups || 0}
             />
           </Card>
         </Col>
         <Col span={6}>
           <Card>
             <Statistic 
-              title="Monthly Revenue" 
-              value={stats?.monthlyRevenue || 0}
-              prefix={<DollarOutlined />} 
+              title="O'qituvchilar" 
+              value={data?.totalTeachers || 0}
             />
           </Card>
         </Col>
-      </Row>
-      <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
-        <Col span={12}>
-          <Card title="O'quvchilar soni">
-            <Line 
-              data={stats?.studentGrowth || []} 
-              xField="date" 
-              yField="count"
-            />
-          </Card>
-        </Col>
-        <Col span={12}>
-          <Card title="To'lovlar statistikasi">
-            <Bar 
-              data={stats?.payments || []} 
-              xField="month" 
-              yField="amount"
+        <Col span={6}>
+          <Card>
+            <Statistic 
+              title="Bugungi Davomat" 
+              value={data?.todayAttendance || 0}
+              suffix="%"
             />
           </Card>
         </Col>
