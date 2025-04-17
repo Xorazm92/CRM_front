@@ -10,11 +10,9 @@ const Teachers = lazy(() => import("../pages/teachers"));
 const Groups = lazy(() => import("../pages/groups"));
 const Courses = lazy(() => import("../pages/courses"));
 const Attendance = lazy(() => import("../pages/attendance"));
-const StudentProfile = lazy(() => import("../pages/students/profile"));
-const Profile = lazy(() => import('../pages/profile'));
+const Payments = lazy(() => import("../pages/payments"));
 const Settings = lazy(() => import("../pages/settings"));
-const AdminUsers = lazy(() => import('../pages/admin-users'));
-const  ErrorBoundary= lazy(() => import("../components/ErrorBoundary"));
+const Profile = lazy(() => import("../pages/profile"));
 
 export const routes = [
   {
@@ -27,7 +25,7 @@ export const routes = [
   },
   {
     path: "/",
-    element: <AdminLayout />, // Layout always renders <Outlet />
+    element: <AdminLayout />,
     children: [
       {
         index: true,
@@ -38,11 +36,7 @@ export const routes = [
         element: <RoleChecker roles={["ADMIN", "MANAGER", "TEACHER"]}><Students /></RoleChecker>
       },
       {
-        path: "students/:id",
-        element: <RoleChecker roles={["ADMIN", "MANAGER", "TEACHER"]}><StudentProfile /></RoleChecker>
-      },
-      {
-        path: "teachers",
+        path: "teachers", 
         element: <RoleChecker roles={["ADMIN", "MANAGER"]}><Teachers /></RoleChecker>
       },
       {
@@ -58,12 +52,8 @@ export const routes = [
         element: <RoleChecker roles={["ADMIN", "MANAGER", "TEACHER"]}><Attendance /></RoleChecker>
       },
       {
-        path: "admin",
-        element: <RoleChecker roles={["ADMIN"]}><AdminUsers /></RoleChecker>
-      },
-      {
-        path: "admin-users",
-        element: <RoleChecker roles={["ADMIN"]}><AdminUsers /></RoleChecker>
+        path: "payments",
+        element: <RoleChecker roles={["ADMIN", "MANAGER"]}><Payments /></RoleChecker>
       },
       {
         path: "profile",
@@ -72,10 +62,6 @@ export const routes = [
       {
         path: "settings",
         element: <RoleChecker roles={["ADMIN", "MANAGER", "TEACHER", "STUDENT"]}><Settings /></RoleChecker>
-      },
-      {
-        path: '*',
-        element: <ErrorBoundary children={undefined} />
       }
     ]
   }
