@@ -1,64 +1,68 @@
-import { Card, Form, Input, Button, message } from 'antd';
-import { useAuthStore } from '../../store/useAuthStore';
-import { authService } from '../../services/auth';
+
+import React from 'react';
+import { Card, Form, Input, Button, Switch, Divider, message } from 'antd';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { profileService } from '../../services/profile';
 
 const Settings = () => {
-  const { user, setUser } = useAuthStore();
   const [form] = Form.useForm();
 
-  const onFinish = async (values: any) => {
-    try {
-      await authService.updateProfile(values);
-      setUser({ ...user, ...values });
-      message.success('Profile updated successfully');
-    } catch (error) {
-      message.error('Failed to update profile');
+  const { data: profile } = useQuery({
+    queryKey: ['profile'],
+    queryFn: profileService.getProfile
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: profileService.updateSettings,
+    onSuccess: () => {
+      message.success('Sozlamalar muvaffaqiyatli yangilandi');
     }
+  });
+
+  const onFinish = (values: any) => {
+    updateMutation.mutate(values);
   };
 
   return (
-    <div style={{ maxWidth: 600, margin: '0 auto' }}>
-      <Card title="Profile Settings">
-        <Form
-          form={form}
-          layout="vertical"
-          initialValues={{
-            full_name: user?.full_name,
-            username: user?.username
-          }}
-          onFinish={onFinish}
+    <Card title="Sozlamalar" style={{ maxWidth: 600, margin: '0 auto' }}>
+      <Form
+        form={form}
+        layout="vertical"
+        initialValues={profile?.settings}
+        onFinish={onFinish}
+      >
+        <Form.Item
+          label="Email xabarnomalar"
+          name="emailNotifications"
+          valuePropName="checked"
         >
-          <Form.Item
-            label="Full Name"
-            name="full_name"
-            rules={[{ required: true }]}
-          >
-            <Input />
-          </Form.Item>
+          <Switch />
+        </Form.Item>
 
-          <Form.Item
-            label="Username"
-            name="username"
-            rules={[{ required: true }]}
-          >
-            <Input />
-          </Form.Item>
+        <Divider />
 
-          <Form.Item
-            label="New Password"
-            name="password"
-          >
-            <Input.Password />
-          </Form.Item>
+        <Form.Item
+          label="Telefon raqam"
+          name="phone"
+          rules={[{ required: true, message: 'Iltimos telefon raqamingizni kiriting' }]}
+        >
+          <Input />
+        </Form.Item>
 
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              Save Changes
-            </Button>
-          </Form.Item>
-        </Form>
-      </Card>
-    </div>
+        <Form.Item
+          label="Telegram username"
+          name="telegram"
+        >
+          <Input />
+        </Form.Item>
+
+        <Form.Item>
+          <Button type="primary" htmlType="submit" loading={updateMutation.isPending}>
+            Saqlash
+          </Button>
+        </Form.Item>
+      </Form>
+    </Card>
   );
 };
 
