@@ -1,24 +1,44 @@
-// Barcha requestlar cookie bilan ishlaydi, token kerak emas
-// import { instance } from "../config/axios-instance";
-import { instance } from "../config/axios-instance";
 
-interface PaymentT {
-  id: string;
-  student_id: string;
+import axiosInstance from '../config/axios-instance';
+
+export interface Payment {
+  id: number;
+  studentId: number;
   amount: number;
-  payment_date: string;
+  paymentDate: string;
+  paymentType: 'cash' | 'card' | 'transfer';
   status: 'pending' | 'completed' | 'failed';
-  student: {
-    full_name: string;
-  };
+  description?: string;
 }
 
 export const paymentsService = {
-  // ... barcha requestlar instance orqali amalga oshiriladi
-  getAll: () => instance.get<PaymentT[]>("/payments"),
-  getByStudentId: (studentId: string) => instance.get<PaymentT[]>(`/payments/student/${studentId}`),
-  create: (data: Omit<PaymentT, "id">) => instance.post("/payments", data),
-  update: (id: string, data: Partial<PaymentT>) => 
-    instance.put(`/payments/${id}`, data),
-  delete: (id: string) => instance.delete(`/payments/${id}`),
+  getAll: async () => {
+    const response = await axiosInstance.get('/payments');
+    return response.data;
+  },
+
+  getById: async (id: number) => {
+    const response = await axiosInstance.get(`/payments/${id}`);
+    return response.data;
+  },
+
+  create: async (data: Partial<Payment>) => {
+    const response = await axiosInstance.post('/payments', data);
+    return response.data;
+  },
+
+  update: async (id: number, data: Partial<Payment>) => {
+    const response = await axiosInstance.put(`/payments/${id}`, data);
+    return response.data;
+  },
+
+  delete: async (id: number) => {
+    const response = await axiosInstance.delete(`/payments/${id}`);
+    return response.data;
+  },
+
+  getByStudent: async (studentId: number) => {
+    const response = await axiosInstance.get(`/students/${studentId}/payments`);
+    return response.data;
+  }
 };
