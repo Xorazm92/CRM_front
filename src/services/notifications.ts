@@ -1,33 +1,25 @@
 
-import axiosInstance from '../config/axios-instance';
+import { api } from '../config/axios-instance';
 
 export interface Notification {
   id: number;
   title: string;
   message: string;
-  type: 'info' | 'success' | 'warning' | 'error';
-  isRead: boolean;
+  read: boolean;
   createdAt: string;
 }
 
 export const notificationsService = {
-  getAll: async () => {
-    const response = await axiosInstance.get('/notifications');
-    return response.data;
+  getAll: async (): Promise<Notification[]> => {
+    const { data } = await api.get('/notifications');
+    return data;
   },
 
-  markAsRead: async (id: number) => {
-    const response = await axiosInstance.put(`/notifications/${id}/read`);
-    return response.data;
+  markAsRead: async (id: number): Promise<void> => {
+    await api.put(`/notifications/${id}/read`);
   },
 
-  markAllAsRead: async () => {
-    const response = await axiosInstance.put('/notifications/read-all');
-    return response.data;
-  },
-
-  delete: async (id: number) => {
-    const response = await axiosInstance.delete(`/notifications/${id}`);
-    return response.data;
+  markAllAsRead: async (): Promise<void> => {
+    await api.put('/notifications/read-all');
   }
 };
