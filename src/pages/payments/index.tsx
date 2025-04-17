@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
-import { Table, Button, Modal, Form, InputNumber, Select, DatePicker, message } from 'antd';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { paymentsService } from '../../services/payments';
-import { studentService } from '../../services/students';
 
-const Payments = () => {
+import React, { useState } from 'react';
+import { Table, Button, Modal, Form, Input, Select, InputNumber, message, Tag } from 'antd';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { paymentsService, Payment } from '../../services/payments';
+import { studentService } from '../../services/students';
+import { LoadingSpinner } from '../../components/LoadingSpinner';
+
+const PaymentsPage = () => {
   const [form] = Form.useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const queryClient = useQueryClient();
@@ -23,83 +25,139 @@ const Payments = () => {
     mutationFn: paymentsService.create,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['payments'] });
-      message.success("To'lov qo'shildi");
+      message.success("To'lov muvaffaqiyatli qo'shildi");
       setIsModalOpen(false);
       form.resetFields();
     }
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: paymentsService.delete,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['payments'] });
+      message.success("To'lov o'chirildi");
+    }
+  });
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return 'success';
+      case 'pending':
+        return 'warning';
+      case 'failed':
+        return 'error';
+      default:
+        return 'default';
+    }
+  };
+
   const columns = [
-    { 
+    {
       title: "O'quvchi",
-      dataIndex: ['student', 'full_name'], //Retaining original dataIndex for consistency
-      key: 'student',
-      render: (student) => student?.full_name || '' //Handling potential null values
+      dataIndex: ['student', 'firstName'],
+      render: (_: any, record: Payment) => 
+        `${record.student?.firstName} ${record.student?.lastName}`
     },
     {
       title: 'Summa',
       dataIndex: 'amount',
-      key: 'amount',
-      render: (amount: any) => `$${amount}`, //Retaining original rendering for currency format
+      render: (amount: number) => `${amount.toLocaleString()} so'm`
+    },
+    {
+      title: "To'lov turi",
+      dataIndex: 'paymentType',
+      render: (type: string) => type.toUpperCase()
+    },
+    {
+      title: 'Holat',
+      dataIndex: 'status',
+      render: (status: string) => (
+        <Tag color={getStatusColor(status)}>{status.toUpperCase()}</Tag>
+      )
     },
     {
       title: 'Sana',
-      dataIndex: 'payment_date', //Retaining original dataIndex
-      key: 'date',
-      render: (date: any) => date ? new Date(date).toLocaleDateString() : '' //Formatting date
+      dataIndex: 'createdAt',
+      render: (date: string) => new Date(date).toLocaleDateString()
     },
     {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
-      render: (status) => (
-        <span style={{ color: status === 'paid' ? 'green' : 'red' }}>
-          {status === 'paid' ? "To'langan" : "To'lanmagan"}
-        </span>
+      title: 'Amallar',
+      render: (_: any, record: Payment) => (
+        <Button danger onClick={() => deleteMutation.mutate(record.id)}>
+          O'chirish
+        </Button>
       )
     }
   ];
 
+  if (isLoading) return <LoadingSpinner />;
+
   return (
     <div>
-      <Button type="primary" onClick={() => setIsModalOpen(true)} style={{ marginBottom: 16 }}>
-        To'lov qo'shish
+      <Button 
+        type="primary" 
+        onClick={() => setIsModalOpen(true)} 
+        style={{ marginBottom: 16 }}
+      >
+        + Yangi to'lov
       </Button>
-      <Table
-        columns={columns}
-        dataSource={payments?.data} //Retaining original dataSource access
-        loading={isLoading}
+
+      <Table 
+        columns={columns} 
+        dataSource={payments} 
         rowKey="id"
       />
+
       <Modal
-        title="To'lov qo'shish"
+        title="Yangi to'lov qo'shish"
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         footer={null}
       >
-        <Form form={form} onFinish={() => createMutation.mutate(form.getFieldsValue())} layout="vertical"> {/* Using form.getFieldsValue for data submission */}
-          <Form.Item name="student_id" label="O'quvchi" rules={[{ required: true }]}>
-            <Select
-              placeholder="O'quvchini tanlang"
-              options={students?.data?.map(s => ({ 
-                value: s.id, 
-                label: `${s.full_name}` //Using full_name from original data
-              }))}
-            />
-          </Form.Item>
-          <Form.Item name="amount" label="Summa" rules={[{ required: true }]}>
-            <InputNumber style={{ width: '100%' }} />
-          </Form.Item>
-          <Form.Item name="payment_date" label="Sana" rules={[{ required: true }]}> {/* Using original field name */}
-            <DatePicker style={{ width: '100%' }} />
-          </Form.Item>
-          <Form.Item name="status" label="Status" rules={[{ required: true }]}> {/* Adding status field */}
-            <Select>
-              <Select.Option value="pending">Pending</Select.Option>
-              <Select.Option value="completed">Completed</Select.Option>
-              <Select.Option value="failed">Failed</Select.Option>
+        <Form form={form} onFinish={createMutation.mutate} layout="vertical">
+          <Form.Item
+            name="studentId"
+            label="O'quvchi"
+            rules={[{ required: true, message: "O'quvchini tanlang" }]}
+          >
+            <Select placeholder="O'quvchini tanlang">
+              {students?.map((student: any) => (
+                <Select.Option key={student.id} value={student.id}>
+                  {student.firstName} {student.lastName}
+                </Select.Option>
+              ))}
             </Select>
           </Form.Item>
+
+          <Form.Item
+            name="amount"
+            label="Summa"
+            rules={[{ required: true, message: "Summani kiriting" }]}
+          >
+            <InputNumber 
+              style={{ width: '100%' }}
+              formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+              parser={value => value!.replace(/\$\s?|(,*)/g, '')}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="paymentType"
+            label="To'lov turi"
+            rules={[{ required: true, message: "To'lov turini tanlang" }]}
+          >
+            <Select>
+              <Select.Option value="cash">Naqd</Select.Option>
+              <Select.Option value="card">Karta</Select.Option>
+              <Select.Option value="transfer">O'tkazma</Select.Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item name="description" label="Izoh">
+            <Input.TextArea />
+          </Form.Item>
+
           <Form.Item>
             <Button type="primary" htmlType="submit" loading={createMutation.isPending}>
               Saqlash
@@ -111,4 +169,4 @@ const Payments = () => {
   );
 };
 
-export default Payments;
+export default PaymentsPage;

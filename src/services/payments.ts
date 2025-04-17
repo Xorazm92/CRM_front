@@ -5,10 +5,14 @@ export interface Payment {
   id: number;
   studentId: number;
   amount: number;
-  paymentDate: string;
   paymentType: 'cash' | 'card' | 'transfer';
   status: 'pending' | 'completed' | 'failed';
   description?: string;
+  createdAt: string;
+  student?: {
+    firstName: string;
+    lastName: string;
+  };
 }
 
 export const paymentsService = {
@@ -39,6 +43,11 @@ export const paymentsService = {
 
   getByStudent: async (studentId: number) => {
     const response = await axiosInstance.get(`/students/${studentId}/payments`);
+    return response.data;
+  },
+
+  getStats: async () => {
+    const response = await axiosInstance.get('/payments/stats');
     return response.data;
   }
 };
