@@ -1,23 +1,20 @@
 
-import { instance } from "../config/axios-instance";
-import { message } from "antd";
+import { instance } from '../config/axios-instance';
+import { LoginDto, User } from '../types';
 
-export const login = async (username: string, password: string) => {
-  try {
-    const { data } = await instance.post("/auth/login", { username, password });
-    return data;
-  } catch (error: any) {
-    message.error(error?.response?.data?.message || "Xatolik yuz berdi");
-    throw error;
-  }
-};
-
-export const confirmPassword = async (password: string) => {
-  try {
-    const { data } = await instance.post("/auth/confirmPassword", { password });
-    return data;
-  } catch (error: any) {
-    message.error(error?.response?.data?.message || "Xatolik yuz berdi");
-    throw error;
+export const authService = {
+  login: (data: LoginDto) => 
+    instance.post<{token: string, user: User}>('/auth/login', data),
+    
+  confirmPassword: (password: string) =>
+    instance.post('/auth/confirmPassword', { password }),
+    
+  getMe: () => instance.post<User>('/auth/me'),
+  
+  refresh: () => instance.post('/auth/refresh'),
+  
+  logout: () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
   }
 };

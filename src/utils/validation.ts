@@ -1,10 +1,19 @@
 
-export const phoneRegex = /^\+998[0-9]{9}$/;
-export const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+import { Rule } from 'antd/lib/form';
 
-export const validationMessages = {
-  required: '${label} kiritilishi shart!',
-  phone: 'Telefon raqam +998 bilan boshlanishi va 12 ta raqamdan iborat bo\'lishi kerak',
-  password: 'Parol kamida 8 ta belgidan iborat bo\'lishi va kamida 1 ta harf va 1 ta raqam bo\'lishi kerak',
-  email: 'Email manzil noto\'g\'ri formatda',
+export const required: Rule = { required: true, message: 'Bu maydon to\'ldirilishi shart!' };
+
+export const phone: Rule = {
+  pattern: /^\+998[0-9]{9}$/,
+  message: 'Telefon raqam +998 bilan boshlanishi va 12 ta raqamdan iborat bo\'lishi kerak'
+};
+
+export const password: Rule = {
+  min: 6,
+  message: 'Parol kamida 6 ta belgidan iborat bo\'lishi kerak'
+};
+
+export const email: Rule = {
+  type: 'email',
+  message: 'Email manzil noto\'g\'ri formatda'
 };

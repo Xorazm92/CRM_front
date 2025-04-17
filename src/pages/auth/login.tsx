@@ -1,73 +1,42 @@
 import React from 'react';
-import { Form, Input, Button, Card, message } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { Form, Input, Button, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../../services/auth';
+import { required } from '../../utils/validation';
 import { useAuthStore } from '../../store/useAuthStore';
 
 const Login = () => {
   const navigate = useNavigate();
-  const setUser = useAuthStore(state => state.setUser);
-  const setToken = useAuthStore(state => state.setToken);
+  const setAuth = useAuthStore(state => state.setAuth);
+  const [form] = Form.useForm();
 
-  const onFinish = async (values: {username: string; password: string}) => {
+  const onFinish = async (values: any) => {
     try {
       const { data } = await authService.login(values);
-      const accessToken = data.access_token;
-      localStorage.setItem('token', accessToken);
-      setUser(data.user);
-      setToken(accessToken);
+      setAuth(data.token, data.user);
       navigate('/');
-      message.success('Tizimga muvaffaqiyatli kirdingiz!');
-    } catch (err) {
-      message.error('Login yoki parol xato!');
+    } catch (error: any) {
+      message.error(error?.response?.data?.message || 'Xatolik yuz berdi');
     }
   };
 
   return (
     <div className="login-page">
-      <div style={{ 
-        minHeight: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        background: '#f0f2f5'
-      }}>
-        <Card style={{ width: 400, borderRadius: 20, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-          <h1 style={{ textAlign: 'center', fontSize: 24, marginBottom: 30 }} className="login-title">CRM Tizimiga Kirish</h1>
-          <Form
-            name="login"
-            onFinish={onFinish}
-            layout="vertical"
-            className="login-form"
-          >
-            <Form.Item
-              name="username"
-              rules={[{ required: true, message: 'Loginni kiriting!' }]}
-            >
-              <Input 
-                prefix={<UserOutlined />}
-                placeholder="Login"
-                size="large"
-              />
-            </Form.Item>
-            <Form.Item
-              name="password"
-              rules={[{ required: true, message: 'Parolni kiriting!' }]}
-            >
-              <Input.Password
-                prefix={<LockOutlined />}
-                placeholder="Parol"
-                size="large"
-              />
-            </Form.Item>
-            <Form.Item>
-              <Button type="primary" htmlType="submit" block size="large">
-                Kirish
-              </Button>
-            </Form.Item>
-          </Form>
-        </Card>
+      <div className="login-container">
+        <h1 className="login-title">Tizimga kirish</h1>
+        <Form form={form} onFinish={onFinish} layout="vertical">
+          <Form.Item name="username" label="Username" rules={[required]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="password" label="Parol" rules={[required]}>
+            <Input.Password />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" block>
+              Kirish
+            </Button>
+          </Form.Item>
+        </Form>
       </div>
     </div>
   );
