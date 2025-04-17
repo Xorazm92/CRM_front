@@ -1,4 +1,4 @@
-
+// Student profile page. Use this for showing a single student's details.
 import React from 'react';
 import { Card, Descriptions, Tabs, Table, Tag } from 'antd';
 import { useParams } from 'react-router-dom';

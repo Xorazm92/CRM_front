@@ -2,11 +2,11 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 interface DataT {
-  logout(): unknown;
-  user: UserT;
   token: string | null;
+  setToken: (token: string | null) => void;
+  logout(): unknown;
+  user: UserT | null;
   setUser: (user: UserT) => void;
-  setToken: (token: string) => void;
 }
 interface UserT {
   full_name?: string;
@@ -18,14 +18,14 @@ interface UserT {
 export const useAuthStore = create<DataT>()(
   persist(
     (set) => ({
-      user: {},
+      user: null,
+      setUser: (user: UserT) => set({ user }),
       token: null,
-      setUser: (user: UserT) => set({ user: user }),
-      setToken: (token: string) => set({ token }),
-      logout: () => set({ user: {}, token: null }),
+      setToken: (token: string | null) => set({ token }),
+      logout: () => set({ user: null, token: null }),
     }),
     {
-      name: "auth",
+      name: "auth-user", 
     }
   )
 );

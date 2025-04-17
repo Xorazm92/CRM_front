@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Table, Button, Modal, Form, Input, Space, message } from 'antd';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { teachersService } from '../../services/teachers';

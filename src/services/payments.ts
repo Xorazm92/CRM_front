@@ -1,3 +1,5 @@
+// Barcha requestlar cookie bilan ishlaydi, token kerak emas
+// import { instance } from "../config/axios-instance";
 import { instance } from "../config/axios-instance";
 
 interface PaymentT {
@@ -12,6 +14,7 @@ interface PaymentT {
 }
 
 export const paymentsService = {
+  // ... barcha requestlar instance orqali amalga oshiriladi
   getAll: () => instance.get<PaymentT[]>("/payments"),
   getByStudentId: (studentId: string) => instance.get<PaymentT[]>(`/payments/student/${studentId}`),
   create: (data: Omit<PaymentT, "id">) => instance.post("/payments", data),

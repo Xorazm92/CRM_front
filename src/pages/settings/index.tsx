@@ -23,8 +23,8 @@ const Settings = () => {
           form={form}
           layout="vertical"
           initialValues={{
-            full_name: user.full_name,
-            username: user.username
+            full_name: user?.full_name,
+            username: user?.username
           }}
           onFinish={onFinish}
         >

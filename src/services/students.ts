@@ -7,6 +7,10 @@ export interface AttendanceT {
   note?: string;
 }
 
+// Barcha requestlar cookie bilan ishlaydi, token kerak emas
+// import { instance } from "../config/axios-instance";
+// ... barcha requestlar instance orqali amalga oshiriladi
+
 export const studentService = {
   getAll: async () => {
     const { data } = await axiosInstance.get('/students');

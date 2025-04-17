@@ -1,117 +1,82 @@
+import { lazy } from "react";
 import RoleChecker from "../components/RoleChecker";
-import Login from "../pages/auth/login";
-import Register from "../pages/auth/Register";
-import Dashboard from "../pages/dashboard";
-import Students from "../pages/students";
-import Teachers from "../pages/teachers";
-import Settings from "../pages/settings";
-import Admin from "../pages/admin";
-import Groups from "../pages/groups";
-import Courses from "../pages/courses";
-import Attendance from "../pages/attendance"; // Import the Attendance component
-import StudentProfile from "../pages/students/profile"; // Import the StudentProfile component
+import NotAuthorized from "../pages/NotAuthorized";
+import AdminLayout from '../components/layout/AdminLayout';
 
-interface RouteT {
-    path: string;
-    element: React.ReactNode;
-    children?: ChildrenT[]
-}
-interface ChildrenT {
-    index?: boolean;
-    path?: string;
-    element: React.ReactNode
-}
-export const routes: RouteT[] = [
-    {
-        path: "/login",
-        element: <Login />
-    },
-    {
-        path: "/register",
-        element: <Register />
-    },
+const Login = lazy(() => import("../pages/auth/login"));
+const Dashboard = lazy(() => import("../pages/dashboard"));
+const Students = lazy(() => import("../pages/students"));
+const Teachers = lazy(() => import("../pages/teachers"));
+const Groups = lazy(() => import("../pages/groups"));
+const Courses = lazy(() => import("../pages/courses"));
+const Attendance = lazy(() => import("../pages/attendance"));
+const StudentProfile = lazy(() => import("../pages/students/profile"));
+const Profile = lazy(() => import('../pages/profile'));
+const Settings = lazy(() => import("../pages/settings"));
+const AdminUsers = lazy(() => import('../pages/admin-users'));
+const  ErrorBoundary= lazy(() => import("../components/ErrorBoundary"));
 
-    {
-        path: "/",
-        element: <RoleChecker roles={["MANAGER", "ADMIN", "TEACHER", "STUDENT"]} />,
-        children: [
-
-            {
-                index: true,
-                element: <Dashboard />
-            },
-            {
-                path: "groups",
-                element: <Groups />
-            },
-            {
-                path: "courses",
-                element: <Courses />
-            },
-            {
-                path: "settings",
-                element: <Settings />
-            },
-        ]
-    },
-    {  
-        path: "/teachers/",
-        element: <RoleChecker roles={["TEACHER"]} />,
-        children: [
-
-            {
-                index: true,
-                element: <Dashboard />
-            },
-            {
-                path: "groups",
-                element: <Groups />
-            },
-            {
-                path: "attendance", // Added attendance route for teachers
-                element: <Attendance />
-            },
-            {
-                path: "courses",
-                element: <Courses />
-            },
-            {
-                path: "settings",
-                element: <Settings />
-            },
-        ]
-    },
-    {
-
-        path: "/student/",
-        element: <RoleChecker roles={["STUDENT"]} />,
-        children: [
-
-            {
-                path: "groups",
-                element: <Groups />
-            },
-            {
-                path: "attendance", // Added attendance route for students
-                element: <Attendance />
-            },
-            {
-                path: "courses",
-                element: <Courses />
-            },
-            {
-                path: "settings",
-                element: <Settings />
-            },
-            {
-                path: "students",
-                element: <Students />
-            },
-            {
-                path: "students/profile/:id",
-                element: <StudentProfile />
-            },
-
-        ]
-    }
-]
+export const routes = [
+  {
+    path: "/login",
+    element: <Login />
+  },
+  {
+    path: "/not-authorized",
+    element: <NotAuthorized />
+  },
+  {
+    path: "/",
+    element: <AdminLayout />, // Layout always renders <Outlet />
+    children: [
+      {
+        index: true,
+        element: <RoleChecker roles={["ADMIN", "MANAGER", "TEACHER", "STUDENT"]}><Dashboard /></RoleChecker>
+      },
+      {
+        path: "students",
+        element: <RoleChecker roles={["ADMIN", "MANAGER", "TEACHER"]}><Students /></RoleChecker>
+      },
+      {
+        path: "students/:id",
+        element: <RoleChecker roles={["ADMIN", "MANAGER", "TEACHER"]}><StudentProfile /></RoleChecker>
+      },
+      {
+        path: "teachers",
+        element: <RoleChecker roles={["ADMIN", "MANAGER"]}><Teachers /></RoleChecker>
+      },
+      {
+        path: "groups",
+        element: <RoleChecker roles={["ADMIN", "MANAGER", "TEACHER"]}><Groups /></RoleChecker>
+      },
+      {
+        path: "courses",
+        element: <RoleChecker roles={["ADMIN", "MANAGER", "TEACHER"]}><Courses /></RoleChecker>
+      },
+      {
+        path: "attendance",
+        element: <RoleChecker roles={["ADMIN", "MANAGER", "TEACHER"]}><Attendance /></RoleChecker>
+      },
+      {
+        path: "admin",
+        element: <RoleChecker roles={["ADMIN"]}><AdminUsers /></RoleChecker>
+      },
+      {
+        path: "admin-users",
+        element: <RoleChecker roles={["ADMIN"]}><AdminUsers /></RoleChecker>
+      },
+      {
+        path: "profile",
+        element: <RoleChecker roles={["ADMIN", "MANAGER", "TEACHER", "STUDENT"]}><Profile /></RoleChecker>
+      },
+      {
+        path: "settings",
+        element: <RoleChecker roles={["ADMIN", "MANAGER", "TEACHER", "STUDENT"]}><Settings /></RoleChecker>
+      },
+      {
+        path: '*',
+        element: <ErrorBoundary children={undefined} />
+      }
+    ]
+  }
+];

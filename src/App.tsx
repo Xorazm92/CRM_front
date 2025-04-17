@@ -1,36 +1,35 @@
-import React from 'react';
+// Ilovaning asosiy komponenti (App)
 import { ConfigProvider } from 'antd';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import AdminLayout from './components/layout/AdminLayout';
+import { Routes, Route } from 'react-router-dom';
 import Login from './pages/auth/login';
-import Register from './pages/auth/Register';
+// import Register from './pages/auth/Register';
 import Dashboard from './pages/dashboard';
-import Teachers from './pages/teacher';
-import Students from './pages/student';
-import AdminUsers from './pages/admin';
+import Teachers from './pages/teachers';
+import Students from './pages/students';
+import AdminUsers from './pages/admin-users';
+import AuthInitializer from './AuthInitializer';
 
-function PrivateRoute({ children }) {
-  const token = localStorage.getItem('token');
-  return token ? children : <Navigate to="/login" />;
-}
+// PrivateRoute va Outlet olib tashlandi, login sahifasi ochiq
 
 const App = () => {
   return (
     <ConfigProvider>
+      {/* AuthInitializer - dastur yuklanganda autentifikatsiyani tekshiradi */}
+      <AuthInitializer />
       <Routes>
+        {/* Login sahifasi ochiq, hech qanday PrivateRoute yoki RoleChecker yo'q */}
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route
-          path="/"
-          element={
-            <PrivateRoute>
-              <AdminLayout />
-            </PrivateRoute>
-          }
-        >
+        {/* Dashboard sahifasi */}
+        <Route path="/dashboard" element={<Dashboard />} />
+        {/* Faqat login bo'lganlar uchun asosiy layout va marshrutlar */}
+        <Route path="/">
+          {/* Asosiy sahifa (dashboard) */}
           <Route index element={<Dashboard />} />
+          {/* O'qituvchilar sahifasi */}
           <Route path="teachers" element={<Teachers />} />
+          {/* O'quvchilar sahifasi */}
           <Route path="students" element={<Students />} />
+          {/* Admin foydalanuvchilar sahifasi */}
           <Route path="admin" element={<AdminUsers />} />
         </Route>
       </Routes>

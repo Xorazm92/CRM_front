@@ -1,3 +1,4 @@
+// Students list page. Use this for showing all students.
 import React, { useState } from 'react';
 import { Table, Button, Modal, Form, Input, message, Select } from 'antd';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import { Table, Space, Button, Modal, Form, Input, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 
@@ -13,10 +13,14 @@ const Admin = () => {
 
   const fetchAdmins = async () => {
     try {
-      const response = await fetch('/api/admin');
+      console.log('Fetching admins...');
+      const response = await fetch('http://localhost:3000/api/v1/admin');
+      console.log(response);
+      
       const data = await response.json();
       setAdmins(data);
     } catch (error) {
+      console.log(error);
       message.error('Failed to fetch admins');
     }
   };
@@ -38,9 +42,9 @@ const Admin = () => {
       render: (_: any, record: { id: any; }) => (
         <Space>
           <Button type="link">Tahrirlash</Button>
-          <Button 
-            type="link" 
-            danger 
+          <Button
+            type="link"
+            danger
             onClick={() => handleDelete(record.id)}
           >
             O'chirish
@@ -83,7 +87,7 @@ const Admin = () => {
         Add New Admin
       </Button>
       <Table columns={columns} dataSource={admins} rowKey="id" />
-      
+
       <Modal
         title="Add/Edit Admin"
         open={isModalVisible}

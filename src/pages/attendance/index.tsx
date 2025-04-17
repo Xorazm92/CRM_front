@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Table, DatePicker, Select, Card, Row, Col, Typography } from 'antd';
 import { useQuery } from '@tanstack/react-query';
 import { groupsService } from '../../services/groups';

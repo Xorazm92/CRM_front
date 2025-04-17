@@ -1,3 +1,6 @@
+// {{ ... }}
+// This page is deprecated. Please use students/index.tsx for students list or students/profile/[id].tsx for profile.
+// {{ ... }}
 
 import { useState, useEffect } from 'react';
 import { Table, Space, Button, Modal, Form, Input, message } from 'antd';

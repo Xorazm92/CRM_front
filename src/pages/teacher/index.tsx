@@ -1,5 +1,6 @@
+// This page is deprecated. Please use teachers/index.tsx for teachers list or teachers/[id].tsx for profile.
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Table, Space, Button, Modal, Form, Input, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 

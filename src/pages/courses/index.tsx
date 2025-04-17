@@ -1,12 +1,19 @@
-
-import { Table, Button, Modal, Form, Input, message } from 'antd';
+import { Table, Button, Modal, Form, Input, Space, message } from 'antd';
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { courseService } from '../../services/courses';
 
+interface Course {
+  id: number;
+  name: string;
+  duration: string;
+  price: number;
+}
+
 const CoursesPage = () => {
   const [form] = Form.useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingCourse, setEditingCourse] = useState<Course | null>(null);
   const queryClient = useQueryClient();
 
   const { data: courses, isLoading } = useQuery({
@@ -27,6 +34,17 @@ const CoursesPage = () => {
     }
   });
 
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: number, data: any }) => courseService.updat(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['courses'] });
+      message.success("Kurs muvaffaqiyatli tahrirlandi");
+      setIsModalOpen(false);
+      setEditingCourse(null);
+      form.resetFields();
+    }
+  });
+
   const deleteMutation = useMutation({
     mutationFn: courseService.delete,
     onSuccess: () => {
@@ -35,16 +53,41 @@ const CoursesPage = () => {
     }
   });
 
+  const handleAdd = () => {
+    setEditingCourse(null);
+    form.resetFields();
+    setIsModalOpen(true);
+  };
+
+  const handleEdit = (course: Course) => {
+    setEditingCourse(course);
+    form.setFieldsValue(course);
+    setIsModalOpen(true);
+  };
+
+  const handleSubmit = (values: any) => {
+    if (editingCourse) {
+      updateMutation.mutate({ id: editingCourse.id, data: values });
+    } else {
+      createMutation.mutate(values);
+    }
+  };
+
   const columns = [
     { title: 'Nomi', dataIndex: 'name' },
     { title: 'Davomiyligi', dataIndex: 'duration' },
     { title: 'Narxi', dataIndex: 'price' },
     {
       title: 'Amallar',
-      render: (_: any, record: { id: number; }) => (
-        <Button danger onClick={() => deleteMutation.mutate(record.id)}>
-          O'chirish
-        </Button>
+      render: (_: any, record: Course) => (
+        <Space>
+          <Button type="primary" onClick={() => handleEdit(record)}>
+            Tahrirlash
+          </Button>
+          <Button danger onClick={() => deleteMutation.mutate(record.id)}>
+            O'chirish
+          </Button>
+        </Space>
       )
     }
   ];
@@ -53,7 +96,7 @@ const CoursesPage = () => {
     <div>
       <Button 
         type="primary" 
-        onClick={() => setIsModalOpen(true)} 
+        onClick={handleAdd} 
         style={{ marginBottom: 16 }}
       >
         Yangi kurs qo'shish
@@ -67,29 +110,40 @@ const CoursesPage = () => {
       />
 
       <Modal 
-        title="Yangi kurs"
+        title={editingCourse ? "Kursni tahrirlash" : "Yangi kurs"}
         open={isModalOpen}
-        onOk={form.submit}
-        onCancel={() => setIsModalOpen(false)}
+        onCancel={() => { setIsModalOpen(false); setEditingCourse(null); }}
+        footer={null}
       >
-        <Form form={form} onFinish={createMutation.mutate}>
+        <Form form={form} onFinish={handleSubmit} layout="vertical">
           <Form.Item 
             name="name" 
+            label="Kurs nomi"
             rules={[{ required: true, message: "Kurs nomini kiriting" }]}
           >
             <Input placeholder="Kurs nomi" />
           </Form.Item>
           <Form.Item 
             name="duration" 
+            label="Davomiyligi"
             rules={[{ required: true, message: "Davomiyligini kiriting" }]}
           >
             <Input placeholder="Davomiyligi" />
           </Form.Item>
           <Form.Item 
             name="price" 
+            label="Narxi"
             rules={[{ required: true, message: "Narxini kiriting" }]}
           >
             <Input type="number" placeholder="Narxi" />
+          </Form.Item>
+          <Form.Item>
+            <Space>
+              <Button type="primary" htmlType="submit">
+                {editingCourse ? 'Tahrirlash' : "+ Qo'shish"}
+              </Button>
+              <Button onClick={() => { setIsModalOpen(false); setEditingCourse(null); }}>Bekor qilish</Button>
+            </Space>
           </Form.Item>
         </Form>
       </Modal>

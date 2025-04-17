@@ -1,5 +1,8 @@
-
 import { instance as axiosInstance } from "../config/axios-instance";
+
+// Barcha requestlar cookie bilan ishlaydi, token kerak emas
+// import { instance } from "../config/axios-instance";
+// ... barcha requestlar instance orqali amalga oshiriladi
 
 interface TeacherT {
   id: string;

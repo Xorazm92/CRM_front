@@ -1,6 +1,8 @@
-
+// React va kerakli hooklarni import qilamiz
 import React, { useState } from 'react';
+// Ant Design komponentlari va hooklarini import qilamiz
 import { Layout, Menu, theme, Button, Avatar, Dropdown } from 'antd';
+// Ant Design ikonlarini import qilamiz
 import { 
   MenuFoldOutlined, 
   MenuUnfoldOutlined,
@@ -11,30 +13,34 @@ import {
   LogoutOutlined,
   SettingOutlined
 } from '@ant-design/icons';
+// Router uchun kerakli hooklar va komponentlar
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 
-const { Header, Sider, Content } = Layout;
+const { Header, Sider, Content } = Layout; // Layoutdan Header, Sider va Content qismlarini ajratib olamiz
 
+// DashboardLayout - CRM tizimining asosiy boshqaruv paneli uchun layout
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
-  const [collapsed, setCollapsed] = useState(false);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { token: { colorBgContainer, borderRadiusLG } } = theme.useToken();
+  const [collapsed, setCollapsed] = useState(false); // Yon panelni yopiq/ochiq holatini saqlaydi
+  const navigate = useNavigate(); // Navigatsiya uchun
+  const location = useLocation(); // Joriy sahifa yo'lini olish uchun
+  const { token: { colorBgContainer, borderRadiusLG } } = theme.useToken(); // Ant Design mavzusi uchun tokenlar
 
+  // Logout funksiyasi - tokenni o'chirib, login sahifasiga yo'naltiradi
   const handleLogout = () => {
     localStorage.removeItem('token');
     navigate('/login');
   };
 
+  // Foydalanuvchi uchun ochiladigan menyu
   const userMenu = [
     {
       key: 'settings',
-      icon: <SettingOutlined />,
+      icon: <SettingOutlined />, // Sozlamalar
       label: 'Settings',
     },
     {
       key: 'logout',
-      icon: <LogoutOutlined />,
+      icon: <LogoutOutlined />, // Chiqish
       label: 'Logout',
       onClick: handleLogout,
     },
@@ -42,6 +48,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <Layout>
+      {/* Yon panel (Sider) */}
       <Sider trigger={null} collapsible collapsed={collapsed} width={260}>
         <div className="logo" style={{ 
           height: 64, 
@@ -53,8 +60,9 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
           color: '#fff',
           fontSize: '20px'
         }}>
-          {!collapsed && 'CRM System'}
+          {!collapsed && 'CRM System'} {/* Yon panel ochiq bo'lsa nomi chiqadi */}
         </div>
+        {/* Yon panel menyusi */}
         <Menu
           theme="dark"
           mode="inline"
@@ -62,38 +70,39 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
           items={[
             {
               key: '/dashboard',
-              icon: <DashboardOutlined />,
+              icon: <DashboardOutlined />, // Dashboard
               label: <Link to="/dashboard">Dashboard</Link>,
             },
             {
               key: '/teachers',
-              icon: <TeamOutlined />,
+              icon: <TeamOutlined />, // O'qituvchilar
               label: <Link to="/teachers">Teachers</Link>,
             },
             {
               key: '/students',
-              icon: <UserOutlined />,
+              icon: <UserOutlined />, // O'quvchilar
               label: <Link to="/students">Students</Link>,
             },
             {
               key: '/courses',
-              icon: <BookOutlined />,
+              icon: <BookOutlined />, // Kurslar
               label: <Link to="/courses">Courses</Link>,
             },
             {
               key: '/groups',
-              icon: <TeamOutlined />,
+              icon: <TeamOutlined />, // Guruhlar
               label: <Link to="/groups">Groups</Link>,
             },
             {
               key: '/admin',
-              icon: <SettingOutlined />,
+              icon: <SettingOutlined />, // Adminlar
               label: <Link to="/admin">Admin Users</Link>,
             },
           ]}
         />
       </Sider>
       <Layout>
+        {/* Yuqori panel (Header) */}
         <Header style={{ 
           padding: '0 24px', 
           background: colorBgContainer,
@@ -101,15 +110,18 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
           alignItems: 'center',
           justifyContent: 'space-between',
         }}>
+          {/* Yon panelni ochish/yopish tugmasi */}
           <Button
             type="text"
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />} // Ikon o'zgaradi
             onClick={() => setCollapsed(!collapsed)}
           />
+          {/* Foydalanuvchi avatari va menyusi */}
           <Dropdown menu={{ items: userMenu }} placement="bottomRight">
             <Avatar style={{ cursor: 'pointer' }} icon={<UserOutlined />} />
           </Dropdown>
         </Header>
+        {/* Asosiy kontent qismi */}
         <Content style={{
           margin: '24px 16px',
           padding: 24,
@@ -117,7 +129,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
           background: colorBgContainer,
           borderRadius: borderRadiusLG,
         }}>
-          {children}
+          {children} {/* Ichki sahifalar shu yerda ko'rsatiladi */}
         </Content>
       </Layout>
     </Layout>

@@ -1,3 +1,5 @@
+// This page is deprecated. Please use groups/index.tsx for groups list or groups/[id].tsx for profile.
+
 import { useState, useEffect } from 'react';
 import { Table, Space, Button, Modal, Form, Input, message } from 'antd';
 import { TeamOutlined } from '@ant-design/icons';
