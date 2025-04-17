@@ -8,15 +8,15 @@ import { useAuthStore } from '../../store/useAuthStore';
 const Login = () => {
   const navigate = useNavigate();
   const setUser = useAuthStore(state => state.setUser);
-  const setToken = useAuthStore(state => state.setToken); // Added setToken
+  const setToken = useAuthStore(state => state.setToken);
 
   const onFinish = async (values: {username: string; password: string}) => {
     try {
       const { data } = await authService.login(values);
-      const accessToken = data.access_token; // Extract accessToken
-      localStorage.setItem('token', accessToken); // Use accessToken
+      const accessToken = data.access_token;
+      localStorage.setItem('token', accessToken);
       setUser(data.user);
-      setToken(accessToken); // Set the token in the store
+      setToken(accessToken);
       navigate('/');
       message.success('Tizimga muvaffaqiyatli kirdingiz!');
     } catch (err) {
@@ -25,47 +25,50 @@ const Login = () => {
   };
 
   return (
-    <div style={{ 
-      minHeight: '100vh',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      background: '#f0f2f5'
-    }}>
-      <Card style={{ width: 400, borderRadius: 20, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-        <h1 style={{ textAlign: 'center', fontSize: 24, marginBottom: 30 }}>CRM Tizimiga Kirish</h1>
-        <Form
-          name="login"
-          onFinish={onFinish}
-          layout="vertical"
-        >
-          <Form.Item
-            name="username"
-            rules={[{ required: true, message: 'Loginni kiriting!' }]}
+    <div className="login-page">
+      <div style={{ 
+        minHeight: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        background: '#f0f2f5'
+      }}>
+        <Card style={{ width: 400, borderRadius: 20, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+          <h1 style={{ textAlign: 'center', fontSize: 24, marginBottom: 30 }} className="login-title">CRM Tizimiga Kirish</h1>
+          <Form
+            name="login"
+            onFinish={onFinish}
+            layout="vertical"
+            className="login-form"
           >
-            <Input 
-              prefix={<UserOutlined />}
-              placeholder="Login"
-              size="large"
-            />
-          </Form.Item>
-          <Form.Item
-            name="password"
-            rules={[{ required: true, message: 'Parolni kiriting!' }]}
-          >
-            <Input.Password
-              prefix={<LockOutlined />}
-              placeholder="Parol"
-              size="large"
-            />
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit" block size="large">
-              Kirish
-            </Button>
-          </Form.Item>
-        </Form>
-      </Card>
+            <Form.Item
+              name="username"
+              rules={[{ required: true, message: 'Loginni kiriting!' }]}
+            >
+              <Input 
+                prefix={<UserOutlined />}
+                placeholder="Login"
+                size="large"
+              />
+            </Form.Item>
+            <Form.Item
+              name="password"
+              rules={[{ required: true, message: 'Parolni kiriting!' }]}
+            >
+              <Input.Password
+                prefix={<LockOutlined />}
+                placeholder="Parol"
+                size="large"
+              />
+            </Form.Item>
+            <Form.Item>
+              <Button type="primary" htmlType="submit" block size="large">
+                Kirish
+              </Button>
+            </Form.Item>
+          </Form>
+        </Card>
+      </div>
     </div>
   );
 };
