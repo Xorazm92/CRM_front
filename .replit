@@ -6,7 +6,6 @@ channel = "stable-24_05"
 
 [deployment]
 run = ["sh", "-c", "npm run dev"]
-build = ["sh", "-c", "npm run build"]
 
 [workflows]
 runButton = "Dev"
@@ -19,3 +18,7 @@ mode = "sequential"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run dev"
+
+[[ports]]
+localPort = 5000
+externalPort = 80
