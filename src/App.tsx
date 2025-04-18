@@ -16,7 +16,7 @@ const App = () => {
   return (
     <ConfigProvider>
       {/* AuthInitializer - dastur yuklanganda autentifikatsiyani tekshiradi */}
-      <AuthInitializer />
+      <AuthInitializer children={undefined}/>
       <Routes>
         {/* Login sahifasi ochiq, hech qanday PrivateRoute yoki RoleChecker yo'q */}
         <Route path="/login" element={<Login />} />

@@ -2,6 +2,7 @@ import { lazy } from "react";
 import RoleChecker from "../components/RoleChecker";
 import NotAuthorized from "../pages/NotAuthorized";
 import AdminLayout from '../components/layout/AdminLayout';
+import React from "react";
 
 const Login = lazy(() => import("../pages/auth/login"));
 const Dashboard = lazy(() => import("../pages/dashboard"));

@@ -1,7 +1,7 @@
 import { instance } from '../config/axios-instance';
 
 export const attendanceService = {
-  getAll: async () => {
+  getAll: async (p0?: { date: Date; groupId: null; }) => {
     const res = await instance.get('/attendance');
     return res.data;
   },

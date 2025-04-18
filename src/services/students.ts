@@ -1,4 +1,3 @@
-
 import axiosInstance from '../config/axios-instance';
 
 export interface AttendanceT {
@@ -9,30 +8,22 @@ export interface AttendanceT {
 }
 
 export const studentService = {
-  getAll: () => axiosInstance.get('/api/v1/students'),
-
-  getById: (id: string) => axiosInstance.get(`/api/v1/students/${id}`),
-
-  getProfile: (id: string) => axiosInstance.get(`/api/v1/students/${id}/profile`),
-
+  getAll: () => axiosInstance.get('/students'),
+  getById: (id: string) => axiosInstance.get(`/students/${id}`),
+  getProfile: (id: string) => axiosInstance.get(`/students/${id}/profile`),
+  create: (data: any) => axiosInstance.post('/students', data),
+  update: (id: string, data: any) => axiosInstance.put(`/students/${id}`, data),
+  delete: (id: string) => axiosInstance.delete(`/students/${id}`),
   getPayments: async (id: string) => {
-    const { data } = await axiosInstance.get(`/api/v1/students/${id}/payments`);
+    const { data } = await axiosInstance.get(`/students/${id}/payments`);
     return data;
   },
-
   getAttendance: async (id: string) => {
-    const { data } = await axiosInstance.get(`/api/v1/students/${id}/attendance`);
+    const { data } = await axiosInstance.get(`/students/${id}/attendance`);
     return data;
   },
-
   getGrades: async (id: string) => {
-    const { data } = await axiosInstance.get(`/api/v1/students/${id}/grades`);
+    const { data } = await axiosInstance.get(`/students/${id}/grades`);
     return data;
   },
-
-  create: (data: any) => axiosInstance.post('/api/v1/students', data),
-
-  update: (id: string, data: any) => axiosInstance.patch(`/api/v1/students/${id}`, data),
-
-  delete: (id: string) => axiosInstance.delete(`/api/v1/students/${id}`)
 };

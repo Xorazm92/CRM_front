@@ -5,6 +5,7 @@ import { Card, Form, Input, Button, message } from 'antd';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { getProfile, updateProfile } from '../services/profile';
 import { useEffect } from 'react';
+import React from 'react';
 
 const Profile = () => {
   const [form] = Form.useForm();

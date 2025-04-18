@@ -1,4 +1,3 @@
-
 import axiosInstance from '../config/axios-instance';
 
 export interface Group {
@@ -13,41 +12,19 @@ export interface Group {
 }
 
 export const groupsService = {
-  getAll: async () => {
-    const response = await axiosInstance.get('/groups');
-    return response.data;
-  },
-
-  getById: async (id: number) => {
-    const response = await axiosInstance.get(`/groups/${id}`);
-    return response.data;
-  },
-
-  create: async (data: Partial<Group>) => {
-    const response = await axiosInstance.post('/groups', data);
-    return response.data;
-  },
-
-  update: async (id: number, data: Partial<Group>) => {
-    const response = await axiosInstance.put(`/groups/${id}`, data);
-    return response.data;
-  },
-
-  delete: async (id: number) => {
-    const response = await axiosInstance.delete(`/groups/${id}`);
-    return response.data;
-  },
-
+  getAll: () => axiosInstance.get('/groups'),
+  getById: (id: string) => axiosInstance.get(`/groups/${id}`),
+  create: (data: any) => axiosInstance.post('/groups', data),
+  update: (id: string, data: any) => axiosInstance.put(`/groups/${id}`, data),
+  delete: (id: string) => axiosInstance.delete(`/groups/${id}`),
   getStudents: async (id: number) => {
     const response = await axiosInstance.get(`/groups/${id}/students`);
     return response.data;
   },
-
   addStudent: async (groupId: number, studentId: number) => {
     const response = await axiosInstance.post(`/groups/${groupId}/students`, { studentId });
     return response.data;
   },
-
   removeStudent: async (groupId: number, studentId: number) => {
     const response = await axiosInstance.delete(`/groups/${groupId}/students/${studentId}`);
     return response.data;

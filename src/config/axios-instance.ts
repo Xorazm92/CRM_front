@@ -1,8 +1,7 @@
-
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: '/api/v1',
+  baseURL: 'http://localhost:3000/api/v1',
   timeout: 15000,
 });
 
@@ -24,10 +23,10 @@ axiosInstance.interceptors.response.use(
       try {
         const refreshToken = localStorage.getItem('refreshToken');
         if (refreshToken) {
-          const { data } = await axios.post('/api/v1/auth/refresh', { refreshToken });
+          const { data } = await axios.post('http://localhost:3000/api/v1/auth/refresh', { refreshToken });
           localStorage.setItem('token', data.token);
           error.config.headers.Authorization = `Bearer ${data.token}`;
-          return axios(error.config);
+          return axiosInstance(error.config);
         }
       } catch {
         localStorage.removeItem('token');

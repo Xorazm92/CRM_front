@@ -1,24 +1,28 @@
-
 import axiosInstance from '../config/axios-instance';
 
 export const authService = {
   login: async (data: { username: string; password: string }) => {
-    const response = await axiosInstance.post('/api/v1/auth/login', data);
+    const response = await axiosInstance.post('/auth/login', data);
     return response.data;
   },
 
   confirmPassword: async (data: { password: string }) => {
-    const response = await axiosInstance.post('/api/v1/auth/confirmPassword', data);
+    const response = await axiosInstance.post('/auth/confirmPassword', data);
     return response.data;
   },
 
   getMe: async () => {
-    const response = await axiosInstance.get('/api/v1/auth/me');
+    const response = await axiosInstance.get('/auth/me');
     return response.data;
   },
 
-  refresh: async () => {
-    const response = await axiosInstance.post('/api/v1/auth/refresh');
+  logout: () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
+  },
+
+  refresh: async (refreshToken: string) => {
+    const response = await axiosInstance.post('/auth/refresh', { refreshToken });
     return response.data;
   }
 };
