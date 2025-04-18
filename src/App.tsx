@@ -1,17 +1,16 @@
 import { ConfigProvider } from 'antd';
 import { Routes, Route } from 'react-router-dom';
-import Login from './pages/auth/login';
-import Dashboard from './pages/dashboard';
-import Teachers from './pages/teachers';
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { ConfigProvider } from 'antd';
 import Layout from "./components/layout/Layout";
+import Login from "./pages/auth/login";
 import Home from "./pages/Home/Home";
 import AddGroup from "./pages/Group/AddGroup/AddGroup";
 import Group from "./pages/Group/Group/Group";
 import AddParents from "./pages/Parents/AddParents/AddParents";
 import Parents from "./pages/Parents/Parents/Parents";
-import Settings from "./pages/Settings/Settings";
+import Settings from "./pages/Settings/Setting";
 import AddStudent from "./pages/Students/AddStudent/AddStudent";
 import Students from "./pages/Students/Students/Students";
 import AddTeacher from "./pages/Teachers/AddTeacher/AddTeacher";
@@ -21,7 +20,6 @@ import Lessons from "./pages/Lessons/Lessons";
 import Profile from "./pages/profile";
 import Payments from "./pages/Payments/Payments";
 import Attendance from "./pages/Attendance/Attendance";
-import Login from "./pages/auth/login";
 
 const App = () => {
   return (
