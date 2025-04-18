@@ -1,21 +1,21 @@
-import React from "react";
-import "./Layout.css";
-import { Outlet } from "react-router-dom";
-import Sidebar from "../Sidebar/Sidebar";
-import Header from "../Header/Header";
 
-function Layout() {
+import React from 'react';
+import { Outlet } from 'react-router-dom';
+import Sidebar from '../Sidebar/Sidebar';
+import Header from '../Header/Header';
+
+const Layout = () => {
   return (
-    <div className="layout">
+    <div className="flex h-screen bg-gray-50">
       <Sidebar />
-      <header>
+      <div className="flex-1 flex flex-col overflow-hidden">
         <Header />
-      </header>
-      <main>
-        <Outlet />
-      </main>
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
-}
+};
 
 export default Layout;
