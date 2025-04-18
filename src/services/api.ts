@@ -1,29 +1,17 @@
-
-import axios from 'axios';
-import { useAuthStore } from '../store/useAuthStore';
+import axios, { AxiosError } from 'axios';
+import { message } from 'antd';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8080/api',
-  headers: {
-    'Content-Type': 'application/json'
-  }
+  baseURL: '/api/v1',
+  timeout: 10000,
 });
 
-api.interceptors.request.use((config) => {
-  const token = useAuthStore.getState().token;
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
 
 api.interceptors.response.use(
   (response) => response,
-  async (error) => {
-    if (error.response?.status === 401) {
-      useAuthStore.getState().logout();
-      window.location.href = '/login';
-    }
+  (error: AxiosError) => {
+    const errorMessage = error.response?.data?.message || 'An error occurred';
+    message.error(errorMessage);
     return Promise.reject(error);
   }
 );

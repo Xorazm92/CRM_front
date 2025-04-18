@@ -2,31 +2,44 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --primary-color: #4A6CF7;
+  --secondary-color: #848E9C;
+  --success-color: #13C296;
+  --warning-color: #FBB040;
+  --error-color: #DC3545;
+  --background-color: #F8F9FF;
+  --text-primary: #212B36;
+  --text-secondary: #637381;
+}
+
 @layer base {
   body {
-    @apply bg-gray-50;
+    @apply bg-[var(--background-color)] text-[var(--text-primary)];
+    font-family: 'Inter', sans-serif;
+  }
+
+  h1 {
+    @apply text-3xl font-bold;
+  }
+
+  h2 {
+    @apply text-2xl font-semibold;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-primary text-white px-4 py-2 rounded-md hover:bg-blue-600;
-  }
-
-  .input-field {
-    @apply border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary;
+    @apply bg-[var(--primary-color)] text-white px-6 py-3 rounded-lg hover:opacity-90 transition-opacity;
   }
 
   .card {
-    @apply bg-white rounded-lg shadow-md p-6;
+    @apply bg-white rounded-xl shadow-sm p-6;
   }
-}
 
-:root {
-  --primary-color: #1890ff;
-  --secondary-color: #001529;
-  --text-color: #000000d9;
-  --border-radius: 4px;
+  .input-field {
+    @apply border border-gray-200 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)];
+  }
 }
 
 * {
