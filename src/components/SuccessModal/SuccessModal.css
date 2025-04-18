@@ -1,0 +1,35 @@
+.success-modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #e4f4f2;
+    border-radius: 8px;
+    padding: 16px;
+    width: 100%;
+}
+
+.success-content {
+    display: flex;
+    align-items: center;
+}
+
+.success-icon {
+    margin-right: 12px;
+}
+
+.success-icon .icon {
+    width: 40px;
+    height: 40px;
+    stroke: #47d0d0;
+}
+
+.success-message {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    color: #2a3d54;
+}
+
+.success-message strong {
+    font-weight: bold;
+    color: #1d2f4d;
+}

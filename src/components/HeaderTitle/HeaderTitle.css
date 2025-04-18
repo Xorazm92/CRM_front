@@ -1,0 +1,9 @@
+.title-wrapper {
+    height: 100px;
+    margin: 100px 20px;
+    color: #000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: calc(100% -237px);
+}

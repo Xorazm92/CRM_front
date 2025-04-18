@@ -1,0 +1,124 @@
+.top-header {
+    position: fixed;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e0e0e0;
+    width: calc(100% - 237px);
+    margin-left: 237px;
+    top: 0;
+    left: 0;
+    height: 96px;
+    z-index: 999;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    background-color: var(--color-light-gray-1);
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #e5e7eb;
+    gap: 10px;
+    box-shadow: 2px 2px 2px 0px #0000001A;
+    width: 214px;
+    padding: 6px, 60px, 6px, 15px
+}
+
+.search-icon {
+    color: var(--color-primary-3);
+}
+
+.search-bar input {
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #333;
+}
+
+.search-bar input[type="text"]::placeholder {
+    font-family: Mada;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20.8px;
+    text-align: left;
+    color: var(--color-light-gray-2)
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.notification-icons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+}
+
+.icon-wrapper {
+    display: flex;
+    align-items: center;
+    border: 2px solid var(--color-light-gray-2);
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    justify-content: center;
+    position: relative;
+
+
+}
+
+.notification-icon {
+    font-size: 18px;
+    color: #475569;
+    cursor: pointer;
+    position: relative;
+
+
+}
+
+.notification-badge {
+    position: absolute;
+    top: 4px;
+    right: 2px;
+    width: 15px;
+    height: 15px;
+    background-color: #ff4d4f;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: #fff;
+    font-weight: bold;
+}
+
+.user-status-icon {
+    font-size: 12px;
+    color: #00c853;
+    cursor: pointer;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.2;
+}
+
+.user-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1b3b54;
+}
+
+.user-role {
+    font-size: 12px;
+    color: #6b7280;
+}

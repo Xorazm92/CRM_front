@@ -1,0 +1,82 @@
+.filter-modal {
+    background: white;
+    top:165px;
+    right: 10px;
+    width: 187px;
+    height: 432px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border-bottom: 2px solid var(--color-light-gray-2);
+    position: absolute;
+    z-index: 999;
+}
+
+.filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--color-light-gray-2);
+    padding: 15px;
+}
+
+.filter-header h3 {
+    font-family: Mada;
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 33.8px;
+    text-align: left;
+    color: var(--color-primary-3);
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #16213E;
+    cursor: pointer;
+}
+
+.filter-body {
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    gap: 10px;
+}
+
+.filter-footer {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.save-btn {
+    background-color: #1ABC9C;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.save-button {
+    border: 1px solid var(--color-light-gray-2);
+    display: flex;
+    align-items: center;
+    background-color: transparent;
+    border-radius: 5px;
+    padding: 6px 10px;
+    gap: 5px;
+    box-shadow: 2px 2px 2px 0px #0000001A;
+    cursor: pointer;
+}
+
+.save-button span {
+    font-family: Mada;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20.8px;
+    text-align: left;
+    color: var(--color-primary-2);
+}

@@ -1,0 +1,53 @@
+.table-header-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.failure {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    background-color: transparent;
+    border-radius: 4px;
+    padding: 6px 10px;
+    border: 1px solid #DDDDDD;
+    cursor: pointer;
+    box-shadow: 2px 2px 2px 0px #0000001A;
+
+}
+
+.failure span {
+    color: var(--color-accent-1);
+    font-family: Mada;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20.8px;
+    text-align: left;
+
+}
+
+.success {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    background-color: transparent;
+    border-radius: 4px;
+    padding: 6px 10px;
+    border: 1px solid #DDDDDD;
+    cursor: pointer;
+    box-shadow: 2px 2px 2px 0px #0000001A;
+
+}
+
+.success span {
+    color: var(--color-primary-2);
+    font-family: Mada;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20.8px;
+    text-align: left;
+
+}

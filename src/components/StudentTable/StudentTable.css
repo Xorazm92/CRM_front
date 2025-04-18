@@ -1,0 +1,83 @@
+.student-table {
+    width: 1200px;
+    /* border-collapse: collapse; */
+    margin: 10px auto;
+    /* border: 1px solid var(--color-light-gray-2); */
+
+}
+
+.student-table th,
+.student-table td {
+    padding: 24px 20px;
+    text-align: left;
+    font-family: Mada;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 20.8px;
+    text-align: left;
+
+}
+
+.user-action-row {
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 4px;
+}
+
+.user-checkbox {
+    margin-right: 10px;
+}
+
+.user-image-name {
+    display: flex;
+    align-items: center;
+
+}
+
+.user-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.status-button {
+    background-color: transparent;
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.action-button {
+    padding: 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 52px;
+    height: 33px;
+    border: 1px solid var(--color-light-gray-2);
+}
+
+.edit-delete-buttons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.edit-button,
+.delete-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.edit-button {
+    color: #6c757d;
+}
+
+.delete-button {
+    color: #dc3545;
+}

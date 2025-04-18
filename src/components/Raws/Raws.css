@@ -1,0 +1,56 @@
+.user-profile-row {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    border: 1px solid var(--color-light-gray-2);
+    border-radius: 4px;
+    background-color: #ffffff;
+    margin-bottom: 10px;
+    width: 854px;
+    height: 66px;
+    box-shadow: 2px 2px 4px 0px #0000001A;
+    justify-content: space-between;
+}
+
+.profile-picture {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 15px;
+}
+
+.user-name,
+.user-index {
+    font-family: Mada;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 20.8px;
+    text-align: left;
+    color: var(--color-primary-3);
+}
+
+.user-birthdate {
+    font-family: Mada;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 20.8px;
+    text-align: left;
+    color: var(--color-primary-3);
+}
+
+.user-gender,
+.user-phone,
+.user-location {
+    font-family: Mada;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 20.8px;
+    text-align: left;
+
+}
+
+
+.user-gender {
+    color: #18a558;
+}
