@@ -1,52 +1,131 @@
 
 import React, { useState } from "react";
-import DataTable from "../../../components/DataTable/DataTable";
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import { Button, Table, message } from "antd";
+import type { ColumnsType } from "antd/es/table";
+import { groupsService } from "../../../services/groups";
 import Filter from "../../../components/Filter/Filter";
-import Button from "../../../components/Button/Button";
-import Pagination from "../../../components/Pagination/Pagination";
 
 interface GroupData {
-  id: number;
+  id: string;
   name: string;
-  startDate: string;
-  level: string;
+  teacherId: string;
+  teacher: {
+    firstName: string;
+    lastName: string;
+  };
+  studentsCount: number;
+  startTime: string;
+  endTime: string;
 }
 
 const Group: React.FC = () => {
+  const navigate = useNavigate();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  
+  const { data: groups, isLoading } = useQuery({
+    queryKey: ['groups'],
+    queryFn: groupsService.getAll
+  });
 
-  const groupsData: GroupData[] = [
+  const columns: ColumnsType<GroupData> = [
     {
-      id: 1,
-      name: "1-guruh",
-      startDate: "15.05.2021",
-      level: "1-level",
+      title: 'Guruh nomi',
+      dataIndex: 'name',
+      key: 'name',
     },
     {
-      id: 2,
-      name: "1-guruh",
-      startDate: "15.05.2021",
-      level: "2-level",
+      title: "O'qituvchi",
+      key: 'teacher',
+      render: (_, record) => (
+        <span>{record.teacher.firstName} {record.teacher.lastName}</span>
+      ),
+    },
+    {
+      title: "O'quvchilar soni",
+      dataIndex: 'studentsCount',
+      key: 'studentsCount',
+    },
+    {
+      title: 'Dars vaqti',
+      key: 'time',
+      render: (_, record) => (
+        <span>{record.startTime} - {record.endTime}</span>
+      ),
+    },
+    {
+      title: 'Amallar',
+      key: 'action',
+      render: (_, record) => (
+        <div className="flex gap-2">
+          <button
+            onClick={() => handleEdit(record.id)}
+            className="px-3 py-1 text-blue-600 hover:bg-blue-50 rounded"
+          >
+            O'zgartirish
+          </button>
+          <button
+            onClick={() => handleDelete(record.id)}
+            className="px-3 py-1 text-red-600 hover:bg-red-50 rounded"
+          >
+            O'chirish
+          </button>
+        </div>
+      ),
     },
   ];
+
+  const handleEdit = (id: string) => {
+    navigate(`/groups/edit/${id}`);
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await groupsService.delete(id);
+      message.success("Guruh muvaffaqiyatli o'chirildi");
+    } catch (error) {
+      message.error("Xatolik yuz berdi");
+    }
+  };
 
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-800">Guruhlar jadvali</h1>
-        <div className="flex space-x-4">
-          <Button onFilterClick={() => setIsFilterOpen(prev => !prev)} showSaveCancel={false} />
-          {isFilterOpen && <Filter closeFilter={() => setIsFilterOpen(false)} />}
+        <h1 className="text-2xl font-bold text-gray-800">Guruhlar ro'yxati</h1>
+        <div className="flex gap-4">
+          <Button 
+            type="primary"
+            onClick={() => navigate("/add-group")}
+            className="bg-blue-600"
+          >
+            Yangi guruh
+          </Button>
+          <Button 
+            onClick={() => setIsFilterOpen(true)}
+            icon={<FilterOutlined />}
+          >
+            Filter
+          </Button>
         </div>
       </div>
-      
+
       <div className="bg-white rounded-lg shadow">
-        <DataTable data={groupsData} type="groups" />
+        <Table
+          columns={columns}
+          dataSource={groups}
+          loading={isLoading}
+          rowKey="id"
+          pagination={{
+            pageSize: 10,
+            showSizeChanger: false,
+          }}
+        />
       </div>
-      
-      <div className="flex justify-end">
-        <Pagination />
-      </div>
+
+      {isFilterOpen && (
+        <Filter closeFilter={() => setIsFilterOpen(false)} />
+      )}
     </div>
   );
 };
