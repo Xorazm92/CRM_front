@@ -1,0 +1,129 @@
+[10:11:06 PM] File change detected. Starting incremental compilation...
+
+[10:11:06 PM] Found 0 errors. Watching for file changes.
+
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [NestFactory] Starting Nest application...
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [InstanceLoader] AppModule dependencies initialized +27ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [InstanceLoader] PrismaModule dependencies initialized +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [InstanceLoader] ConfigHostModule dependencies initialized +2ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [InstanceLoader] CacheModule dependencies initialized +1ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [InstanceLoader] ConfigModule dependencies initialized +1ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [InstanceLoader] ConfigModule dependencies initialized +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [InstanceLoader] JwtModule dependencies initialized +2ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [InstanceLoader] GroupModule dependencies initialized +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [InstanceLoader] AttendanceModule dependencies initialized +1ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [InstanceLoader] AssignmentsModule dependencies initialized +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [InstanceLoader] LessonModule dependencies initialized +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [InstanceLoader] TeacherModule dependencies initialized +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [InstanceLoader] UserModule dependencies initialized +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [InstanceLoader] StudentModule dependencies initialized +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [InstanceLoader] CourseModule dependencies initialized +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [InstanceLoader] DashboardModule dependencies initialized +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [InstanceLoader] SubmissionsModule dependencies initialized +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [InstanceLoader] FileUploadModule dependencies initialized +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [InstanceLoader] CustomJwtModule dependencies initialized +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [InstanceLoader] PaymentModule dependencies initialized +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [InstanceLoader] AuthModule dependencies initialized +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [InstanceLoader] AdminModule dependencies initialized +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RoutesResolver] AuthController {/api/v1/auth}: +7ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/auth/login, POST} route +3ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/auth/confirmPassword, POST} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/auth/me, POST} route +1ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/auth/refresh, POST} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RoutesResolver] UserController {/api/v1/users}: +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/users, POST} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/users, GET} route +1ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/users/:id, GET} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/users/:id, PUT} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/users/:id, DELETE} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RoutesResolver] AdminController {/api/v1/admin}: +1ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/admin/signin, POST} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/admin/createAdmin, POST} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/admin/addMembersToGroup, POST} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/admin, GET} route +1ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/admin/getProfile, GET} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/admin/:id, GET} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/admin/:id, PATCH} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/admin/:id, DELETE} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RoutesResolver] TeacherController {/api/v1/teacher}: +1ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/teacher, POST} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/teacher, GET} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/teacher/profile/:id, GET} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/teacher/:id, GET} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/teacher/:id/groups, GET} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/teacher/:id, PATCH} route +1ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/teacher/:id, DELETE} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RoutesResolver] StudentController {/api/v1/student}: +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/student/createStudent, POST} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/student, GET} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/student/getProfile/:id, GET} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/student/:id, GET} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/student/:id, PATCH} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/student/:id, DELETE} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RoutesResolver] CourseController {/api/v1/course}: +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/course, POST} route +1ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/course, GET} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/course/:id, GET} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/course/:id, PATCH} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/course/:id, DELETE} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/course/:id/groups, GET} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RoutesResolver] GroupController {/api/v1/groups}: +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/groups, POST} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/groups, GET} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/groups/:id, GET} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/groups/:id, PUT} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/groups/:id, DELETE} route +1ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RoutesResolver] DashboardController {/api/v1/dashboard}: +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/dashboard/stats, GET} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/dashboard/financial, GET} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/dashboard/attendance, GET} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/dashboard/groups, GET} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/dashboard/teachers, GET} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RoutesResolver] LessonController {/api/v1/lesson}: +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/lesson, POST} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/lesson, GET} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/lesson/:id, GET} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/lesson/:id, PATCH} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/lesson/:id, DELETE} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RoutesResolver] AttendanceController {/api/v1/attendance}: +1ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/attendance, POST} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/attendance, GET} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/attendance/:id, GET} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/attendance/:id, PUT} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/attendance/:id, DELETE} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RoutesResolver] AssignmentsController {/api/v1/assignments}: +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/assignments, POST} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/assignments, GET} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/assignments/:id, GET} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/assignments/:id, PUT} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/assignments/:id, DELETE} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RoutesResolver] SubmissionsController {/api/v1/submissions}: +1ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/submissions, POST} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/submissions, GET} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/submissions/:id, GET} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/submissions/assignment/:assignmentId, GET} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/submissions/:id, PUT} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/submissions/:id, DELETE} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RoutesResolver] PaymentController {/api/v1/payments}: +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/payments/student, POST} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/payments/teacher, POST} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/payments/student/:id, GET} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/payments/teacher/:id, GET} route +1ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/payments/student-payments, GET} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/payments/student/:id/status, PUT} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/payments/teacher/:id/status, PUT} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/payments/teacher/calculate-salaries, POST} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/payments/teacher/:salaryId/pay, PUT} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RoutesResolver] FileUploadController {/api/v1/files}: +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/files/upload, POST} route +1ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/files, GET} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/files/:filename, GET} route +0ms
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [RouterExplorer] Mapped {/api/v1/files/:filename, DELETE} route +0ms
+prisma:info Starting a postgresql pool with 9 connections.
+prisma:info Starting a postgresql pool with 9 connections.
+prisma:info Starting a postgresql pool with 9 connections.
+prisma:info Starting a postgresql pool with 9 connections.
+prisma:info Starting a postgresql pool with 9 connections.
+prisma:info Starting a postgresql pool with 9 connections.
+[Nest] 73868  - 04/18/2025, 10:11:07 PM     LOG [NestApplication] Nest application successfully started +517ms
+Server: http://localhost:3000/api/v1/
