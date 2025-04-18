@@ -1,37 +1,35 @@
 
 import React, { useState } from "react";
-import DataTable from "../../../components/DataTable/DataTable";
-import Button from "../../../components/Button/Button";
 import Filter from "../../../components/Filter/Filter";
+import Button from "../../../components/Button/Button";
+import DataTable from "../../../components/DataTable/DataTable";
+import Pagination from "../../../components/Pagination/Pagination";
 
-interface Student {
+interface StudentData {
   id: number;
   name: string;
-  birthDate: string;
-  gender: string;
   group: string;
-  attendance: boolean;
+  phone: string;
+  parent: string;
 }
 
 const Students: React.FC = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  const students: Student[] = [
+  const studentsData: StudentData[] = [
     {
       id: 1,
-      name: "Sultonov Shokirjon Tursinjon o'g'li",
-      birthDate: "15.05.2021",
-      gender: "O'g'il bola",
-      group: "15-gurux",
-      attendance: true,
+      name: "Aliyev Ali",
+      group: "15-guruh",
+      phone: "+998 90 123 45 67",
+      parent: "Aliyev Vali",
     },
     {
       id: 2,
-      name: "Nodirova Shodiya Tursinjon qizi",
-      birthDate: "15.05.2021",
-      gender: "Qiz bola",
-      group: "15-gurux",
-      attendance: false,
+      name: "Valiyev Vali",
+      group: "16-guruh",
+      phone: "+998 90 123 45 67",
+      parent: "Valiyev Ali",
     },
   ];
 
@@ -39,12 +37,18 @@ const Students: React.FC = () => {
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-800">O'quvchilar jadvali</h1>
-        <Button onFilterClick={() => setIsFilterOpen(prev => !prev)} />
-        {isFilterOpen && <Filter closeFilter={() => setIsFilterOpen(false)} />}
+        <div className="flex space-x-4">
+          <Button onFilterClick={() => setIsFilterOpen(prev => !prev)} />
+          {isFilterOpen && <Filter closeFilter={() => setIsFilterOpen(false)} />}
+        </div>
       </div>
       
       <div className="bg-white rounded-lg shadow">
-        <DataTable data={students} type="students" />
+        <DataTable data={studentsData} type="students" />
+      </div>
+      
+      <div className="flex justify-end">
+        <Pagination />
       </div>
     </div>
   );
