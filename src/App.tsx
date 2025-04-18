@@ -6,17 +6,22 @@ import Teachers from './pages/teachers';
 import Students from './pages/students';
 import AuthInitializer from './AuthInitializer';
 import React from 'react';
-import Layout from "./components/Layout/Layout";
-import AddGroup from "./Pages/Group/AddGroup/AddGroup";
-import Group from "./Pages/Group/Group/Group";
-import AddParents from "./Pages/Parents/AddParents/AddParents";
-import Parents from "./Pages/Parents/Parents/Parents";
-import Setting from "./Pages/Settings/Setting";
-import AddStudent from "./Pages/Students/AddStudents/AddStudent";
-import AddTeacher from "./Pages/Teachers/AddTeachers/AddTeacher";
-import Teacher from "./Pages/Teachers/Teachers/Teacher";
-import Report from "./Pages/Report/Report";
-import Student from "./Pages/Students/Students/Student";
+import Layout from "./components/layout/Layout";
+import AddGroup from "./pages/Group/AddGroup/AddGroup";
+import Group from "./pages/Group/Group/Group";
+import AddParents from "./pages/Parents/AddParents/AddParents";
+import Parents from "./pages/Parents/Parents/Parents";
+import Settings from "./pages/Settings/Settings";
+import AddStudent from "./pages/Students/AddStudent/AddStudent";
+import AddTeacher from "./pages/Teachers/AddTeacher/AddTeacher";
+import Teachers from "./pages/Teachers/Teachers";
+import Report from "./pages/Report/Report";
+import Students from "./pages/Students/Students";
+import Home from "./pages/Home/Home";
+import Lessons from "./pages/Lessons/Lessons";
+import Profile from "./pages/profile";
+import Payments from "./pages/Payments/Payments";
+import Attendance from "./pages/Attendance/Attendance";
 
 const App = () => {
   return (
