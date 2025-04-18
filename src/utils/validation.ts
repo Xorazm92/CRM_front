@@ -1,19 +1,21 @@
 
-import { Rule } from 'antd/lib/form';
-
-export const required: Rule = { required: true, message: 'Bu maydon to\'ldirilishi shart!' };
-
-export const phone: Rule = {
-  pattern: /^\+998[0-9]{9}$/,
-  message: 'Telefon raqam +998 bilan boshlanishi va 12 ta raqamdan iborat bo\'lishi kerak'
+export const validateEmail = (email: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
 };
 
-export const password: Rule = {
-  min: 6,
-  message: 'Parol kamida 6 ta belgidan iborat bo\'lishi kerak'
+export const validatePhone = (phone: string): boolean => {
+  const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+  return phoneRegex.test(phone);
 };
 
-export const email: Rule = {
-  type: 'email',
-  message: 'Email manzil noto\'g\'ri formatda'
+export const validatePassword = (password: string): boolean => {
+  return password.length >= 8;
+};
+
+export const validateRequired = (value: any): boolean => {
+  if (typeof value === 'string') {
+    return value.trim().length > 0;
+  }
+  return value !== null && value !== undefined;
 };

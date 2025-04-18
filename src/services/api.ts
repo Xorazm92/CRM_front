@@ -1,37 +1,57 @@
 
-import axios, { AxiosError } from 'axios';
-import { message } from 'antd';
+import axios from '../config/axios-instance';
+import { AxiosError } from 'axios';
 
-const api = axios.create({
-  baseURL: 'http://localhost:3000/api/v1',
-  timeout: 15000,
-  headers: {
-    'Content-Type': 'application/json'
+export class ApiError extends Error {
+  constructor(public status: number, message: string) {
+    super(message);
   }
-});
+}
 
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+export const handleApiError = (error: AxiosError) => {
+  if (error.response) {
+    throw new ApiError(
+      error.response.status,
+      error.response.data?.message || 'An error occurred'
+    );
+  }
+  throw new Error('Network error');
+};
+
+export const api = {
+  async get<T>(url: string) {
+    try {
+      const response = await axios.get<T>(url);
+      return response.data;
+    } catch (error) {
+      handleApiError(error as AxiosError);
     }
-    return config;
   },
-  (error) => Promise.reject(error)
-);
 
-api.interceptors.response.use(
-  (response) => response,
-  (error: AxiosError) => {
-    const errorMessage = error.response?.data?.message || 'Xatolik yuz berdi';
-    message.error(errorMessage);
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      window.location.href = '/login';
+  async post<T>(url: string, data: any) {
+    try {
+      const response = await axios.post<T>(url, data);
+      return response.data;
+    } catch (error) {
+      handleApiError(error as AxiosError);
     }
-    return Promise.reject(error);
-  }
-);
+  },
 
-export default api;
+  async put<T>(url: string, data: any) {
+    try {
+      const response = await axios.put<T>(url, data);
+      return response.data;
+    } catch (error) {
+      handleApiError(error as AxiosError);
+    }
+  },
+
+  async delete<T>(url: string) {
+    try {
+      const response = await axios.delete<T>(url);
+      return response.data;
+    } catch (error) {
+      handleApiError(error as AxiosError);
+    }
+  }
+};

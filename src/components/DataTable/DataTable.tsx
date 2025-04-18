@@ -1,49 +1,33 @@
-
-import React from 'react';
+import { FC } from 'react';
+import { Table, Spin } from 'antd';
+import type { ColumnsType } from 'antd/es/table';
 import './DataTable.css';
 
-interface Column {
-  title: string;
-  key: string;
-  render?: (value: any, record: any) => React.ReactNode;
-}
-
-interface DataTableProps {
-  data: any[];
-  columns: Column[];
+interface DataTableProps<T> {
+  data?: T[];
   loading?: boolean;
+  columns: ColumnsType<T>;
+  type: 'students' | 'teachers' | 'parents' | 'groups';
 }
 
-const DataTable: React.FC<DataTableProps> = ({ data, columns, loading }) => {
+const DataTable: FC<DataTableProps<any>> = ({ 
+  data = [], 
+  loading = false,
+  columns,
+  type 
+}) => {
   if (loading) {
-    return <div className="loading">Loading...</div>;
+    return <Spin size="large" className="table-loader" />;
   }
 
   return (
-    <div className="table-container">
-      <table className="data-table">
-        <thead>
-          <tr>
-            {columns.map((column) => (
-              <th key={column.key}>{column.title}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((record, index) => (
-            <tr key={index}>
-              {columns.map((column) => (
-                <td key={column.key}>
-                  {column.render 
-                    ? column.render(record[column.key], record)
-                    : record[column.key]}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <Table 
+      dataSource={data}
+      columns={columns}
+      rowKey="id"
+      pagination={false}
+      className={`data-table ${type}-table`}
+    />
   );
 };
 
