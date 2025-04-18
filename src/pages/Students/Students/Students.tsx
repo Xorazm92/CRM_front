@@ -1,5 +1,6 @@
-
 import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { studentsService } from "../../../services/students";
 import Filter from "../../../components/Filter/Filter";
 import Button from "../../../components/Button/Button";
 import DataTable from "../../../components/DataTable/DataTable";
@@ -16,22 +17,10 @@ interface StudentData {
 const Students: React.FC = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  const studentsData: StudentData[] = [
-    {
-      id: 1,
-      name: "Aliyev Ali",
-      group: "15-guruh",
-      phone: "+998 90 123 45 67",
-      parent: "Aliyev Vali",
-    },
-    {
-      id: 2,
-      name: "Valiyev Vali",
-      group: "16-guruh",
-      phone: "+998 90 123 45 67",
-      parent: "Valiyev Ali",
-    },
-  ];
+  const { data: students, isLoading } = useQuery({
+    queryKey: ['students'],
+    queryFn: studentsService.getStudents
+  });
 
   return (
     <div className="p-6 space-y-6">
@@ -42,11 +31,11 @@ const Students: React.FC = () => {
           {isFilterOpen && <Filter closeFilter={() => setIsFilterOpen(false)} />}
         </div>
       </div>
-      
+
       <div className="bg-white rounded-lg shadow">
-        <DataTable data={studentsData} type="students" />
+        <DataTable data={students} type="students" loading={isLoading} />
       </div>
-      
+
       <div className="flex justify-end">
         <Pagination />
       </div>
