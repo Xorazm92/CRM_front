@@ -1,19 +1,25 @@
 
-import axiosInstance from '../config/axios-instance';
+import { axiosInstance } from '../config/axios-instance';
 
-export const authService = {
-  login: async (username: string, password: string) => {
-    const { data } = await axiosInstance.post('/auth/login', { username, password });
-    return data;
-  },
-  
-  register: async (userData: any) => {
-    const { data } = await axiosInstance.post('/auth/register', userData);
-    return data;
-  },
+interface LoginData {
+  username: string;
+  password: string;
+}
 
-  getProfile: async () => {
-    const { data } = await axiosInstance.get('/auth/profile');
-    return data;
-  }
+interface AuthResponse {
+  token: string;
+  user: {
+    id: number;
+    username: string;
+    role: string;
+  };
+}
+
+export const login = async (data: LoginData): Promise<AuthResponse> => {
+  const response = await axiosInstance.post('/auth/login', data);
+  return response.data;
+};
+
+export const logout = async (): Promise<void> => {
+  await axiosInstance.post('/auth/logout');
 };
