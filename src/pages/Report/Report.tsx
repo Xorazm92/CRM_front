@@ -32,29 +32,25 @@ const Report: React.FC = () => {
     },
   ];
 
-  const toggleFilter = () => {
-    setIsFilterOpen((prev) => !prev);
-  };
-
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-800">Hisobotlar jadvali</h1>
         <div className="flex space-x-4">
           <ReportButtons />
-          <Button showAdd={false} onFilterClick={toggleFilter} />
-          {isFilterOpen && <Filter closeFilter={toggleFilter} />}
+          <Button showAdd={false} onFilterClick={() => setIsFilterOpen(prev => !prev)} />
         </div>
+        {isFilterOpen && <Filter closeFilter={() => setIsFilterOpen(false)} />}
       </div>
-
+      
       <div className="bg-white rounded-lg shadow">
         <DataTable data={reportsData} type="reports" />
       </div>
-
-      <div className="flex justify-between items-center border-t border-gray-200 pt-4">
-        <div className="flex items-center gap-4">
-          <span className="text-gray-600">Daromad umumiy summasi:</span>
-          <span className="font-semibold text-green-600">1 000 000 so'm</span>
+      
+      <div className="flex justify-between items-center mt-4">
+        <div className="text-gray-700">
+          <span className="font-semibold">Daromad umumiy summasi: </span>
+          <span className="text-green-600">1 000 000 so'm</span>
         </div>
         <Pagination />
       </div>
