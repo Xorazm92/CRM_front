@@ -1,13 +1,11 @@
+
 import React, { useState } from "react";
-import "./Teacher.css";
-import Button from "../../../components/Button/Button";
-import Filter from "../../../components/Filter/Filter";
+import { Link } from "react-router-dom";
 import DataTable from "../../../components/DataTable/DataTable";
+import images from "../../../images";
 
 function Teacher() {
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
-
-  const teachers = [
+  const [teachers] = useState([
     {
       id: 1,
       name: "Sultonov Shokirjon Tursinjon o'g'li",
@@ -24,19 +22,33 @@ function Teacher() {
       contact: "+998914747485",
       attendance: false,
     },
-  ];
+  ]);
 
-  const toggleFilter = () => {
-    setIsFilterOpen((prev) => !prev);
-  };
   return (
-    <div className="teachers_wrapper">
-      <div className="header-student-page">
-        <h1>O’qituvchilar jadvali</h1>
-        <Button onFilterClick={toggleFilter} />
-        {isFilterOpen && <Filter closeFilter={toggleFilter} />}
+    <div className="p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-gray-800">O'qituvchilar</h1>
+        <Link 
+          to="/add-teacher" 
+          className="flex items-center bg-primary text-white px-4 py-2 rounded-md hover:bg-blue-600"
+        >
+          <img src={images.add_icon} alt="add" className="w-5 h-5 mr-2" />
+          O'qituvchi qo'shish
+        </Link>
       </div>
-      <DataTable data={teachers} type="teachers" />
+
+      <div className="bg-white rounded-lg shadow-md">
+        <DataTable
+          data={teachers}
+          columns={[
+            { title: "F.I.O", key: "name" },
+            { title: "Tug'ilgan sana", key: "birthDate" },
+            { title: "Jinsi", key: "gender" },
+            { title: "Telefon", key: "contact" },
+            { title: "Holati", key: "attendance" },
+          ]}
+        />
+      </div>
     </div>
   );
 }
