@@ -64,6 +64,14 @@ function Sidebar() {
             <span>Ota-Onalar</span>
           </Link>
           <Link
+            to="/lessons"
+            className={`menu-item ${activeItem === "Lessons" ? "active" : ""}`}
+            onClick={() => handleItemClick("Lessons")}
+          >
+            <img src={images.calendar} alt="Lessons" />
+            <span>Darslar</span>
+          </Link>
+          <Link
             to="/report"
             className={`menu-item ${
               activeItem === "Hisobotlar" ? "active" : ""

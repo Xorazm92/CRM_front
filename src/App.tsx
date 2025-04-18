@@ -36,6 +36,7 @@ const App = () => {
           <Route path="/add-student" element={<AddStudent />} />
           <Route path="/teachers" element={<Teacher />} />
           <Route path="/add-teacher" element={<AddTeacher />} />
+          <Route path="/lessons" element={<Lessons />} />
         </Route>
       </Routes>
     </ConfigProvider>
