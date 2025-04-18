@@ -1,7 +1,7 @@
 
-import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
+import type { FC } from 'react';
 import AuthInitializer from './AuthInitializer';
 import Layout from "./components/layout/Layout";
 import Login from "./pages/auth/login";
