@@ -115,6 +115,13 @@ function Sidebar() {
             <img src={images.cashs} alt="Report" />
             <span>Hisobotlar</span>
           </Link>
+          <Link
+            to="/settings"
+            className={`menu-item ${activeItem === "Settings" ? "active" : ""}`}
+            onClick={() => handleItemClick("Settings")}
+          >
+            <span>Sozlamalar</span>
+          </Link>
         </ul>
       </nav>
       <div className="footer-menu">

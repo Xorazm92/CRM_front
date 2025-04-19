@@ -9,6 +9,9 @@ import Pagination from "../../components/Pagination/Pagination";
 import instance from "../../api/axios";
 import Toast from "../../components/Toast";
 import ClipLoader from "react-spinners/ClipLoader";
+import ExportExcelButton from "../../components/ReportButtons/ExportExcelButton";
+import "../../components/ReportButtons/ExportExcelButton.css";
+import ReportCharts from "./ReportCharts";
 
 function Report() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -47,6 +50,7 @@ function Report() {
       <div className="header-student-page">
         <h1>Hisobotlar jadvali</h1>
         <ReportButtons />
+        <ExportExcelButton data={reports} />
         <Button showAdd={false} onFilterClick={toggleFilter} />
         {isFilterOpen && <Filter closeFilter={toggleFilter} />}
       </div>
@@ -59,6 +63,7 @@ function Report() {
       ) : (
         <DataTable data={reports} type="reports" />
       )}
+      <ReportCharts />
       <footer className="footer">
         <div className="income_status">
           <p>Daromad umumiy summasi:</p>
