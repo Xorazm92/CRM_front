@@ -1,57 +1,11 @@
-
 import axios from '../config/axios-instance';
-import { AxiosError } from 'axios';
+import { API_URL } from '../config/constants';
 
-export class ApiError extends Error {
-  constructor(public status: number, message: string) {
-    super(message);
-  }
-}
-
-export const handleApiError = (error: AxiosError) => {
-  if (error.response) {
-    throw new ApiError(
-      error.response.status,
-      error.response.data?.message || 'An error occurred'
-    );
-  }
-  throw new Error('Network error');
-};
+//ApiError class and handleApiError function removed
 
 export const api = {
-  async get<T>(url: string) {
-    try {
-      const response = await axios.get<T>(url);
-      return response.data;
-    } catch (error) {
-      handleApiError(error as AxiosError);
-    }
-  },
-
-  async post<T>(url: string, data: any) {
-    try {
-      const response = await axios.post<T>(url, data);
-      return response.data;
-    } catch (error) {
-      handleApiError(error as AxiosError);
-    }
-  },
-
-  async put<T>(url: string, data: any) {
-    try {
-      const response = await axios.put<T>(url, data);
-      return response.data;
-    } catch (error) {
-      handleApiError(error as AxiosError);
-    }
-  },
-
-  async delete<T>(url: string) {
-    try {
-      const response = await axios.delete<T>(url);
-      return response.data;
-    } catch (error) {
-      handleApiError(error as AxiosError);
-    }
-  }
+  get: <T>(url: string) => axios.get<T>(`${API_URL}${url}`).then(res => res.data),
+  post: <T>(url: string, data: any) => axios.post<T>(`${API_URL}${url}`, data).then(res => res.data),
+  put: <T>(url: string, data: any) => axios.put<T>(`${API_URL}${url}`, data).then(res => res.data),
+  delete: <T>(url: string) => axios.delete<T>(`${API_URL}${url}`).then(res => res.data),
 };
