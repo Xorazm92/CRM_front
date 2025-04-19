@@ -14,7 +14,7 @@ import AddParents from "./pages/Parents/AddParents/AddParents";
 import Settings from "./pages/Settings/Setting";
 import Students from "./pages/Students/Students/Students";
 import AddStudent from "./pages/Students/AddStudents/AddStudent";
-import Teachers from "./pages/Teachers/Teachers/Teachers";
+import Teachers from "./pages/Teachers/Teachers/Teacher";
 import AddTeacher from "./pages/Teachers/AddTeachers/AddTeacher";
 import Report from "./pages/Report/Report";
 import Lessons from "./pages/Lessons/Lessons";
@@ -26,7 +26,7 @@ import RoleChecker from './components/RoleChecker';
 const App: React.FC = () => {
   return (
     <ConfigProvider>
-      <AuthInitializer />
+      <AuthInitializer children={undefined} />
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />

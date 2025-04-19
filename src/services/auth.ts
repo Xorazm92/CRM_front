@@ -1,5 +1,4 @@
-
-import { axiosInstance } from '../config/axios-instance';
+import axiosInstance from '../config/axios-instance';
 
 interface LoginData {
   username: string;
@@ -15,11 +14,16 @@ interface AuthResponse {
   };
 }
 
-export const login = async (data: LoginData): Promise<AuthResponse> => {
+const login = async (data: LoginData, password: any): Promise<AuthResponse> => {
   const response = await axiosInstance.post('/auth/login', data);
   return response.data;
 };
 
-export const logout = async (): Promise<void> => {
+const logout = async (): Promise<void> => {
   await axiosInstance.post('/auth/logout');
+};
+
+export const authService = {
+  login,
+  logout,
 };

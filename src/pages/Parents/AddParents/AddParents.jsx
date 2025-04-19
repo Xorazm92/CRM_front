@@ -1,5 +1,4 @@
 import React from "react";
-import "./AddParents.css";
 import FormComponent from "../../../components/FormComponent/FormComponent";
 import Button from "../../../components/Button/Button";
 import SaveCancelBtn from "../../../components/SaveCancelBtn/SaveCancelBtn";

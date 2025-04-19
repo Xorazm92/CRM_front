@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "./AddTeacher.css";
 import SaveCancelBtn from "../../../components/SaveCancelBtn/SaveCancelBtn";
 import ImageUpload from "../../../components/ImageUpload/ImageUpload";
 import Input from "../../../components/Inputs/Input/Input";

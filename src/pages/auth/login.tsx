@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Form, Input, Button, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
@@ -14,6 +13,9 @@ const Login = () => {
       const response = await authService.login(values.username, values.password);
       setToken(response.token);
       setUser(response.user);
+      // localStorage'ga ham token va user saqlab qo'yamiz
+      localStorage.setItem('token', response.token);
+      localStorage.setItem('user', JSON.stringify(response.user));
       navigate('/');
     } catch (error: any) {
       message.error(error.response?.data?.message || 'Login failed');

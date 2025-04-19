@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "./AddStudent.css";
 import SaveCancelBtn from "../../../components/SaveCancelBtn/SaveCancelBtn";
 import ImageUpload from "../../../components/ImageUpload/ImageUpload";
 import DateField from "../../../components/DataField/DataField";

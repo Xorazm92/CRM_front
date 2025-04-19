@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { studentsService } from "../../../services/students";
+import { studentService } from "../../../services/students";
 import Filter from "../../../components/Filter/Filter";
 import Button from "../../../components/Button/Button";
 import DataTable from "../../../components/DataTable/DataTable";
@@ -17,10 +17,14 @@ interface StudentData {
 const Students: React.FC = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  const { data: students, isLoading } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ['students'],
-    queryFn: studentsService.getStudents
+    queryFn: studentService.getAll
   });
+  const students = data?.data || [];
+
+  if (isLoading) return <div>Yuklanmoqda...</div>;
+  if (error) return <div>Xatolik: {error.message}</div>;
 
   return (
     <div className="p-6 space-y-6">
@@ -33,7 +37,7 @@ const Students: React.FC = () => {
       </div>
 
       <div className="bg-white rounded-lg shadow">
-        <DataTable data={students} type="students" loading={isLoading} />
+        <DataTable data={students} type="students" />
       </div>
 
       <div className="flex justify-end">

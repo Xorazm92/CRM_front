@@ -1,14 +1,13 @@
-
 import React from 'react';
 import { Table, message } from 'antd';
 import { useQuery } from '@tanstack/react-query';
-import { getPayments } from '../../services/payments';
+import { paymentsService } from '../../services/payments';
 import HeaderTitle from '../../components/HeaderTitle/HeaderTitle';
 
 const Payments = () => {
   const { data: payments, isLoading } = useQuery({
     queryKey: ['payments'],
-    queryFn: getPayments
+    queryFn: paymentsService.getAllStudentPayments
   });
 
   const columns = [

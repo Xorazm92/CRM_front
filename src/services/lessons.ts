@@ -1,5 +1,4 @@
-
-import { axiosInstance } from '../config/axios-instance';
+import axiosInstance from '../config/axios-instance';
 
 export const lessonService = {
   getAll: async () => {

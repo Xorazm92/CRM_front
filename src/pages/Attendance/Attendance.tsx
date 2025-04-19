@@ -1,8 +1,8 @@
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { DatePicker, Table, Select, message } from 'antd';
 import { useQuery } from '@tanstack/react-query';
-import { getAttendance } from '../../services/attendance';
+import { attendanceService } from '../../services/attendance';
 import HeaderTitle from '../../components/HeaderTitle/HeaderTitle';
 
 const Attendance = () => {
@@ -11,7 +11,7 @@ const Attendance = () => {
 
   const { data: attendance, isLoading } = useQuery({
     queryKey: ['attendance', selectedDate, selectedGroup],
-    queryFn: () => getAttendance(selectedDate, selectedGroup)
+    queryFn: () => attendanceService.getAll({ date: new Date(selectedDate), groupId: selectedGroup })
   });
 
   const columns = [
