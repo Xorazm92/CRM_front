@@ -1,0 +1,6 @@
+.home-wrapper {
+    width: calc(100% -237px);
+    display: flex;
+    justify-content: center;
+    margin-top: 150px;
+}
