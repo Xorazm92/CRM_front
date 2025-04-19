@@ -1,0 +1,13 @@
+.groups-page { padding: 30px; max-width: 900px; margin: 0 auto; }
+.add-btn { background: #009688; color: #fff; border: none; padding: 8px 18px; border-radius: 4px; cursor: pointer; margin-bottom: 18px; }
+.add-btn:hover { background: #00796b; }
+.groups-table { width: 100%; border-collapse: collapse; margin-top: 14px; }
+.groups-table th, .groups-table td { border: 1px solid #e0e0e0; padding: 8px 12px; text-align: left; }
+.groups-table th { background: #f5f5f5; }
+.groups-table tr:nth-child(even) { background: #fafafa; }
+.groups-table .delete-btn { background: #e53935; color: #fff; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; margin-left: 8px; }
+.groups-table .delete-btn:hover { background: #c62828; }
+.loader-center { display: flex; justify-content: center; align-items: center; min-height: 120px; }
+.error-msg { color: #e53935; margin: 18px 0; text-align: center; }
+.modal.group-modal input, .modal.group-modal select { width: 100%; margin-bottom: 12px; padding: 7px 10px; border: 1px solid #ccc; border-radius: 4px; }
+.modal.group-modal .modal-actions { display: flex; justify-content: flex-end; gap: 10px; }

@@ -1,0 +1,11 @@
+.fileupload-page { padding: 30px; max-width: 600px; margin: 0 auto; }
+.upload-form { display: flex; align-items: center; gap: 18px; margin-bottom: 20px; }
+.upload-form input[type='file'] { border: 1px solid #ccc; border-radius: 4px; padding: 6px; }
+.upload-form button { background: #009688; color: #fff; border: none; padding: 7px 18px; border-radius: 4px; cursor: pointer; }
+.upload-form button:hover { background: #00796b; }
+.uploaded-list { margin-top: 24px; }
+.uploaded-list ul { list-style: none; padding: 0; }
+.uploaded-list li { display: flex; align-items: center; gap: 14px; margin-bottom: 7px; }
+.uploaded-list a { color: #1976d2; text-decoration: underline; font-weight: 500; }
+.delete-btn { background: #e53935; color: #fff; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; }
+.delete-btn:hover { background: #c62828; }

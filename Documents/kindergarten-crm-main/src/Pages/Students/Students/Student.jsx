@@ -6,6 +6,8 @@ import Filter from "../../../components/Filter/Filter";
 import instance from "../../../api/axios";
 import AddStudentModal from "./AddStudentModal";
 import EditStudentModal from "./EditStudentModal";
+import Toast from "../../../components/Toast";
+import ClipLoader from "react-spinners/ClipLoader";
 
 const StudentPage = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -15,6 +17,7 @@ const StudentPage = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
+  const [toast, setToast] = useState({ message: '', type: 'success' });
 
   const fetchStudents = async () => {
     setLoading(true);
@@ -47,13 +50,28 @@ const StudentPage = () => {
     try {
       await instance.delete(`/student/${id}`);
       fetchStudents();
+      setToast({ message: "O‘quvchi muvaffaqiyatli o‘chirildi!", type: "success" });
     } catch (err) {
-      alert("O‘chirishda xatolik: " + (err.response?.data?.message || err.message));
+      setToast({ message: err.response?.data?.message || "O‘chirishda xatolik", type: "error" });
     }
+    setTimeout(() => setToast({ message: '', type: 'success' }), 3000);
+  };
+
+  const handleStudentAdded = () => {
+    fetchStudents();
+    setToast({ message: "O‘quvchi muvaffaqiyatli qo‘shildi!", type: "success" });
+    setTimeout(() => setToast({ message: '', type: 'success' }), 3000);
+  };
+
+  const handleStudentEdited = () => {
+    fetchStudents();
+    setToast({ message: "O‘quvchi muvaffaqiyatli tahrirlandi!", type: "success" });
+    setTimeout(() => setToast({ message: '', type: 'success' }), 3000);
   };
 
   return (
     <div className="studentss-wrapper">
+      <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: '', type: 'success' })} />
       <div className="header-student-page">
         <h1>O’quvchilar jadvali</h1>
         <Button onClick={() => setIsAddModalOpen(true)}>Yangi o‘quvchi qo‘shish</Button>
@@ -63,16 +81,18 @@ const StudentPage = () => {
       <AddStudentModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
-        onStudentAdded={fetchStudents}
+        onStudentAdded={handleStudentAdded}
       />
       <EditStudentModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         student={selectedStudent}
-        onStudentEdited={fetchStudents}
+        onStudentEdited={handleStudentEdited}
       />
       {loading ? (
-        <div>Yuklanmoqda...</div>
+        <div style={{display:'flex',justifyContent:'center',alignItems:'center',height:'200px'}}>
+          <ClipLoader color="#009688" size={40} />
+        </div>
       ) : error ? (
         <div className="error">{error}</div>
       ) : (
