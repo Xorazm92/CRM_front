@@ -1,14 +1,7 @@
 
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
-
-interface User {
-  id: string;
-  full_name: string; 
-  username: string;
-  role: string;
-  image?: string;
-}
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import { User } from '../types/api.types';
 
 interface AuthState {
   user: User | null;
@@ -43,7 +36,7 @@ export const useAuthStore = create<AuthState>()(
       }),
     }),
     {
-      name: "auth-storage",
+      name: 'auth-storage',
     }
   )
 );
