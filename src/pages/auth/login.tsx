@@ -1,8 +1,8 @@
+
 import React from 'react';
 import { Form, Input, Button, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/useAuthStore';
-import { authService } from '../../services/auth';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -10,15 +10,24 @@ const Login = () => {
 
   const onFinish = async (values: any) => {
     try {
-      const response = await authService.login(values.username, values.password);
-      setToken(response.token);
-      setUser(response.user);
-      // localStorage'ga ham token va user saqlab qo'yamiz
-      localStorage.setItem('token', response.token);
-      localStorage.setItem('user', JSON.stringify(response.user));
+      // Mock login for now
+      const mockResponse = {
+        token: 'mock-token',
+        user: {
+          id: 1,
+          username: values.username,
+          role: 'ADMIN'
+        }
+      };
+      
+      setToken(mockResponse.token);
+      setUser(mockResponse.user);
+      localStorage.setItem('token', mockResponse.token);
+      localStorage.setItem('user', JSON.stringify(mockResponse.user));
+      message.success('Login successful!');
       navigate('/');
     } catch (error: any) {
-      message.error(error.response?.data?.message || 'Login failed');
+      message.error('Login failed');
     }
   };
 
@@ -28,14 +37,15 @@ const Login = () => {
         name="login"
         onFinish={onFinish}
         layout="vertical"
+        className="login-form"
       >
-        <h1>Login</h1>
+        <h1 className="login-title">Welcome Back</h1>
         <Form.Item
           label="Username"
           name="username"
           rules={[{ required: true, message: 'Please input your username!' }]}
         >
-          <Input />
+          <Input size="large" />
         </Form.Item>
 
         <Form.Item
@@ -43,11 +53,11 @@ const Login = () => {
           name="password"
           rules={[{ required: true, message: 'Please input your password!' }]}
         >
-          <Input.Password />
+          <Input.Password size="large" />
         </Form.Item>
 
         <Form.Item>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" size="large">
             Login
           </Button>
         </Form.Item>

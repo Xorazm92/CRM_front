@@ -1,29 +1,20 @@
-import { useEffect } from 'react';
-import axiosInstance from './config/axios-instance';
-import { useAuthStore } from './store/useAuthStore';
-import React from 'react';
 
-/**
- * AuthInitializer
- * Ilovani ishga tushganda user ma'lumotini olish va global store'ga saqlash uchun.
- */
+import { useEffect } from 'react';
+import { useAuthStore } from './store/useAuthStore';
+
 const AuthInitializer = ({ children }: { children: React.ReactNode }) => {
   const setUser = useAuthStore((s) => s.setUser);
+  const setToken = useAuthStore((s) => s.setToken);
 
   useEffect(() => {
-    const fetchMe = async () => {
-      try {
-        // POST so'rovi yuboriladi, chunki backendda faqat POST mavjud
-        const res = await axiosInstance.post('/auth/me');
-        const newUser = res.data.data?.user || res.data.user;
-        setUser(newUser);
-      } catch (error) {
-        setUser(undefined);
-        // logout yoki boshqa xatoliklarni handle qilish mumkin
-      }
-    };
-    fetchMe();
-  }, [setUser]);
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
+    
+    if (token && user) {
+      setToken(token);
+      setUser(JSON.parse(user));
+    }
+  }, [setUser, setToken]);
 
   return <>{children}</>;
 };
