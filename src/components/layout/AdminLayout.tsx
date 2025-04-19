@@ -1,111 +1,113 @@
-import { Layout, Menu, Avatar, Badge, Drawer, List } from 'antd';
-import { BellOutlined } from '@ant-design/icons';
+
+import { Layout, Menu, Avatar, Badge, Drawer } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/useAuthStore';
-import { notificationsService } from '../../services/notifications';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
 import {
-    DashboardOutlined,
-    TeamOutlined,
-    UserOutlined,
-    BookOutlined,
-    SettingOutlined,
-    CalendarOutlined,
-    UserSwitchOutlined,
+  DashboardOutlined,
+  TeamOutlined,
+  UserOutlined,
+  BookOutlined,
+  SettingOutlined,
+  CalendarOutlined,
+  LogoutOutlined
 } from '@ant-design/icons';
+import { useState } from 'react';
 
 const { Header, Sider, Content } = Layout;
 
-type Notification = {
-    id: string;
-    title: string;
-    description: string;
-    read: boolean;
-    createdAt: string;
+const AdminLayout = ({ children }: { children: React.ReactNode }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { user, logout } = useAuthStore();
+  const [collapsed, setCollapsed] = useState(false);
+
+  const menuItems = [
+    {
+      key: '/',
+      icon: <DashboardOutlined />,
+      label: 'Dashboard'
+    },
+    {
+      key: '/teachers',
+      icon: <TeamOutlined />,
+      label: 'Teachers'
+    },
+    {
+      key: '/students',
+      icon: <UserOutlined />,
+      label: 'Students'
+    },
+    {
+      key: '/lessons',
+      icon: <BookOutlined />,
+      label: 'Lessons'
+    },
+    {
+      key: '/attendance',
+      icon: <CalendarOutlined />,
+      label: 'Attendance'
+    },
+    {
+      key: '/settings',
+      icon: <SettingOutlined />,
+      label: 'Settings'
+    }
+  ];
+
+  const handleMenuClick = (key: string) => {
+    navigate(key);
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  return (
+    <Layout style={{ minHeight: '100vh' }}>
+      <Sider 
+        collapsible 
+        collapsed={collapsed} 
+        onCollapse={setCollapsed}
+        style={{
+          overflow: 'auto',
+          height: '100vh',
+          position: 'fixed',
+          left: 0,
+        }}
+      >
+        <div className="logo p-4">
+          <h1 className="text-white text-xl font-bold">LMS</h1>
+        </div>
+        <Menu
+          theme="dark"
+          selectedKeys={[location.pathname]}
+          mode="inline"
+          items={menuItems}
+          onClick={({ key }) => handleMenuClick(key)}
+        />
+      </Sider>
+      <Layout style={{ marginLeft: collapsed ? 80 : 200 }}>
+        <Header style={{ padding: 0, background: '#fff' }}>
+          <div className="flex justify-end items-center h-full px-4">
+            <div className="flex items-center space-x-4">
+              <Badge count={5}>
+                <Avatar icon={<UserOutlined />} />
+              </Badge>
+              <span>{user?.full_name}</span>
+              <LogoutOutlined 
+                onClick={handleLogout}
+                className="text-xl cursor-pointer" 
+              />
+            </div>
+          </div>
+        </Header>
+        <Content style={{ margin: '24px 16px', padding: 24, background: '#fff' }}>
+          {children}
+        </Content>
+      </Layout>
+    </Layout>
+  );
 };
 
-export default function AdminLayout() {
-    const [collapsed, setCollapsed] = useState(false);
-    const navigate = useNavigate();
-    const location = useLocation();
-    const { user, logout } = useAuthStore();
-    const queryClient = useQueryClient();
-
-    // Role-based menu
-    const menuItems = [
-        {
-            key: '/dashboard',
-            icon: <DashboardOutlined />, label: 'Dashboard', roles: ['admin', 'manager', 'teacher', 'student'],
-        },
-        {
-            key: '/teachers',
-            icon: <TeamOutlined />, label: 'Teachers', roles: ['admin', 'manager'],
-        },
-        {
-            key: '/students',
-            icon: <UserOutlined />, label: 'Students', roles: ['admin', 'manager', 'teacher'],
-        },
-        {
-            key: '/courses',
-            icon: <BookOutlined />, label: 'Courses', roles: ['admin', 'manager', 'teacher'],
-        },
-        {
-            key: '/attendance',
-            icon: <CalendarOutlined />, label: 'Davomat', roles: ['admin', 'manager', 'teacher'],
-        },
-        {
-            key: '/admin',
-            icon: <UserSwitchOutlined />, label: 'User Management', roles: ['admin'],
-        },
-        {
-            key: '/profile',
-            icon: <UserOutlined />, label: 'Profile', roles: ['admin', 'manager', 'teacher', 'student'],
-        },
-        {
-            key: '/settings',
-            icon: <SettingOutlined />, label: 'Settings', roles: ['admin', 'manager', 'teacher', 'student'],
-        },
-    ].filter(item => !user?.role || item.roles.includes(user.role)).map(({ roles, ...item }) => item);
-
-
-    // NOTIFICATIONS QUERY
-    const { data: notifications = [], isLoading: notifLoading } = useQuery<Notification[]>({
-        queryKey: ['notifications'],
-        queryFn: notificationsService.getAll
-    });
-
-    const markAsReadMutation = useMutation({
-        mutationFn: notificationsService.markAsRead,
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['notifications'] })
-    });
-
-    const unreadCount = notifications.filter((n: Notification) => !n.read).length;
-
-    return (
-        <Layout>
-            <Sider theme="light" width={260}>
-                <div className="logo">
-                    <h1>CRM System</h1>
-                </div>
-                <Menu mode="inline" selectedKeys={[location.pathname]}
-                      items={menuItems}
-                      onClick={({ key }) => navigate(key)}
-                />
-            </Sider>
-            <Layout>
-                <Header className="header">
-                    <div className="header-right">
-                        <Badge count={unreadCount} offset={[-10, 10]}>
-                            <BellOutlined className="notification-icon" onClick={() => {}} />
-                        </Badge>
-                        <Avatar>{user?.fullName?.[0] || 'A'}</Avatar>
-                    </div>
-                </Header>
-                <Content className="main-content">
-                    <Outlet />
-                </Content>
-            </Layout>
-        </Layout>
-    );
-}
+export default AdminLayout;

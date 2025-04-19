@@ -2,11 +2,14 @@
 import axios from 'axios';
 import { useAuthStore } from '../store/useAuthStore';
 
-const API_URL = 'http://0.0.0.0:3000/api/v1';
+const BASE_URL = 'http://0.0.0.0:3000/api/v1';
 
 const api = axios.create({
-  baseURL: API_URL,
-  timeout: 10000,
+  baseURL: BASE_URL,
+  timeout: 15000,
+  headers: {
+    'Content-Type': 'application/json'
+  }
 });
 
 api.interceptors.request.use(
@@ -17,16 +20,22 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    return Promise.reject(error);
+  }
 );
 
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response?.status === 401) {
+    const originalRequest = error.config;
+    
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
       useAuthStore.getState().logout();
       window.location.href = '/login';
     }
+    
     return Promise.reject(error);
   }
 );
