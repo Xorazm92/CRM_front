@@ -1,11 +1,34 @@
-import axios from '../config/axios-instance';
-import { API_URL } from '../config/constants';
 
-//ApiError class and handleApiError function removed
+import axios from 'axios';
+import { useAuthStore } from '../store/useAuthStore';
 
-export const api = {
-  get: <T>(url: string) => axios.get<T>(`${API_URL}${url}`).then(res => res.data),
-  post: <T>(url: string, data: any) => axios.post<T>(`${API_URL}${url}`, data).then(res => res.data),
-  put: <T>(url: string, data: any) => axios.put<T>(`${API_URL}${url}`, data).then(res => res.data),
-  delete: <T>(url: string) => axios.delete<T>(`${API_URL}${url}`).then(res => res.data),
-};
+const API_URL = 'http://0.0.0.0:3000/api/v1';
+
+const api = axios.create({
+  baseURL: API_URL,
+  timeout: 10000,
+});
+
+api.interceptors.request.use(
+  (config) => {
+    const token = useAuthStore.getState().token;
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 401) {
+      useAuthStore.getState().logout();
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
+export default api;

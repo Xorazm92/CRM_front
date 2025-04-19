@@ -1,20 +1,34 @@
 
-import { api } from './api';
+import api from './api';
 
-export interface LoginDTO {
+export interface LoginData {
   username: string;
   password: string;
 }
 
-export interface RegisterDTO {
-  username: string;
-  password: string;
-  full_name: string;
-  role: string;
+export interface LoginResponse {
+  token: string;
+  user: {
+    id: string;
+    username: string;
+    full_name: string;
+    role: string;
+  };
 }
 
 export const authService = {
-  login: (data: LoginDTO) => api.post('/auth/login', data),
-  register: (data: RegisterDTO) => api.post('/auth/register', data),
-  me: () => api.get('/auth/me'),
+  login: async (data: LoginData): Promise<LoginResponse> => {
+    const response = await api.post('/auth/login', data);
+    return response.data;
+  },
+  
+  getProfile: async () => {
+    const response = await api.get('/auth/profile');
+    return response.data;
+  },
+  
+  logout: async () => {
+    const response = await api.post('/auth/logout');
+    return response.data;
+  }
 };
