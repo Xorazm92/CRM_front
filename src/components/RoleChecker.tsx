@@ -4,23 +4,22 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 
 const RoleChecker = ({ roles, children }: { roles: string[]; children: React.ReactNode }) => {
-  const { user } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!user) {
-      navigate('/login');
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: location.pathname } });
       return;
     }
 
-    const hasAccess = roles.includes(user.role);
-    if (!hasAccess) {
-      navigate('/not-authorized');
+    if (user && !roles.includes(user.role.toUpperCase())) {
+      navigate('/');
     }
-  }, [user, roles, navigate]);
+  }, [user, roles, navigate, location, isAuthenticated]);
 
-  if (!user || !roles.includes(user.role)) {
+  if (!user || !roles.includes(user.role.toUpperCase())) {
     return null;
   }
 
