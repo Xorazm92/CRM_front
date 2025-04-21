@@ -1,0 +1,61 @@
+.at_wrapper {
+    display: flex;
+    flex-direction: column;
+    width: calc(100% -237px);
+    height: 100vh;
+    margin-left: 237px;
+    margin-top: 100px;
+    padding: 0px 20px;
+}
+
+.form_wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 40px;
+
+
+}
+
+.form_wrapper_info {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-direction: column;
+    width: 70%;
+
+}
+
+.add-teacher-image {
+    width: 200px;
+    height: 182px;
+}
+
+.add-teacher-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+    width: 100%;
+
+}
+
+.add-teacher-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    width: 100%;
+    height: 182px;
+}
+
+.add-teacher-bottom {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    gap: 23px;
+    flex-wrap: wrap;
+    /* gap: 30px; */
+    margin-top: 50px;
+}

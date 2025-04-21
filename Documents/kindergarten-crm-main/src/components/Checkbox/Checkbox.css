@@ -1,0 +1,9 @@
+.checkbox-container {
+    margin-bottom: 10px;
+    /* border:2px solid red; */
+}
+
+.checkbox-container label {
+    font-size: 1rem;
+    color: #16213E;
+}
