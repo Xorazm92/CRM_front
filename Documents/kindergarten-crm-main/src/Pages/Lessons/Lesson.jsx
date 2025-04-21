@@ -15,18 +15,15 @@ const Lesson = () => {
   const [showAdd, setShowAdd] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [editItem, setEditItem] = useState(null);
+  const [groups, setGroups] = useState([]);
 
   const fetchLessons = async () => {
     setLoading(true);
     try {
-      // always use correct endpoint
       const res = await instance.get("/lesson");
       let data = res.data;
-      if (!Array.isArray(data)) {
-        // Support for both {results:[]} and []
-        data = Array.isArray(data.results) ? data.results : [];
-      }
-      setLessons(data);
+      let lessonsArray = Array.isArray(data.data) ? data.data : [];
+      setLessons(lessonsArray);
     } catch (err) {
       setError("Darslarni olishda xatolik");
       setToast({ message: err.response?.data?.message || err.message || "Darslarni olishda xatolik", type: 'error' });
@@ -35,9 +32,23 @@ const Lesson = () => {
     }
   };
 
+  // Guruhlarni olish
+  useEffect(() => {
+    instance.get('/groups').then(res => {
+      let data = res.data.data || [];
+      setGroups(data);
+    });
+  }, []);
+
   useEffect(() => {
     fetchLessons();
   }, []);
+
+  // Guruh nomini id orqali topish uchun funksiya
+  const getGroupName = (group_id) => {
+    const g = groups.find(g => g.group_id === group_id || g._id === group_id);
+    return g ? g.name : group_id;
+  };
 
   const handleDelete = async (id) => {
     if (!window.confirm("Haqiqatan ham o'chirmoqchimisiz?")) return;
@@ -54,7 +65,7 @@ const Lesson = () => {
   };
 
   return (
-    <div className="lesson-page">
+    <div className="lesson-wrapper">
       <div className="header-lesson-page">
         <h2><img src={images.lesson} alt="Darslar" style={{width:28,verticalAlign:'middle',marginRight:8}} /> Darslar</h2>
         <button className="add-btn" onClick={() => setShowAdd(true)}>
@@ -72,10 +83,10 @@ const Lesson = () => {
             <thead>
               <tr>
                 <th>#</th>
-                <th>Nomi</th>
-                <th>Kurs</th>
-                <th>O'qituvchi</th>
-                <th>Izoh</th>
+                <th>Mavzu</th>
+                <th>Guruh</th>
+                <th>Sana</th>
+                <th>Yozuv yo‘li</th>
                 <th>Amallar</th>
               </tr>
             </thead>
@@ -83,15 +94,15 @@ const Lesson = () => {
               {(!Array.isArray(lessons) || lessons.length === 0) ? (
                 <tr><td colSpan="6">Darslar topilmadi</td></tr>
               ) : lessons.map((l, i) => (
-                <tr key={l.id}>
+                <tr key={l.lesson_id || l.id}>
                   <td>{i + 1}</td>
-                  <td>{l.name}</td>
-                  <td>{l.courseName || l.courseId}</td>
-                  <td>{l.teacherName || l.teacherId}</td>
-                  <td>{l.description}</td>
+                  <td>{l.topic}</td>
+                  <td>{getGroupName(l.group_id)}</td>
+                  <td>{l.lesson_date ? new Date(l.lesson_date).toLocaleString() : ''}</td>
+                  <td>{l.recording_path}</td>
                   <td>
                     <button className="edit-btn" onClick={() => { setEditItem(l); setShowEdit(true); }}>Tahrirlash</button>
-                    <button onClick={() => handleDelete(l.id)} className="delete-btn">O'chirish</button>
+                    <button onClick={() => handleDelete(l.lesson_id || l.id)} className="delete-btn">O'chirish</button>
                   </td>
                 </tr>
               ))}

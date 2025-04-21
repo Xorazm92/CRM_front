@@ -5,37 +5,17 @@ import ClipLoader from "react-spinners/ClipLoader";
 import "./Lesson.css";
 
 const AddLessonModal = ({ open, onClose, onSuccess }) => {
-  const [form, setForm] = useState({ name: '', courseId: '', teacherId: '', description: '' });
+  const [form, setForm] = useState({ group_id: '', topic: '', lesson_date: '', recording_path: '' });
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState({ message: '', type: 'success' });
-  const [courses, setCourses] = useState([]);
-  const [teachers, setTeachers] = useState([]);
-  const [courseMap, setCourseMap] = useState({});
-  const [teacherMap, setTeacherMap] = useState({});
+  const [groups, setGroups] = useState([]);
 
   useEffect(() => {
-    // Fetch courses
-    instance.get('/course').then(res => {
+    // Guruhlarni olish
+    instance.get('/groups').then(res => {
       let data = res.data.data || [];
-      // Map: name -> id
-      const map = {};
-      data.forEach(c => {
-        map[c.name] = c._id || c.id || c.name;
-      });
-      setCourses(data);
-      setCourseMap(map);
-      console.log('Kurslar:', data);
-    });
-    // Fetch teachers
-    instance.get('/teacher').then(res => {
-      let data = res.data.data || [];
-      const map = {};
-      data.forEach(t => {
-        map[t.full_name || t.name] = t._id || t.id || t.full_name || t.name;
-      });
-      setTeachers(data);
-      setTeacherMap(map);
-      console.log('Oqituvchilar:', data);
+      setGroups(data);
+      console.log('Guruhlar:', data);
     });
   }, []);
 
@@ -47,15 +27,19 @@ const AddLessonModal = ({ open, onClose, onSuccess }) => {
     e.preventDefault();
     // Debug: Ko'rib chiqish uchun formani konsolga chiqaramiz
     console.log('Yuborilayotgan forma:', form);
-    if (!form.name || !form.courseId || !form.teacherId || !form.description) {
+    if (!form.group_id || !form.topic || !form.lesson_date || !form.recording_path) {
       setToast({ message: "Barcha maydonlarni to'ldiring", type: 'error' });
       return;
     }
     setLoading(true);
     try {
-      await instance.post("/lesson", form);
+      const payload = {
+        ...form,
+        lesson_date: new Date(form.lesson_date).toISOString()
+      };
+      await instance.post("/lesson", payload);
       setToast({ message: "Dars qo'shildi!", type: 'success' });
-      setForm({ name: '', courseId: '', teacherId: '', description: '' });
+      setForm({ group_id: '', topic: '', lesson_date: '', recording_path: '' });
       onSuccess && onSuccess();
       setTimeout(onClose, 1000);
     } catch (err) {
@@ -75,50 +59,30 @@ const AddLessonModal = ({ open, onClose, onSuccess }) => {
         <form onSubmit={handleSubmit}>
           <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: '', type: 'success' })} />
           <div className="form-group">
-            <label>Nomi</label>
-            <input name="name" value={form.name} onChange={handleChange} disabled={loading} />
-          </div>
-          <div className="form-group">
-            <label>Kurs</label>
+            <label>Guruh</label>
             <select
-              name="courseId"
-              value={form.courseId}
-              onChange={e => {
-                const name = e.target.selectedOptions[0].textContent;
-                setForm({ ...form, courseId: courseMap[name] });
-              }}
+              name="group_id"
+              value={form.group_id}
+              onChange={handleChange}
               disabled={loading}
             >
-              <option value="">Kursni tanlang</option>
-              {courses.map((c, idx) => (
-                <option key={c._id || c.id || idx} value={c._id || c.id || c.name}>
-                  {c.name}
-                </option>
+              <option value="">Guruhni tanlang</option>
+              {groups.map((g, idx) => (
+                <option key={g.group_id || g._id || idx} value={g.group_id || g._id}>{g.name}</option>
               ))}
             </select>
           </div>
           <div className="form-group">
-            <label>O'qituvchi</label>
-            <select
-              name="teacherId"
-              value={form.teacherId}
-              onChange={e => {
-                const name = e.target.selectedOptions[0].textContent;
-                setForm({ ...form, teacherId: teacherMap[name] });
-              }}
-              disabled={loading}
-            >
-              <option value="">O'qituvchini tanlang</option>
-              {teachers.map((t, idx) => (
-                <option key={t._id || t.id || idx} value={t._id || t.id || t.full_name || t.name}>
-                  {t.full_name || t.name}
-                </option>
-              ))}
-            </select>
+            <label>Mavzu</label>
+            <input name="topic" value={form.topic} onChange={handleChange} disabled={loading} />
           </div>
           <div className="form-group">
-            <label>Izoh</label>
-            <input name="description" value={form.description} onChange={handleChange} disabled={loading} />
+            <label>Dars sanasi</label>
+            <input name="lesson_date" type="datetime-local" value={form.lesson_date} onChange={handleChange} disabled={loading} />
+          </div>
+          <div className="form-group">
+            <label>Yozuv yo‘li</label>
+            <input name="recording_path" value={form.recording_path} onChange={handleChange} disabled={loading} />
           </div>
           <button type="submit" disabled={loading}>{loading ? <ClipLoader size={18} color="#fff" /> : "Qo'shish"}</button>
           <button type="button" className="cancel-btn" onClick={onClose} disabled={loading}>Bekor qilish</button>
