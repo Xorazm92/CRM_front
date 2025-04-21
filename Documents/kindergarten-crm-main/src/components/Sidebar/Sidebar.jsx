@@ -87,6 +87,16 @@ function Sidebar() {
             className={`menu-item ${activeItem === "Assignments" ? "active" : ""}`}
             onClick={() => handleItemClick("Assignments")}
           >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style={{marginRight:10}} xmlns="http://www.w3.org/2000/svg">
+              <rect x="3" y="4" width="18" height="16" rx="3" fill={activeItem === "Assignments" ? "#1976d2" : "#f5f5f5"} stroke="#1976d2" strokeWidth="1.5"/>
+              <rect x="7" y="8" width="10" height="2" rx="1" fill="#1976d2" opacity=".8"/>
+              <rect x="7" y="12" width="7" height="2" rx="1" fill="#1976d2" opacity=".6"/>
+              <rect x="7" y="16" width="5" height="2" rx="1" fill="#1976d2" opacity=".4"/>
+              <g>
+                <circle cx="18" cy="18" r="2.2" fill="#fff" stroke="#1976d2" strokeWidth="1.3"/>
+                <path d="M18 17V19M17 18H19" stroke="#1976d2" strokeWidth="1.2" strokeLinecap="round"/>
+              </g>
+            </svg>
             <span>Vazifalar</span>
           </Link>
           <Link

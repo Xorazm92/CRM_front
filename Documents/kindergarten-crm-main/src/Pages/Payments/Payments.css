@@ -1,11 +1,80 @@
-.payments-page { padding: 30px; }
-.payments-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-.payments-table th, .payments-table td { border: 1px solid #eee; padding: 8px; text-align: center; }
-.payments-table th { background: #f5f5f5; }
-.add-btn { margin-bottom: 15px; background: #43a047; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
-.add-btn:hover { background: #2e7031; }
-.delete-btn { background: #e53935; color: #fff; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-left: 8px; }
-.delete-btn:hover { background: #c62828; }
+.payments-page {
+    width: calc(100% - 237px);
+    height: 100vh;
+    margin-left: 237px;
+    margin-top: 100px;
+    box-sizing: border-box;
+    overflow-x: auto;
+    overflow-y: auto;
+    padding: 30px;
+}
+.payments-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+.payments-table th, .payments-table td {
+    border: 1px solid #eee;
+    padding: 8px;
+    text-align: center;
+}
+.payments-table th {
+    background: #f5f5f5;
+}
+.add-btn {
+    margin-bottom: 15px;
+    background: #1976d2;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.add-btn:hover {
+    background: #115293;
+}
+.delete-btn {
+    background: #e53935;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 8px;
+}
+.delete-btn:hover {
+    background: #c62828;
+}
+.payments-table button {
+    padding: 4px 9px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    margin: 0 2px;
+    font-size: 14px;
+    transition: background 0.15s;
+}
+.payments-table button:first-child {
+    background: #1976d2;
+    color: #fff;
+}
+.payments-table button:first-child:hover {
+    background: #115293;
+}
+.payments-table button.delete-btn {
+    background: #e53935;
+    color: #fff;
+}
+.payments-table button.delete-btn:hover {
+    background: #c62828;
+}
+.payments-table button:active {
+    opacity: 0.9;
+}
+.payments-table td button {
+    min-width: 90px;
+    font-weight: 500;
+}
 .loader-center { display: flex; justify-content: center; align-items: center; height: 140px; }
 .error-msg { color: #e53935; margin: 16px 0; text-align: center; }
 .modal-overlay { position: fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.2); display:flex; align-items:center; justify-content:center; z-index:999; }

@@ -117,6 +117,7 @@ function App() {
               <Lesson />
             </ProtectedRoute>
           } />
+          <Route path="assignments" element={<Assignments />} />
           <Route path="forbidden" element={<Forbidden />} />
         </Route>
       </Routes>

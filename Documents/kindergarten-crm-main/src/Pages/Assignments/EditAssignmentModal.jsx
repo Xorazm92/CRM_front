@@ -5,19 +5,26 @@ import ClipLoader from "react-spinners/ClipLoader";
 import "./Assignments.css";
 
 const EditAssignmentModal = ({ open, onClose, onSuccess, assignment }) => {
-  const [form, setForm] = useState({ title: '', startDate: '', endDate: '' });
+  const [form, setForm] = useState({ title: '', description: '', group_id: '', due_date: '' });
+  const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState({ message: '', type: 'success' });
 
   useEffect(() => {
     if (assignment) {
       setForm({
-        title: assignment.title,
-        startDate: assignment.startDate?.slice(0, 10),
-        endDate: assignment.endDate?.slice(0, 10)
+        title: assignment.title || '',
+        description: assignment.description || '',
+        group_id: assignment.group_id || '',
+        due_date: assignment.due_date ? assignment.due_date.slice(0, 10) : ''
       });
     }
-  }, [assignment]);
+    if (open) {
+      instance.get('/groups').then(res => {
+        setGroups(res.data || []);
+      });
+    }
+  }, [assignment, open]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -25,13 +32,13 @@ const EditAssignmentModal = ({ open, onClose, onSuccess, assignment }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.title || !form.startDate || !form.endDate) {
+    if (!form.title || !form.due_date || !form.group_id) {
       setToast({ message: "Barcha maydonlarni to'ldiring", type: 'error' });
       return;
     }
     setLoading(true);
     try {
-      await instance.put(`/assignments/${assignment.id}`, form);
+      await instance.put(`/assignments/${assignment.assignment_id || assignment.id}`, form);
       setToast({ message: "Vazifa tahrirlandi!", type: 'success' });
       onSuccess && onSuccess();
       setTimeout(onClose, 1000);
@@ -42,6 +49,9 @@ const EditAssignmentModal = ({ open, onClose, onSuccess, assignment }) => {
       setTimeout(() => setToast({ message: '', type: 'success' }), 2000);
     }
   };
+
+  // Guruhlar select uchun fallback: agar groups massiv emas yoki undefined bo'lsa, [] qilib yuboriladi
+  const safeGroups = Array.isArray(groups) ? groups : [];
 
   if (!open) return null;
 
@@ -56,12 +66,21 @@ const EditAssignmentModal = ({ open, onClose, onSuccess, assignment }) => {
             <input name="title" value={form.title} onChange={handleChange} disabled={loading} />
           </div>
           <div className="form-group">
-            <label>Boshlanish sanasi</label>
-            <input type="date" name="startDate" value={form.startDate} onChange={handleChange} disabled={loading} />
+            <label>Guruh</label>
+            <select name="group_id" value={form.group_id} onChange={handleChange} disabled={loading}>
+              <option value="">Tanlang</option>
+              {safeGroups.map(g => (
+                <option key={g.group_id || g._id || g.id} value={g.group_id || g._id || g.id}>{g.name}</option>
+              ))}
+            </select>
+          </div>
+          <div className="form-group">
+            <label>Tavsif</label>
+            <textarea name="description" value={form.description} onChange={handleChange} disabled={loading} />
           </div>
           <div className="form-group">
             <label>Tugash sanasi</label>
-            <input type="date" name="endDate" value={form.endDate} onChange={handleChange} disabled={loading} />
+            <input type="date" name="due_date" value={form.due_date} onChange={handleChange} disabled={loading} />
           </div>
           <button type="submit" disabled={loading}>{loading ? <ClipLoader size={18} color="#fff" /> : "Saqlash"}</button>
           <button type="button" className="cancel-btn" onClick={onClose} disabled={loading}>Bekor qilish</button>

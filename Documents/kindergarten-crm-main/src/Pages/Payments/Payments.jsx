@@ -77,8 +77,8 @@ const Payments = () => {
             ) : payments.map((p, i) => (
               <tr key={p.id}>
                 <td>{i + 1}</td>
-                <td>{p.student?.fullName || p.studentId}</td>
-                <td>{p.date?.slice(0, 10)}</td>
+                <td>{p.student?.name || p.student?.full_name || p.student?.fullName || p.studentId}</td>
+                <td>{p.createdAt ? new Date(p.createdAt).toLocaleDateString() : (p.date ? p.date.slice(0,10) : '')}</td>
                 <td>{p.amount}</td>
                 <td>{p.status}</td>
                 <td>
