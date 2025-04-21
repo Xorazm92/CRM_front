@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import instance from "../../api/axios";
 import ClipLoader from "react-spinners/ClipLoader";
 import Toast from "../../components/Toast";
+import Button from "../../components/Button/Button";
+import Filter from "../../components/Filter/Filter";
+import DataTable from "../../components/DataTable/DataTable";
 import AddGroupModal from "./AddGroupModal";
 import EditGroupModal from "./EditGroupModal";
 import AddGroupMemberModal from "./AddGroupMemberModal";
@@ -10,36 +13,27 @@ import AddGroupTeacherModal from "./AddGroupTeacherModal";
 import "./Groups.css";
 
 const Groups = () => {
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [groups, setGroups] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [toast, setToast] = useState({ message: '', type: 'success' });
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [showAdd, setShowAdd] = useState(false);
-  const [showEdit, setShowEdit] = useState(false);
-  const [editItem, setEditItem] = useState(null);
-  const [showAddMember, setShowAddMember] = useState(false);
-  const [addMemberGroup, setAddMemberGroup] = useState(null);
-  const [showDetail, setShowDetail] = useState(false);
-  const [detailGroupId, setDetailGroupId] = useState(null);
-  const [showAddTeacher, setShowAddTeacher] = useState(false);
-  const [addTeacherGroup, setAddTeacherGroup] = useState(null);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedGroup, setSelectedGroup] = useState(null);
+  const [toast, setToast] = useState({ message: '', type: 'success' });
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
+  const [addMemberModalOpen, setAddMemberModalOpen] = useState(false);
+  const [addTeacherModalOpen, setAddTeacherModalOpen] = useState(false);
 
   const fetchGroups = async () => {
     setLoading(true);
+    setError("");
     try {
       const res = await instance.get("/groups");
-      let data = res.data;
-      if (!Array.isArray(data)) {
-        if (data && Array.isArray(data.data)) {
-          data = data.data;
-        } else {
-          data = [];
-        }
-      }
-      setGroups(data);
+      setGroups(res.data.data || []);
     } catch (err) {
-      setError("Guruhlarni olishda xatolik");
-      setToast({ message: err.message || "Guruhlarni olishda xatolik", type: 'error' });
+      setError(err.message || "Guruhlarni yuklashda xatolik");
+      setToast({ message: err.message || "Guruhlarni yuklashda xatolik", type: 'error' });
     } finally {
       setLoading(false);
     }
@@ -49,112 +43,112 @@ const Groups = () => {
     fetchGroups();
   }, []);
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Haqiqatan ham o'chirmoqchimisiz?")) return;
-    setLoading(true);
-    try {
-      await instance.delete(`/group/${id}`);
-      setToast({ message: "Guruh o'chirildi!", type: 'success' });
-      fetchGroups();
-    } catch (err) {
-      setToast({ message: err.message || "O'chirishda xatolik", type: 'error' });
-    } finally {
-      setLoading(false);
-    }
+  const toggleFilter = () => {
+    setIsFilterOpen((prev) => !prev);
   };
 
-  const handleAddMembers = (group) => {
-    setAddMemberGroup(group);
-    setShowAddMember(true);
+  const handleEdit = (group) => {
+    setSelectedGroup(group);
+    setIsEditModalOpen(true);
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("O‘chirishga ishonchingiz komilmi?")) return;
+    try {
+      await instance.delete(`/group/${id}`);
+      fetchGroups();
+      setToast({ message: "Guruh muvaffaqiyatli o‘chirildi!", type: "success" });
+    } catch (err) {
+      setToast({ message: err.response?.data?.message || "O‘chirishda xatolik", type: "error" });
+    }
+    setTimeout(() => setToast({ message: '', type: 'success' }), 3000);
+  };
+
+  const handleGroupAdded = () => {
+    fetchGroups();
+    setToast({ message: "Guruh muvaffaqiyatli qo‘shildi!", type: "success" });
+    setTimeout(() => setToast({ message: '', type: 'success' }), 3000);
+  };
+
+  const handleGroupEdited = () => {
+    fetchGroups();
+    setToast({ message: "Guruh muvaffaqiyatli tahrirlandi!", type: "success" });
+    setTimeout(() => setToast({ message: '', type: 'success' }), 3000);
+  };
+
+  const openDetailModal = (group) => {
+    setSelectedGroup(group);
+    setDetailModalOpen(true);
+  };
+  const closeDetailModal = () => {
+    setDetailModalOpen(false);
+    setSelectedGroup(null);
+  };
+  const openAddMemberModal = (group) => {
+    setSelectedGroup(group);
+    setAddMemberModalOpen(true);
+  };
+  const closeAddMemberModal = () => {
+    setAddMemberModalOpen(false);
+    setSelectedGroup(null);
+  };
+  const openAddTeacherModal = (group) => {
+    setSelectedGroup(group);
+    setAddTeacherModalOpen(true);
+  };
+  const closeAddTeacherModal = () => {
+    setAddTeacherModalOpen(false);
+    setSelectedGroup(null);
   };
 
   return (
-    <div className="home-wrapper">
-      <div className="groups-page">
-        <div className="groups-header-row">
-          <div>
-            <h2 className="groups-title">Guruhlar</h2>
-            <div className="groups-subtitle">Barcha guruhlarni boshqarish va tahrirlash</div>
-          </div>
-          <button className="add-btn" onClick={() => setShowAdd(true)}>
-            <span className="add-btn-icon">＋</span> Guruh qo'shish
-          </button>
+    <div className="groups-wrapper">
+      <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: '', type: 'success' })} />
+      <div className="header-student-page">
+        <h1>Guruhlar jadvali</h1>
+        <div style={{marginLeft:'auto', display:'flex', gap:'10px'}}>
+          <Button onClick={() => setIsAddModalOpen(true)}>Qo‘shish</Button>
+          <Button onFilterClick={toggleFilter} />
         </div>
-        <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: '', type: 'success' })} />
-        {loading ? (
-          <div className="loader-center"><ClipLoader color="#009688" size={40} /></div>
-        ) : error ? (
-          <div className="error-msg">{error}</div>
-        ) : (
-          <table className="groups-table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Nomi</th>
-                <th>Boshlanish sanasi</th>
-                <th>O'qituvchi</th>
-                <th>Amallar</th>
-                <th>Batafsil</th>
-                <th>O'qituvchi biriktirish</th>
-                <th>A'zolar</th>
-              </tr>
-            </thead>
-            <tbody>
-              {groups.length === 0 ? (
-                <tr><td colSpan="8" className="empty-row">Guruhlar topilmadi</td></tr>
-              ) : (
-                groups.map((g, i) => (
-                  <tr key={g.id || g.group_id || g._id || i} className="table-row">
-                    <td>{i + 1}</td>
-                    <td>{g.name}</td>
-                    <td>{g.start_date || g.startDate}</td>
-                    <td>{g.teacher_name || g.teacherName || g.teacher || "-"}</td>
-                    <td>
-                      <button onClick={() => { setEditItem(g); setShowEdit(true); }} className="edit-btn"><span className="icon-edit" /> Tahrirlash</button>
-                      <button onClick={() => handleDelete(g.id)} className="delete-btn"><span className="icon-delete" /> O'chirish</button>
-                    </td>
-                    <td>
-                      <button onClick={() => { setDetailGroupId(g.id || g.group_id || g._id); setShowDetail(true); }} className="add-member-btn">Batafsil</button>
-                    </td>
-                    <td>
-                      <button onClick={() => { setAddTeacherGroup(g); setShowAddTeacher(true); }} className="add-member-btn">O'qituvchi qo'shish</button>
-                    </td>
-                    <td><button onClick={() => handleAddMembers(g)} className="add-member-btn">A'zo qo'shish</button></td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        )}
-        <AddGroupModal
-          isOpen={showAdd}
-          onClose={() => setShowAdd(false)}
-          onGroupAdded={fetchGroups}
-        />
-        <EditGroupModal
-          isOpen={showEdit}
-          onClose={() => { setShowEdit(false); setEditItem(null); }}
-          group={editItem}
-          onGroupEdited={fetchGroups}
-        />
-        <AddGroupMemberModal
-          isOpen={showAddMember}
-          onClose={() => setShowAddMember(false)}
-          groupId={addMemberGroup?.id || addMemberGroup?.group_id || addMemberGroup?._id}
-          onMembersAdded={fetchGroups}
-        />
-        <GroupDetailModal
-          isOpen={showDetail}
-          onClose={() => setShowDetail(false)}
-          groupId={detailGroupId}
-        />
-        <AddGroupTeacherModal
-          isOpen={showAddTeacher}
-          onClose={() => setShowAddTeacher(false)}
-          groupId={addTeacherGroup?.id || addTeacherGroup?.group_id || addTeacherGroup?._id}
-          onTeacherAdded={fetchGroups}
-        />
+        {isFilterOpen && <Filter closeFilter={toggleFilter} />}
       </div>
+      <AddGroupModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onGroupAdded={handleGroupAdded}
+      />
+      <EditGroupModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        group={selectedGroup}
+        onGroupEdited={handleGroupEdited}
+      />
+      {loading ? (
+        <div style={{display:'flex',justifyContent:'center',alignItems:'center',height:'200px'}}>
+          <ClipLoader color="#009688" size={40} />
+        </div>
+      ) : error ? (
+        <div className="error">{error}</div>
+      ) : (
+        <DataTable 
+          data={groups} 
+          type="groups" 
+          onEdit={handleEdit} 
+          onDelete={handleDelete} 
+          onDetail={(group) => openDetailModal(group)} 
+          onAddMember={(group) => openAddMemberModal(group)} 
+          onAddTeacher={(group) => openAddTeacherModal(group)} 
+        />
+      )}
+      {detailModalOpen && (
+        <GroupDetailModal isOpen={detailModalOpen} groupId={selectedGroup?.group_id || selectedGroup?.id} onClose={closeDetailModal} />
+      )}
+      {addMemberModalOpen && (
+        <AddGroupMemberModal isOpen={addMemberModalOpen} groupId={selectedGroup?.group_id || selectedGroup?.id} onClose={closeAddMemberModal} />
+      )}
+      {addTeacherModalOpen && (
+        <AddGroupTeacherModal isOpen={addTeacherModalOpen} groupId={selectedGroup?.group_id || selectedGroup?.id} onClose={closeAddTeacherModal} />
+      )}
     </div>
   );
 };

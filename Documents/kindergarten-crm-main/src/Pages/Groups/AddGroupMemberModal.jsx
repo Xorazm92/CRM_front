@@ -22,21 +22,8 @@ const AddGroupMemberModal = ({ isOpen, onClose, groupId, onMembersAdded }) => {
           }
         }
         setStudents(data);
-      }).catch(async () => {
-        try {
-          const res2 = await instance.get("/api/v1/student");
-          let data2 = res2.data;
-          if (!Array.isArray(data2)) {
-            if (data2 && Array.isArray(data2.data)) {
-              data2 = data2.data;
-            } else {
-              data2 = [];
-            }
-          }
-          setStudents(data2);
-        } catch {
-          setStudents([]);
-        }
+      }).catch(() => {
+        setStudents([]);
       });
     }
   }, [isOpen]);
@@ -72,32 +59,22 @@ const AddGroupMemberModal = ({ isOpen, onClose, groupId, onMembersAdded }) => {
   if (!isOpen) return null;
   return (
     <div className="modal-overlay" style={{position:'fixed',top:0,left:0,width:'100vw',height:'100vh',background:'rgba(0,0,0,0.3)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:9999}}>
-      <div className="modal-content" style={{background:'#fff',padding:24,borderRadius:8,minWidth:320,maxWidth:400}}>
+      <div className="modal-content">
         <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: '', type: 'success' })} />
         <h3>Guruhga a'zo qo'shish</h3>
-        <form onSubmit={handleSubmit} style={{display:'flex',flexDirection:'column',gap:12,maxHeight:400,overflowY:'auto'}}>
+        <form onSubmit={handleSubmit} style={{display:'flex',flexDirection:'column',gap:16}}>
           <div style={{marginBottom:8}}>
-            {students.length === 0 ? (
-              <div style={{color:'#888'}}>O'quvchilar topilmadi</div>
-            ) : (
-              students.map((s) => {
-                const studentId = s.id || s.student_id || s.user_id || s._id;
-                if (!studentId) return null;
-                return (
-                  <label key={studentId} style={{display:'block',marginBottom:4}}>
-                    <input
-                      type="checkbox"
-                      checked={selected.includes(studentId)}
-                      onChange={() => handleSelect(studentId)}
-                    /> {s.full_name || s.name || s.username || 'No name'}
-                  </label>
-                );
-              })
-            )}
+            <select multiple value={selected} onChange={e => setSelected(Array.from(e.target.selectedOptions, o => o.value))} style={{width:'100%',minHeight:90,padding:10,borderRadius:6,border:'1px solid #ccc',fontSize:15}}>
+              {students.map((s) => (
+                <option key={s.id || s.user_id} value={s.id || s.user_id}>
+                  {s.full_name || s.name || s.username || 'No name'}
+                </option>
+              ))}
+            </select>
           </div>
-          <div style={{display:'flex',gap:8}}>
-            <button type="submit" disabled={loading}>{loading ? <ClipLoader size={16} color="#fff" /> : "+ Qo'shish"}</button>
-            <button type="button" onClick={onClose} disabled={loading}>Bekor qilish</button>
+          <div style={{display:'flex',gap:10,justifyContent:'flex-end'}}>
+            <button type="submit" disabled={loading} style={{background:'#009688',color:'#fff',padding:'7px 18px',borderRadius:6,border:'none',fontSize:15}}>{loading ? <ClipLoader size={16} color="#fff" /> : "+ Qo'shish"}</button>
+            <button type="button" onClick={onClose} disabled={loading} style={{background:'#eee',color:'#222',padding:'7px 18px',borderRadius:6,border:'none',fontSize:15}}>Bekor qilish</button>
           </div>
         </form>
       </div>

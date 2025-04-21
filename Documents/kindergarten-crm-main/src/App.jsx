@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
-import "./App.css";
-import AddGroup from "./Pages/Group/AddGroup/AddGroup";
-import Group from "./Pages/Group/Group/Group";
+
+import Group from "./Pages/Groups/Groups";
 import Home from "./Pages/Home/Home";
 import Settings from "./Pages/Settings/Settings";
+import AddGroupModal from "./Pages/Groups/AddGroupModal";
 import AddStudent from "./Pages/Students/AddStudents/AddStudent";
 import AddTeacher from "./Pages/Teachers/AddTeachers/AddTeacher";
 import Teacher from "./Pages/Teachers/Teachers/Teacher";
@@ -13,6 +13,8 @@ import Report from "./Pages/Report/Report";
 import Layout from "./components/Layout/Layout";
 import Student from "./Pages/Students/Students/Student";
 import Login from "./Pages/Login";
+import AddLessonModal from "./Pages/Lessons/AddLessonModal";
+
 import { AuthProvider } from "./context/AuthContext";
 import { useAuthStore } from "./store/useAuthStore";
 import ProtectedRoute from "./auth/ProtectedRoute";
@@ -29,8 +31,23 @@ import StatisticsDashboard from "./Pages/Dashboard/StatisticsDashboard";
 
 function App() {
   const { isLogged } = useAuthStore();
+  const [showAddGroup, setShowAddGroup] = useState(false);
+
   return (
     <AuthProvider>
+      {/* Yangi guruh qo‘shish tugmasi */}
+      <button
+        onClick={() => setShowAddGroup(true)}
+        style={{ margin: 20, padding: 12, fontSize: 16 }}
+      >
+        Yangi guruh qo‘shish
+      </button>
+      {/* Modal */}
+      <AddGroupModal
+        isOpen={showAddGroup}
+        onClose={() => setShowAddGroup(false)}
+        onGroupAdded={() => setShowAddGroup(false)}
+      />
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route
@@ -45,15 +62,9 @@ function App() {
         >
           <Route index element={<Home />} />
           <Route path="group" element={<Group />} />
-          <Route path="add-group" element={<AddGroup />} />
           <Route path="report" element={
             <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.MANAGER, ROLES.TEACHER]}>
               <Report />
-            </ProtectedRoute>
-          } />
-          <Route path="settings" element={
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.TEACHER, ROLES.STUDENT, ROLES.PARENT, ROLES.MANAGER]}>
-              <React.Suspense fallback={<div>Loading...</div>}><Settings /></React.Suspense>
             </ProtectedRoute>
           } />
           <Route path="students" element={
@@ -61,55 +72,49 @@ function App() {
               <Student />
             </ProtectedRoute>
           } />
-          <Route path="add-student" element={<AddStudent />} />
-          <Route
-            path="teacher"
-            element={
-              <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.MANAGER]}>
-                <Teacher />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="add-teacher" element={<AddTeacher />} />
+          <Route path="students/add" element={
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.MANAGER]}>
+              <AddStudent />
+            </ProtectedRoute>
+          } />
+          <Route path="teacher" element={
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.MANAGER]}>
+              <Teacher />
+            </ProtectedRoute>
+          } />
           <Route path="teachers" element={
             <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.MANAGER]}>
               <Teachers />
             </ProtectedRoute>
           } />
-          <Route path="attendance" element={<React.Suspense fallback={<div>Loading...</div>}><Attendance /></React.Suspense>} />
-          <Route path="assignments" element={
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.MANAGER, ROLES.TEACHER]}>
-              <Assignments />
-            </ProtectedRoute>
-          } />
-          <Route path="payments" element={
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.MANAGER, ROLES.TEACHER]}>
-              <Payments />
+          <Route path="teachers/add" element={
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.MANAGER]}>
+              <AddTeacher />
             </ProtectedRoute>
           } />
           <Route path="courses" element={
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.MANAGER, ROLES.TEACHER]}>
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.MANAGER]}>
               <Course />
-            </ProtectedRoute>
-          } />
-          <Route path="lessons" element={
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.MANAGER, ROLES.TEACHER]}>
-              <Lesson />
-            </ProtectedRoute>
-          } />
-          <Route path="file-upload" element={
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.MANAGER, ROLES.TEACHER]}>
-              <FileUpload />
             </ProtectedRoute>
           } />
           <Route path="groups" element={
             <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.MANAGER, ROLES.TEACHER]}>
-              <Groups />
+              <Group />
             </ProtectedRoute>
           } />
           <Route path="dashboard" element={
             <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.MANAGER]}>
               <StatisticsDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="attendance" element={
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.MANAGER, ROLES.TEACHER]}>
+              <Attendance />
+            </ProtectedRoute>
+          } />
+          <Route path="lessons" element={
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.MANAGER, ROLES.TEACHER]}>
+              <Lesson />
             </ProtectedRoute>
           } />
           <Route path="forbidden" element={<Forbidden />} />

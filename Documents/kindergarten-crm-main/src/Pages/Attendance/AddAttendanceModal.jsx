@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import instance from "../../api/axios";
 import Toast from "../../components/Toast";
 import ClipLoader from "react-spinners/ClipLoader";
@@ -8,6 +8,21 @@ const AddAttendanceModal = ({ open, onClose, onSuccess }) => {
   const [form, setForm] = useState({ studentId: '', date: '', status: 'present' });
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState({ message: '', type: 'success' });
+  const [students, setStudents] = useState([]);
+  const [studentsLoading, setStudentsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    setStudentsLoading(true);
+    instance.get("/student")
+      .then(res => {
+        setStudents(res.data.data || []);
+      })
+      .catch(() => {
+        setStudents([]);
+      })
+      .finally(() => setStudentsLoading(false));
+  }, [open]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -43,12 +58,21 @@ const AddAttendanceModal = ({ open, onClose, onSuccess }) => {
         <form onSubmit={handleSubmit}>
           <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: '', type: 'success' })} />
           <div className="form-group">
-            <label>Talaba ID</label>
-            <input name="studentId" value={form.studentId} onChange={handleChange} disabled={loading} />
+            <label>Talaba</label>
+            {studentsLoading ? (
+              <div style={{padding:'8px 0'}}><ClipLoader size={18} color="#009688" /></div>
+            ) : (
+              <select name="studentId" value={form.studentId} onChange={handleChange} disabled={loading || studentsLoading} required>
+                <option value="">Talabani tanlang</option>
+                {students.map((student) => (
+                  <option key={student._id} value={student._id}>{student.fullName || student.name}</option>
+                ))}
+              </select>
+            )}
           </div>
           <div className="form-group">
             <label>Sana</label>
-            <input type="date" name="date" value={form.date} onChange={handleChange} disabled={loading} />
+            <input type="date" name="date" value={form.date} onChange={handleChange} disabled={loading} required />
           </div>
           <div className="form-group">
             <label>Status</label>
@@ -57,7 +81,7 @@ const AddAttendanceModal = ({ open, onClose, onSuccess }) => {
               <option value="absent">Kelmagan</option>
             </select>
           </div>
-          <button type="submit" disabled={loading}>{loading ? <ClipLoader size={18} color="#fff" /> : "Qo'shish"}</button>
+          <button type="submit" disabled={loading || studentsLoading}>{loading ? <ClipLoader size={18} color="#fff" /> : "Qo'shish"}</button>
           <button type="button" className="cancel-btn" onClick={onClose} disabled={loading}>Bekor qilish</button>
         </form>
       </div>

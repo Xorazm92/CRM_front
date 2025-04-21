@@ -31,6 +31,7 @@ import success from "../../src/images/icons/success.png";
 import top from "../../src/images/icons/top.png";
 import true_icon from "../../src/images/icons/true_icon.png";
 import logo from "../../src/images/images/svg/logo.svg";
+import lesson from "../../src/images/icons/lesson.svg";
 
 const images = {
   x_icon,
@@ -66,5 +67,6 @@ const images = {
   top,
   true_icon,
   logo,
+  lesson,
 };
 export default images;

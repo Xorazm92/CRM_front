@@ -51,61 +51,71 @@ const AddGroupModal = ({ isOpen, onClose, onGroupAdded }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.name || !form.description || !form.course_id || !form.status || !form.start_date || !form.teacher_id) {
-      setToast({ message: "Barcha maydonlarni to‘ldiring", type: 'error' });
+    // --- VALIDATION ---
+    if (!form.name || !form.course_id || !form.teacher_id || !form.start_date) {
+      setToast({ message: "Barcha majburiy maydonlarni to‘ldiring", type: "error" });
+      return;
+    }
+    if (!form.description || form.description.length < 10) {
+      setToast({ message: "Tavsif kamida 10 ta belgidan iborat bo‘lishi kerak", type: "error" });
       return;
     }
     setLoading(true);
     try {
+      // --- ID mapping ---
+      const selectedCourse = courses.find(c => (c.id || c._id) === form.course_id);
+      const selectedTeacher = teachers.find(t => (t.id || t._id) === form.teacher_id);
       const payload = {
-        name: form.name,
-        description: form.description,
-        course_id: form.course_id,
-        status: form.status,
-        start_date: form.start_date,
-        teacher_id: form.teacher_id
+        ...form,
+        course_id: selectedCourse ? (selectedCourse.id || selectedCourse._id) : '',
+        teacher_id: selectedTeacher ? (selectedTeacher.id || selectedTeacher._id) : ''
       };
+      // Konsolga yuborilayotgan payloadni chiqaramiz
+      console.log("Yuborilayotgan payload:", payload);
       await instance.post("/groups", payload);
-      setToast({ message: "Guruh qo'shildi!", type: 'success' });
-      setForm({ name: "", description: "", course_id: "", status: "ACTIVE", start_date: "", teacher_id: "" });
-      onGroupAdded && onGroupAdded();
-      onClose();
+      setToast({ message: "Guruh muvaffaqiyatli qo'shildi!", type: "success" });
+      setForm({
+        name: "",
+        description: "",
+        course_id: "",
+        status: "ACTIVE",
+        start_date: "",
+        teacher_id: ""
+      });
+      if (onGroupAdded) onGroupAdded();
+      if (onClose) onClose();
     } catch (err) {
-      setToast({ message: err.message || "Qo'shishda xatolik", type: 'error' });
+      setToast({ message: err.response?.data?.message || err.message || "Xatolik yuz berdi", type: "error" });
     } finally {
       setLoading(false);
     }
   };
 
   if (!isOpen) return null;
+
   return (
     <div className="modal-overlay">
-      <div className="modal group-modal">
-        <h3>Guruh qo'shish</h3>
+      <div className="modal add-group-modal">
+        <h2>Yangi guruh qo'shish</h2>
         <form onSubmit={handleSubmit}>
-          <input name="name" placeholder="Guruh nomi" value={form.name} onChange={handleChange} />
-          <input name="description" placeholder="Guruh tavsifi" value={form.description} onChange={handleChange} />
-          <select name="course_id" value={form.course_id} onChange={handleChange}>
-            <option value="">Kursni tanlang</option>
-            {Array.isArray(courses) && courses.map((c, idx) => (
-              <option value={c.id || c.course_id || idx} key={c.id || c.course_id || idx}>
-                {c.name || c.course_name || 'No name'}
-              </option>
+          <input name="name" placeholder="Guruh nomi" value={form.name} onChange={handleChange} required />
+          <input name="description" placeholder="Tavsif (kamida 10 ta belgi)" value={form.description} onChange={handleChange} required />
+          <select name="course_id" value={form.course_id} onChange={handleChange} required>
+            <option value="">Kurs tanlang</option>
+            {courses.map(c => (
+              <option key={c.id || c._id} value={c.id || c._id}>{c.name}</option>
             ))}
           </select>
+          <select name="teacher_id" value={form.teacher_id} onChange={handleChange} required>
+            <option value="">O‘qituvchi tanlang</option>
+            {teachers.map(t => (
+              <option key={t.id || t._id} value={t.id || t._id}>{t.full_name || t.name}</option>
+            ))}
+          </select>
+          <input name="start_date" type="date" value={form.start_date} onChange={handleChange} required />
           <select name="status" value={form.status} onChange={handleChange}>
             <option value="ACTIVE">Aktiv</option>
-            <option value="INACTIVE">Noaktiv</option>
-            <option value="COMPLETED">Yakunlangan</option>
-          </select>
-          <input type="date" name="start_date" value={form.start_date} onChange={handleChange} />
-          <select name="teacher_id" value={form.teacher_id} onChange={handleChange}>
-            <option value="">O'qituvchi tanlang</option>
-            {Array.isArray(teachers) && teachers.map((t, idx) => (
-              <option value={t.id || t.user_id || t.teacher_id || idx} key={t.id || t.user_id || t.teacher_id || idx}>
-                {t.full_name || t.name || t.username || t.lastname || 'No name'}
-              </option>
-            ))}
+            <option value="INACTIVE">Passiv</option>
           </select>
           <div className="modal-actions">
             <button type="button" onClick={onClose}>Bekor qilish</button>

@@ -3,7 +3,7 @@ import "./DataTable.css";
 import images from "../../images";
 import Payment from "../Payment/Payment";
 
-const DataTable = ({ data = [], type, person, onEdit, onDelete }) => {
+const DataTable = ({ data = [], type, person, onEdit, onDelete, onDetail, onAddMember, onAddTeacher }) => {
   const [isChecked, setIsChecked] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPersonId, setSelectedPersonId] = useState(null);
@@ -186,12 +186,14 @@ const DataTable = ({ data = [], type, person, onEdit, onDelete }) => {
             {/* Groups */}
             {type === "groups" && (
               <>
-                <td className="names-person">{person.name}</td>
+                <td className="names-person" onClick={() => onDetail && onDetail(person)} style={{cursor:'pointer'}}>{person.name}</td>
                 <td className="start-date">{person.startDate}</td>
                 <td className="level">{person.level}</td>
                 <td>
                   <button onClick={() => onEdit && onEdit(person)}>Edit</button>
                   <button onClick={() => onDelete && onDelete(person.user_id || person.id)}>Delete</button>
+                  <button onClick={() => onAddMember && onAddMember(person)}>Student qo‘shish</button>
+                  <button onClick={() => onAddTeacher && onAddTeacher(person)}>Teacher qo‘shish</button>
                 </td>
               </>
             )}

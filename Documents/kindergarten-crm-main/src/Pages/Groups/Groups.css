@@ -2,6 +2,40 @@ body {
   background: #f5f6fa;
 }
 
+.groups-wrapper {
+  width: calc(100% -237px);
+  height: 100vh;
+  margin-left: 237px;
+  margin-top: 100px;
+}
+
+
+.footer {
+  padding: 10px 20px;
+  text-align: center;
+  position: relative;
+  bottom: 0;
+  width: 100%;
+}
+
+.header-groups-page {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--color-light-gray-2)
+}
+
+.header-groups-page h1 {
+  font-family: Mada;
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 33.8px;
+  text-align: left;
+  color: var(--color-primary-3);
+}
+
+
 .groups-page {
   background: #fff;
   border-radius: 18px;
@@ -60,40 +94,152 @@ body {
   margin-right: 2px;
 }
 
+/* Jadvalni markazga va zamonaviy ko'rinishga keltirish */
 .groups-table {
   width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
+  min-width: 900px;
+  max-width: 100%;
+  margin: 32px 0 0 0;
+  border-collapse: separate;
+  border-spacing: 0;
   background: #fff;
-  border-radius: 10px;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
   overflow: hidden;
 }
-
 .groups-table th, .groups-table td {
-  border: 1px solid #f0f0f0;
-  padding: 12px 10px;
-  text-align: center;
+  padding: 12px 14px;
+  border-bottom: 1px solid #f0f0f0;
+  text-align: left;
   font-size: 15px;
 }
-
 .groups-table th {
-  background: #f5f5f5;
+  background: #f7f7f7;
+  font-weight: 600;
+}
+.groups-table tr:last-child td {
+  border-bottom: none;
+}
+.groups-table .add-member-btn, .groups-table .edit-btn, .groups-table .delete-btn {
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: none;
+  margin-right: 6px;
+  background: #009688;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.groups-table .edit-btn { background: #1976d2; }
+.groups-table .delete-btn { background: #e53935; }
+.groups-table .add-member-btn:hover, .groups-table .edit-btn:hover, .groups-table .delete-btn:hover {
+  opacity: 0.85;
+}
+.empty-row {
+  text-align: center;
+  color: #888;
+  padding: 24px 0;
+  font-size: 16px;
+}
+
+/* Modal (universal) */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.modal-content {
+  background: #fff;
+  border-radius: 12px;
+  padding: 32px 28px 28px 28px;
+  min-width: 350px;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+  position: relative;
+  animation: modal-pop 0.25s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes modal-pop {
+  0% { transform: scale(0.85); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.modal-content h2, .modal-content h3 {
+  margin-top: 0;
+  margin-bottom: 18px;
+  font-size: 22px;
   font-weight: 700;
   color: #222;
 }
-
-.groups-table tr {
-  transition: background 0.15s;
+.modal-content button[disabled] {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+.modal-content form {
+  margin-top: 10px;
 }
 
-.table-row:hover {
-  background: #f1f8ff;
+/* Guruhlar sahifasi asosiy konteyneri */
+.groups-page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #f4f6fb;
 }
 
-.empty-row {
-  color: #aaa;
-  font-style: italic;
-  background: #fafafa;
+.groups-content {
+  margin-left: 240px; /* sidebar kengligi bilan bir xil bo'lsin */
+  padding: 36px 32px 32px 32px;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1200px) {
+  .groups-content {
+    margin-left: 0;
+    padding: 18px 4vw;
+  }
+  .groups-table {
+    min-width: 600px;
+  }
+}
+
+@media (max-width: 700px) {
+  .groups-content {
+    padding: 8px 2vw;
+  }
+  .groups-table {
+    min-width: 400px;
+  }
+}
+
+/* Jadval scrolli kichik ekranlar uchun */
+@media (max-width: 700px) {
+  .groups-table, .groups-table th, .groups-table td {
+    font-size: 13px;
+  }
+  .modal-content {
+    min-width: 90vw;
+    max-width: 98vw;
+    padding: 18px 6vw 18px 6vw;
+  }
+}
+
+.loader-center { 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  height: 140px; 
+}
+
+.error-msg { 
+  color: #e53935; 
+  margin: 16px 0; 
+  text-align: center; 
 }
 
 .edit-btn {
@@ -149,17 +295,4 @@ body {
   content: '\1F5D1';
   font-size: 1em;
   margin-right: 2px;
-}
-
-.loader-center { 
-  display: flex; 
-  justify-content: center; 
-  align-items: center; 
-  height: 140px; 
-}
-
-.error-msg { 
-  color: #e53935; 
-  margin: 16px 0; 
-  text-align: center; 
 }

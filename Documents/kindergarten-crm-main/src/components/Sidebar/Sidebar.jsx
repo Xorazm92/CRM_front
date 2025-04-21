@@ -13,6 +13,7 @@ function Sidebar() {
 
   return (
     <aside className="sidebar">
+
       <div className="logo">
         <img src={images.logo} alt="Logo" />
       </div>
@@ -66,10 +67,19 @@ function Sidebar() {
             <span>Guruhlar</span>
           </Link>
           <Link
+            to="/lessons"
+            className={`menu-item ${activeItem === "Lessons" ? "active" : ""}`}
+            onClick={() => handleItemClick("Lessons")}
+          >
+            <img src={images.lesson} alt="Darslar" style={{width:22, height:22}} />
+            <span>Darslar</span>
+          </Link>
+          <Link
             to="/attendance"
             className={`menu-item ${activeItem === "Attendance" ? "active" : ""}`}
             onClick={() => handleItemClick("Attendance")}
           >
+            <img src={images.calendar} alt="Davomat" />
             <span>Davomat</span>
           </Link>
           <Link
@@ -85,13 +95,6 @@ function Sidebar() {
             onClick={() => handleItemClick("Payments")}
           >
             <span>To‘lovlar</span>
-          </Link>
-          <Link
-            to="/lessons"
-            className={`menu-item ${activeItem === "Lessons" ? "active" : ""}`}
-            onClick={() => handleItemClick("Lessons")}
-          >
-            <span>Darslar</span>
           </Link>
           <Link
             to="/file-upload"

@@ -53,12 +53,12 @@ const AddGroupTeacherModal = ({ isOpen, onClose, groupId, onTeacherAdded }) => {
   if (!isOpen) return null;
   return (
     <div className="modal-overlay" style={{position:'fixed',top:0,left:0,width:'100vw',height:'100vh',background:'rgba(0,0,0,0.3)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:9999}}>
-      <div className="modal-content" style={{background:'#fff',padding:24,borderRadius:8,minWidth:320,maxWidth:400}}>
+      <div className="modal-content">
         <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: '', type: 'success' })} />
         <h3>Guruhga o'qituvchi biriktirish</h3>
-        <form onSubmit={handleSubmit} style={{display:'flex',flexDirection:'column',gap:12}}>
+        <form onSubmit={handleSubmit} style={{display:'flex',flexDirection:'column',gap:16}}>
           <div style={{marginBottom:8}}>
-            <select value={selected} onChange={e => setSelected(e.target.value)} style={{width:'100%',padding:8}}>
+            <select value={selected} onChange={e => setSelected(e.target.value)} style={{width:'100%',padding:10,borderRadius:6,border:'1px solid #ccc',fontSize:15}}>
               <option value="">O'qituvchini tanlang</option>
               {teachers.map((t) => (
                 <option key={t.id || t.teacher_id || t.user_id} value={t.id || t.teacher_id || t.user_id}>
@@ -67,9 +67,9 @@ const AddGroupTeacherModal = ({ isOpen, onClose, groupId, onTeacherAdded }) => {
               ))}
             </select>
           </div>
-          <div style={{display:'flex',gap:8}}>
-            <button type="submit" disabled={loading}>{loading ? <ClipLoader size={16} color="#fff" /> : "+ Qo'shish"}</button>
-            <button type="button" onClick={onClose} disabled={loading}>Bekor qilish</button>
+          <div style={{display:'flex',gap:10,justifyContent:'flex-end'}}>
+            <button type="submit" disabled={loading} style={{background:'#009688',color:'#fff',padding:'7px 18px',borderRadius:6,border:'none',fontSize:15}}>{loading ? <ClipLoader size={16} color="#fff" /> : "+ Qo'shish"}</button>
+            <button type="button" onClick={onClose} disabled={loading} style={{background:'#eee',color:'#222',padding:'7px 18px',borderRadius:6,border:'none',fontSize:15}}>Bekor qilish</button>
           </div>
         </form>
       </div>

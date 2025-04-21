@@ -5,6 +5,7 @@ import Toast from "../../components/Toast";
 import AddLessonModal from "./AddLessonModal";
 import EditLessonModal from "./EditLessonModal";
 import "./Lesson.css";
+import images from '../../images';
 
 const Lesson = () => {
   const [lessons, setLessons] = useState([]);
@@ -18,15 +19,17 @@ const Lesson = () => {
   const fetchLessons = async () => {
     setLoading(true);
     try {
+      // always use correct endpoint
       const res = await instance.get("/lesson");
       let data = res.data;
       if (!Array.isArray(data)) {
+        // Support for both {results:[]} and []
         data = Array.isArray(data.results) ? data.results : [];
       }
       setLessons(data);
     } catch (err) {
       setError("Darslarni olishda xatolik");
-      setToast({ message: err.message || "Darslarni olishda xatolik", type: 'error' });
+      setToast({ message: err.response?.data?.message || err.message || "Darslarni olishda xatolik", type: 'error' });
     } finally {
       setLoading(false);
     }
@@ -52,43 +55,49 @@ const Lesson = () => {
 
   return (
     <div className="lesson-page">
-      <h2>Darslar</h2>
-      <button className="add-btn" onClick={() => setShowAdd(true)}>+ Dars qo'shish</button>
+      <div className="header-lesson-page">
+        <h2><img src={images.lesson} alt="Darslar" style={{width:28,verticalAlign:'middle',marginRight:8}} /> Darslar</h2>
+        <button className="add-btn" onClick={() => setShowAdd(true)}>
+          <span style={{fontSize:22,marginRight:6}}>+</span> Dars qo'shish
+        </button>
+      </div>
       <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: '', type: 'success' })} />
       {loading ? (
         <div className="loader-center"><ClipLoader color="#009688" size={40} /></div>
       ) : error ? (
         <div className="error-msg">{error}</div>
       ) : (
-        <table className="lesson-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Nomi</th>
-              <th>Kurs</th>
-              <th>O'qituvchi</th>
-              <th>Izoh</th>
-              <th>Amallar</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(!Array.isArray(lessons) || lessons.length === 0) ? (
-              <tr><td colSpan="6">Darslar topilmadi</td></tr>
-            ) : lessons.map((l, i) => (
-              <tr key={l.id}>
-                <td>{i + 1}</td>
-                <td>{l.name}</td>
-                <td>{l.courseName || l.courseId}</td>
-                <td>{l.teacherName || l.teacherId}</td>
-                <td>{l.description}</td>
-                <td>
-                  <button onClick={() => { setEditItem(l); setShowEdit(true); }}>Tahrirlash</button>
-                  <button onClick={() => handleDelete(l.id)} className="delete-btn">O'chirish</button>
-                </td>
+        <div className="table-responsive">
+          <table className="lesson-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Nomi</th>
+                <th>Kurs</th>
+                <th>O'qituvchi</th>
+                <th>Izoh</th>
+                <th>Amallar</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {(!Array.isArray(lessons) || lessons.length === 0) ? (
+                <tr><td colSpan="6">Darslar topilmadi</td></tr>
+              ) : lessons.map((l, i) => (
+                <tr key={l.id}>
+                  <td>{i + 1}</td>
+                  <td>{l.name}</td>
+                  <td>{l.courseName || l.courseId}</td>
+                  <td>{l.teacherName || l.teacherId}</td>
+                  <td>{l.description}</td>
+                  <td>
+                    <button className="edit-btn" onClick={() => { setEditItem(l); setShowEdit(true); }}>Tahrirlash</button>
+                    <button onClick={() => handleDelete(l.id)} className="delete-btn">O'chirish</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
       <AddLessonModal
         open={showAdd}
