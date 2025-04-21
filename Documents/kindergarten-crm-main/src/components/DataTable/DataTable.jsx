@@ -90,7 +90,7 @@ const DataTable = ({ data = [], type, person, onEdit, onDelete }) => {
       </thead>
       <tbody>
         {data.map((person, idx) => (
-          <tr key={person.user_id || person.id || idx}>
+          <tr key={person.user_id || person.id || person.name || idx}>
             <td className="checkbox-index">
               <input
                 type="checkbox"

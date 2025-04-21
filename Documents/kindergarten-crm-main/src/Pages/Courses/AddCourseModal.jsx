@@ -5,7 +5,7 @@ import ClipLoader from "react-spinners/ClipLoader";
 import "./Course.css";
 
 const AddCourseModal = ({ open, onClose, onSuccess }) => {
-  const [form, setForm] = useState({ name: '', description: '' });
+  const [form, setForm] = useState({ name: '', description: '', duration: '', status: 'ACTIVE' });
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState({ message: '', type: 'success' });
 
@@ -15,15 +15,15 @@ const AddCourseModal = ({ open, onClose, onSuccess }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.name || !form.description) {
+    if (!form.name || !form.description || !form.duration || !form.status) {
       setToast({ message: "Barcha maydonlarni to'ldiring", type: 'error' });
       return;
     }
     setLoading(true);
     try {
-      await instance.post("/course", form);
+      await instance.post("/course", { ...form, duration: Number(form.duration) });
       setToast({ message: "Kurs qo'shildi!", type: 'success' });
-      setForm({ name: '', description: '' });
+      setForm({ name: '', description: '', duration: '', status: 'ACTIVE' });
       onSuccess && onSuccess();
       setTimeout(onClose, 1000);
     } catch (err) {
@@ -49,6 +49,17 @@ const AddCourseModal = ({ open, onClose, onSuccess }) => {
           <div className="form-group">
             <label>Izoh</label>
             <input name="description" value={form.description} onChange={handleChange} disabled={loading} />
+          </div>
+          <div className="form-group">
+            <label>Davomiyligi (oy)</label>
+            <input name="duration" type="number" min="1" value={form.duration} onChange={handleChange} disabled={loading} placeholder="Masalan: 6" />
+          </div>
+          <div className="form-group">
+            <label>Status</label>
+            <select name="status" value={form.status} onChange={handleChange} disabled={loading}>
+              <option value="ACTIVE">Faol</option>
+              <option value="INACTIVE">Nofaol</option>
+            </select>
           </div>
           <button type="submit" disabled={loading}>{loading ? <ClipLoader size={18} color="#fff" /> : "Qo'shish"}</button>
           <button type="button" className="cancel-btn" onClick={onClose} disabled={loading}>Bekor qilish</button>

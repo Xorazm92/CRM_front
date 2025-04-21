@@ -34,13 +34,13 @@ function Sidebar() {
             <img src={images.doubleuser} alt="O'quvchilar" />
             <span>O’quvchilar</span>
           </Link>
-          <Link
+          {/* <Link
             to="/teachers"
             className={`menu-item ${activeItem === "Teachers" ? "active" : ""}`}
             onClick={() => handleItemClick("Teachers")}
           >
             <span>O'qituvchilar</span>
-          </Link>
+          </Link> */}
           <Link
             to="/teacher"
             className={`menu-item ${activeItem === "O’qituvchilar" ? "active" : ""}`}
@@ -50,14 +50,15 @@ function Sidebar() {
             <span>O’qituvchilar</span>
           </Link>
           <Link
-            to="/groups"
-            className={`menu-item ${activeItem === "Groups" ? "active" : ""}`}
-            onClick={() => handleItemClick("Groups")}
+            to="/courses"
+            className={`menu-item ${activeItem === "Kurslar" ? "active" : ""}`}
+            onClick={() => handleItemClick("Kurslar")}
           >
-            <span>Guruhlar</span>
+            <img src={images.add_icon} alt="Kurslar" />
+            <span>Kurslar</span>
           </Link>
           <Link
-            to="/group"
+            to="/groups"
             className={`menu-item ${activeItem === "Guruhlar" ? "active" : ""}`}
             onClick={() => handleItemClick("Guruhlar")}
           >
@@ -84,13 +85,6 @@ function Sidebar() {
             onClick={() => handleItemClick("Payments")}
           >
             <span>To‘lovlar</span>
-          </Link>
-          <Link
-            to="/courses"
-            className={`menu-item ${activeItem === "Courses" ? "active" : ""}`}
-            onClick={() => handleItemClick("Courses")}
-          >
-            <span>Kurslar</span>
           </Link>
           <Link
             to="/lessons"

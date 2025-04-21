@@ -14,6 +14,11 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     return <Navigate to="/login" replace />;
   }
 
+  // ADMIN har doim hamma narsaga ruxsat
+  if (user && user.role === 'ADMIN') {
+    return children;
+  }
+
   if (!user || (allowedRoles && !allowedRoles.includes(user.role))) {
     // Agar user role mos kelmasa, bosh sahifaga yoki 403 sahifaga yo‘naltiramiz
     return <Navigate to="/forbidden" replace />;

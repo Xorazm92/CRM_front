@@ -1,13 +1,165 @@
-.groups-page { padding: 30px; max-width: 900px; margin: 0 auto; }
-.add-btn { background: #009688; color: #fff; border: none; padding: 8px 18px; border-radius: 4px; cursor: pointer; margin-bottom: 18px; }
-.add-btn:hover { background: #00796b; }
-.groups-table { width: 100%; border-collapse: collapse; margin-top: 14px; }
-.groups-table th, .groups-table td { border: 1px solid #e0e0e0; padding: 8px 12px; text-align: left; }
-.groups-table th { background: #f5f5f5; }
-.groups-table tr:nth-child(even) { background: #fafafa; }
-.groups-table .delete-btn { background: #e53935; color: #fff; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; margin-left: 8px; }
-.groups-table .delete-btn:hover { background: #c62828; }
-.loader-center { display: flex; justify-content: center; align-items: center; min-height: 120px; }
-.error-msg { color: #e53935; margin: 18px 0; text-align: center; }
-.modal.group-modal input, .modal.group-modal select { width: 100%; margin-bottom: 12px; padding: 7px 10px; border: 1px solid #ccc; border-radius: 4px; }
-.modal.group-modal .modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
+body {
+  background: #f5f6fa;
+}
+
+.groups-page {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.06);
+  padding: 36px 40px 32px 40px;
+  min-width: 340px;
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.groups-header-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 26px;
+}
+
+.groups-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 2px;
+  color: #1a202c;
+}
+
+.groups-subtitle {
+  font-size: 1.13rem;
+  color: #6b7280;
+  margin-bottom: 0;
+}
+
+.add-btn {
+  background: linear-gradient(90deg, #009688 0%, #43cea2 100%);
+  color: #fff;
+  border: none;
+  padding: 10px 26px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(67,206,162,0.08);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.add-btn:hover {
+  background: linear-gradient(90deg, #00796b 0%, #009688 100%);
+  box-shadow: 0 4px 16px rgba(67,206,162,0.13);
+}
+
+.add-btn-icon {
+  font-size: 1.25em;
+  vertical-align: middle;
+  margin-right: 2px;
+}
+
+.groups-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.groups-table th, .groups-table td {
+  border: 1px solid #f0f0f0;
+  padding: 12px 10px;
+  text-align: center;
+  font-size: 15px;
+}
+
+.groups-table th {
+  background: #f5f5f5;
+  font-weight: 700;
+  color: #222;
+}
+
+.groups-table tr {
+  transition: background 0.15s;
+}
+
+.table-row:hover {
+  background: #f1f8ff;
+}
+
+.empty-row {
+  color: #aaa;
+  font-style: italic;
+  background: #fafafa;
+}
+
+.edit-btn {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  padding: 7px 18px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500;
+  margin-right: 8px;
+  box-shadow: 0 2px 8px rgba(25,118,210,0.05);
+  transition: background 0.2s, box-shadow 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.edit-btn:hover {
+  background: #0d47a1;
+  box-shadow: 0 4px 16px rgba(25,118,210,0.12);
+}
+
+.delete-btn {
+  background: #e53935;
+  color: #fff;
+  border: none;
+  padding: 7px 18px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(229,57,53,0.08);
+  transition: background 0.2s, box-shadow 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.delete-btn:hover {
+  background: #c62828;
+  box-shadow: 0 4px 16px rgba(229,57,53,0.13);
+}
+
+.icon-edit::before {
+  content: '\270E';
+  font-size: 1em;
+  margin-right: 2px;
+}
+
+.icon-delete::before {
+  content: '\1F5D1';
+  font-size: 1em;
+  margin-right: 2px;
+}
+
+.loader-center { 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  height: 140px; 
+}
+
+.error-msg { 
+  color: #e53935; 
+  margin: 16px 0; 
+  text-align: center; 
+}

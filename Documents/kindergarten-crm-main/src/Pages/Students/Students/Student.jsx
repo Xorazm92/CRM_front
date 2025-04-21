@@ -74,8 +74,11 @@ const StudentPage = () => {
       <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: '', type: 'success' })} />
       <div className="header-student-page">
         <h1>O’quvchilar jadvali</h1>
-        <Button onClick={() => setIsAddModalOpen(true)}>Yangi o‘quvchi qo‘shish</Button>
-        <Button onFilterClick={toggleFilter} />
+        {/* Faqat o'ng tarafdagi qo'shish tugmasi qoldi */}
+        <div style={{marginLeft:'auto', display:'flex', gap:'10px'}}>
+          <Button onClick={() => setIsAddModalOpen(true)}>Qo‘shish</Button>
+          <Button onFilterClick={toggleFilter} />
+        </div>
         {isFilterOpen && <Filter closeFilter={toggleFilter} />}
       </div>
       <AddStudentModal

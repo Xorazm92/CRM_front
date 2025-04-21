@@ -1,14 +1,13 @@
 import React, { useState } from "react";
 import "./AddStudent.css";
-import SaveCancelBtn from "../../../components/SaveCancelBtn/SaveCancelBtn";
 import ImageUpload from "../../../components/ImageUpload/ImageUpload";
-import DateField from "../../../components/DataField/DataField";
 import Input from "../../../components/Inputs/Input/Input";
-import SelectField from "../../../components/SelectField/SelectField";
 import Calendar from "react-calendar";
+import instance from "../../../api/axios";
 
 function AddStudent() {
   const [formData, setFormData] = useState({
+    username: "",
     name: "",
     lastname: "",
     middlename: "",
@@ -16,7 +15,12 @@ function AddStudent() {
     address: "",
     payment: "",
     phone_number: "",
+    gender: "",
+    password: "",
   });
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -26,11 +30,94 @@ function AddStudent() {
     });
   };
 
+  const handleSave = async () => {
+    setLoading(true);
+    setError("");
+    console.log("FORMDATA:", formData);
+    console.log("Majburiy:", !!formData.username, !!formData.name, !!formData.lastname, !!formData.birthdate, !!formData.gender, !!formData.password);
+    if (!formData.username || !formData.name || !formData.lastname || !formData.birthdate || !formData.gender || !formData.password) {
+      setError("Barcha majburiy maydonlarni to'ldiring!");
+      setLoading(false);
+      return;
+    }
+    try {
+      const data = {
+        username: formData.username,
+        name: formData.name,
+        lastname: formData.lastname,
+        middlename: formData.middlename,
+        birthdate: formData.birthdate,
+        gender: formData.gender,
+        address: formData.address,
+        payment: formData.payment,
+        phone_number: formData.phone_number,
+        password: formData.password,
+        role: "student"
+      };
+      console.log("Yuborilayotgan data:", data);
+      const response = await instance.post("/student/createStudent", data);
+      console.log("Backend javobi:", response.data);
+      alert("O'quvchi muvaffaqiyatli qo'shildi!");
+      setFormData({
+        username: "",
+        name: "",
+        lastname: "",
+        middlename: "",
+        birthdate: "",
+        address: "",
+        payment: "",
+        phone_number: "",
+        gender: "",
+        password: "",
+      });
+    } catch (err) {
+      console.error("Xatolik:", err);
+      setError(err.response?.data?.message || err.message || "Xatolik yuz berdi");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setFormData({
+      username: "",
+      name: "",
+      lastname: "",
+      middlename: "",
+      birthdate: "",
+      address: "",
+      payment: "",
+      phone_number: "",
+      gender: "",
+      password: "",
+    });
+    setError("");
+  };
+
   return (
     <div className="as_wrapper">
       <div className="header-student-page">
         <h1>O’quvchilarni qo’shish</h1>
-        <SaveCancelBtn />
+        {/* Tugmalarni to'g'ridan-to'g'ri shu yerga joylaymiz va eventlarni ishonchli bog'laymiz */}
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button
+            type="button"
+            style={{ background: '#e57373', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: 4, cursor: 'pointer' }}
+            onClick={handleCancel}
+            disabled={loading}
+          >
+            Bekor qilish
+          </button>
+          <button
+            type="button"
+            style={{ background: '#80cbc4', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: 4, cursor: 'pointer' }}
+            onClick={handleSave}
+            disabled={loading}
+          >
+            {loading ? 'Yuklanmoqda...' : 'Saqlash'}
+          </button>
+        </div>
+        {error && <div style={{ color: 'red', marginTop: 8 }}>{error}</div>}
       </div>
 
       <div className="form_wrapper">
@@ -41,6 +128,14 @@ function AddStudent() {
             </div>
 
             <div className="add-student-info">
+              <Input
+                label="Foydalanuvchi nomi"
+                value={formData.username}
+                name="username"
+                onChange={handleInputChange}
+                placeholder="Masalan: bari.fari"
+                required
+              />
               <Input
                 label="Ism"
                 value={formData.name}
@@ -62,21 +157,34 @@ function AddStudent() {
                 name="middlename"
                 placeholder="Tursinjon o’gli"
               />
-              <DateField
-                label="Tug'ilgan sana"
+              {/* DateField o'rniga oddiy input type="date" ishlatamiz */}
+              <input
+                type="date"
+                name="birthdate"
                 value={formData.birthdate}
                 onChange={handleInputChange}
-                name="birthdate"
+                style={{marginBottom: '12px', padding: '8px', borderRadius: '4px', border: '1px solid #ccc'}}
               />
-              <SelectField
-                label="Jinsi"
+              {/* SelectField o'rniga oddiy select ishlatamiz */}
+              <select
                 name="gender"
-                options={[
-                  { label: "O'g'il bola", value: "male" },
-                  { label: "Qiz bola", value: "female" },
-                ]}
                 value={formData.gender}
                 onChange={handleInputChange}
+                style={{marginBottom: '12px', padding: '8px', borderRadius: '4px', border: '1px solid #ccc'}}
+                required
+              >
+                <option value="">Jinsini tanlang</option>
+                <option value="male">O'g'il bola</option>
+                <option value="female">Qiz bola</option>
+              </select>
+              <Input
+                label="Parol"
+                value={formData.password}
+                name="password"
+                type="password"
+                onChange={handleInputChange}
+                placeholder="Parol kiriting"
+                required
               />
               <Input
                 label="Yashash manzili"
@@ -89,26 +197,6 @@ function AddStudent() {
           </div>
 
           <div className="add-student-bottom">
-            <SelectField
-              label="Jinsi"
-              name="gender"
-              options={[
-                { label: "O'g'il bola", value: "male" },
-                { label: "Qiz bola", value: "female" },
-              ]}
-              value={formData.gender}
-              onChange={handleInputChange}
-            />
-            <SelectField
-              label="Jinsi"
-              name="gender"
-              options={[
-                { label: "O'g'il bola", value: "male" },
-                { label: "Qiz bola", value: "female" },
-              ]}
-              value={formData.gender}
-              onChange={handleInputChange}
-            />
             <Input
               label="To’lov summa"
               value={formData.payment}
