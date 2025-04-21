@@ -1,5 +1,0 @@
-.settings-page { padding: 30px; max-width: 400px; margin: 0 auto; }
-.settings-form { display: flex; flex-direction: column; gap: 16px; margin-top: 18px; }
-.settings-form input { padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 15px; }
-.settings-form button { background: #009688; color: #fff; border: none; padding: 9px 0; border-radius: 4px; font-size: 16px; cursor: pointer; margin-top: 8px; }
-.settings-form button:disabled { background: #bdbdbd; cursor: not-allowed; }
