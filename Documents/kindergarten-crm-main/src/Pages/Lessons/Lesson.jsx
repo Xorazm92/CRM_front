@@ -4,6 +4,7 @@ import ClipLoader from "react-spinners/ClipLoader";
 import Toast from "../../components/Toast";
 import AddLessonModal from "./AddLessonModal";
 import EditLessonModal from "./EditLessonModal";
+import AttendanceModal from "./AttendanceModal";
 import "./Lesson.css";
 import images from '../../images';
 
@@ -16,6 +17,7 @@ const Lesson = () => {
   const [showEdit, setShowEdit] = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [groups, setGroups] = useState([]);
+  const [attendanceLesson, setAttendanceLesson] = useState(null);
 
   const fetchLessons = async () => {
     setLoading(true);
@@ -103,6 +105,7 @@ const Lesson = () => {
                   <td>
                     <button className="edit-btn" onClick={() => { setEditItem(l); setShowEdit(true); }}>Tahrirlash</button>
                     <button onClick={() => handleDelete(l.lesson_id || l.id)} className="delete-btn">O'chirish</button>
+                    <button className="attendance-btn" onClick={() => setAttendanceLesson(l)}>Davomat</button>
                   </td>
                 </tr>
               ))}
@@ -120,6 +123,13 @@ const Lesson = () => {
         onClose={() => { setShowEdit(false); setEditItem(null); }}
         onSuccess={fetchLessons}
         lesson={editItem}
+      />
+      <AttendanceModal
+        open={!!attendanceLesson}
+        lesson={attendanceLesson}
+        groupId={attendanceLesson?.group_id}
+        onClose={() => setAttendanceLesson(null)}
+        onSuccess={fetchLessons}
       />
     </div>
   );

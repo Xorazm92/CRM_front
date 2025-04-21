@@ -74,14 +74,24 @@ const Attendance = () => {
             {attendance.length === 0 ? (
               <tr><td colSpan="5">Davomatlar topilmadi</td></tr>
             ) : attendance.map((a, i) => (
-              <tr key={a.id}>
+              <tr key={a.attendance_id || a.id || i}>
                 <td>{i + 1}</td>
-                <td>{a.student?.fullName || a.studentId}</td>
-                <td>{a.date?.slice(0, 10)}</td>
+                <td>
+                  {a.student
+                    ? `${a.student.name || ''} ${a.student.lastname || ''}`.trim()
+                    : a.student_id || a.studentId}
+                </td>
+                <td>
+                  {a.lesson?.lesson_date
+                    ? new Date(a.lesson.lesson_date).toLocaleDateString()
+                    : a.created_at
+                      ? new Date(a.created_at).toLocaleDateString()
+                      : ''}
+                </td>
                 <td>{a.status}</td>
                 <td>
                   <button onClick={() => { setEditItem(a); setShowEdit(true); }}>Tahrirlash</button>
-                  <button onClick={() => handleDelete(a.id)} className="delete-btn">O'chirish</button>
+                  <button onClick={() => handleDelete(a.attendance_id || a.id)} className="delete-btn">O'chirish</button>
                 </td>
               </tr>
             ))}
