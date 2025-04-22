@@ -5,6 +5,7 @@ import Toast from "../../components/Toast";
 import AddAttendanceModal from "./AddAttendanceModal";
 import EditAttendanceModal from "./EditAttendanceModal";
 import "./Attendance.css";
+import images from '../../images';
 
 const Attendance = () => {
   const [attendance, setAttendance] = useState([]);
@@ -89,9 +90,13 @@ const Attendance = () => {
                       : ''}
                 </td>
                 <td>{a.status}</td>
-                <td>
-                  <button onClick={() => { setEditItem(a); setShowEdit(true); }}>Tahrirlash</button>
-                  <button onClick={() => handleDelete(a.attendance_id || a.id)} className="delete-btn">O'chirish</button>
+                <td style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <button onClick={() => { setEditItem(a); setShowEdit(true); }} title="Tahrirlash" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
+                    <img src={images.pen_icon} alt="edit" width={22} height={22} />
+                  </button>
+                  <button onClick={() => handleDelete(a.attendance_id || a.id)} title="O'chirish" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
+                    <img src={images.deleteIcon} alt="delete" width={22} height={22} />
+                  </button>
                 </td>
               </tr>
             ))}

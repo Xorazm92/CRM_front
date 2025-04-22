@@ -102,9 +102,13 @@ const Lesson = () => {
                   <td>{getGroupName(l.group_id)}</td>
                   <td>{l.lesson_date ? new Date(l.lesson_date).toLocaleString() : ''}</td>
                   <td>{l.recording_path}</td>
-                  <td>
-                    <button className="edit-btn" onClick={() => { setEditItem(l); setShowEdit(true); }}>Tahrirlash</button>
-                    <button onClick={() => handleDelete(l.lesson_id || l.id)} className="delete-btn">O'chirish</button>
+                  <td style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                    <button onClick={() => { setEditItem(l); setShowEdit(true); }} title="Tahrirlash" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
+                      <img src={images.pen_icon} alt="edit" width={22} height={22} />
+                    </button>
+                    <button onClick={() => handleDelete(l.lesson_id || l.id)} title="O'chirish" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
+                      <img src={images.deleteIcon} alt="delete" width={22} height={22} />
+                    </button>
                     <button className="attendance-btn" onClick={() => setAttendanceLesson(l)}>Davomat</button>
                   </td>
                 </tr>

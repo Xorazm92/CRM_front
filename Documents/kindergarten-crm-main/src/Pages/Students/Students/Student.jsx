@@ -76,7 +76,7 @@ const StudentPage = () => {
         <h1>O’quvchilar jadvali</h1>
         {/* Faqat o'ng tarafdagi qo'shish tugmasi qoldi */}
         <div style={{marginLeft:'auto', display:'flex', gap:'10px'}}>
-          <Button onClick={() => setIsAddModalOpen(true)}>Qo‘shish</Button>
+          {/* <Button onClick={() => setIsAddModalOpen(true)}>Qo‘shish</Button> */}
           <Button onFilterClick={toggleFilter} />
         </div>
         {isFilterOpen && <Filter closeFilter={toggleFilter} />}

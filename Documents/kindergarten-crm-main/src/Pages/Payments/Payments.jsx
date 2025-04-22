@@ -81,9 +81,13 @@ const Payments = () => {
                 <td>{p.createdAt ? new Date(p.createdAt).toLocaleDateString() : (p.date ? p.date.slice(0,10) : '')}</td>
                 <td>{p.amount}</td>
                 <td>{p.status}</td>
-                <td>
-                  <button onClick={() => { setEditItem(p); setShowEdit(true); }}>Tahrirlash</button>
-                  <button onClick={() => handleDelete(p.id)} className="delete-btn">O‘chirish</button>
+                <td style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <button onClick={() => { setEditItem(p); setShowEdit(true); }} title="Tahrirlash" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
+                    <img src={require('../../images/pen_icon.png')} alt="edit" width={22} height={22} />
+                  </button>
+                  <button onClick={() => handleDelete(p.id)} title="O‘chirish" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
+                    <img src={require('../../images/deleteIcon.png')} alt="delete" width={22} height={22} />
+                  </button>
                 </td>
               </tr>
             ))}

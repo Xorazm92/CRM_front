@@ -5,7 +5,7 @@ import ClipLoader from "react-spinners/ClipLoader";
 import "./Payments.css";
 
 const AddPaymentModal = ({ open, onClose, onSuccess }) => {
-  const [form, setForm] = useState({ studentId: '', date: '', amount: '', status: 'pending' });
+  const [form, setForm] = useState({ student_id: '', date: '', amount: '', status: 'pending' });
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState({ message: '', type: 'success' });
 
@@ -15,7 +15,7 @@ const AddPaymentModal = ({ open, onClose, onSuccess }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.studentId || !form.date || !form.amount || !form.status) {
+    if (!form.student_id || !form.date || !form.amount || !form.status) {
       setToast({ message: "Barcha maydonlarni to'ldiring", type: 'error' });
       return;
     }
@@ -23,7 +23,7 @@ const AddPaymentModal = ({ open, onClose, onSuccess }) => {
     try {
       await instance.post("/payments/student", form);
       setToast({ message: "To‘lov qo‘shildi!", type: 'success' });
-      setForm({ studentId: '', date: '', amount: '', status: 'pending' });
+      setForm({ student_id: '', date: '', amount: '', status: 'pending' });
       onSuccess && onSuccess();
       setTimeout(onClose, 1000);
     } catch (err) {
@@ -44,7 +44,7 @@ const AddPaymentModal = ({ open, onClose, onSuccess }) => {
           <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: '', type: 'success' })} />
           <div className="form-group">
             <label>Talaba ID</label>
-            <input name="studentId" value={form.studentId} onChange={handleChange} disabled={loading} />
+            <input name="student_id" value={form.student_id} onChange={handleChange} disabled={loading} />
           </div>
           <div className="form-group">
             <label>Sana</label>

@@ -150,9 +150,13 @@ const DataTable = ({ data = [], type, person, onEdit, onDelete, onDetail, onAddM
                     />
                   )}
                 </td>
-                <td>
-                  <button onClick={() => onEdit && onEdit(person)}>Edit</button>
-                  <button onClick={() => onDelete && onDelete(person.user_id || person.id)}>Delete</button>
+                <td style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <button onClick={() => onEdit && onEdit(person)} title="Tahrirlash" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
+                    <img src={images.pen_icon} alt="edit" width={22} height={22} />
+                  </button>
+                  <button onClick={() => onDelete && onDelete(person.user_id || person.id)} title="O'chirish" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
+                    <img src={images.deleteIcon} alt="delete" width={22} height={22} />
+                  </button>
                 </td>
               </>
             )}
@@ -176,9 +180,13 @@ const DataTable = ({ data = [], type, person, onEdit, onDelete, onDetail, onAddM
                   {person.gender}
                 </td>
                 <td className="contact">{person.contact}</td>
-                <td>
-                  <button onClick={() => onEdit && onEdit(person)}>Edit</button>
-                  <button onClick={() => onDelete && onDelete(person.user_id || person.id)}>Delete</button>
+                <td style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <button onClick={() => onEdit && onEdit(person)} title="Tahrirlash" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
+                    <img src={images.pen_icon} alt="edit" width={22} height={22} />
+                  </button>
+                  <button onClick={() => onDelete && onDelete(person.user_id || person.id)} title="O'chirish" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
+                    <img src={images.deleteIcon} alt="delete" width={22} height={22} />
+                  </button>
                 </td>
               </>
             )}
@@ -189,11 +197,19 @@ const DataTable = ({ data = [], type, person, onEdit, onDelete, onDetail, onAddM
                 <td className="names-person" onClick={() => onDetail && onDetail(person)} style={{cursor:'pointer'}}>{person.name}</td>
                 <td className="start-date">{person.startDate}</td>
                 <td className="level">{person.level}</td>
-                <td>
-                  <button onClick={() => onEdit && onEdit(person)}>Edit</button>
-                  <button onClick={() => onDelete && onDelete(person.user_id || person.id)}>Delete</button>
-                  <button onClick={() => onAddMember && onAddMember(person)}>Student qo‘shish</button>
-                  <button onClick={() => onAddTeacher && onAddTeacher(person)}>Teacher qo‘shish</button>
+                <td style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <button onClick={() => onEdit && onEdit(person)} title="Tahrirlash" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
+                    <img src={images.pen_icon} alt="edit" width={22} height={22} />
+                  </button>
+                  <button onClick={() => onDelete && onDelete(person.user_id || person.id)} title="O'chirish" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
+                    <img src={images.deleteIcon} alt="delete" width={22} height={22} />
+                  </button>
+                  <button onClick={() => onAddMember && onAddMember(person)} title="Student qo‘shish" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
+                    <img src={images.usersThree} alt="student add" width={22} height={22} />
+                  </button>
+                  <button onClick={() => onAddTeacher && onAddTeacher(person)} title="Teacher qo‘shish" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
+                    <img src={images.group} alt="teacher add" width={22} height={22} />
+                  </button>
                 </td>
               </>
             )}
@@ -207,9 +223,13 @@ const DataTable = ({ data = [], type, person, onEdit, onDelete, onDetail, onAddM
                 <td className="school-attendance">{person.school_length}</td>
                 <td className="payment-status">{person.payment_status}</td>
                 <td className="job">{person.jobs}</td>
-                <td>
-                  <button onClick={() => onEdit && onEdit(person)}>Edit</button>
-                  <button onClick={() => onDelete && onDelete(person.user_id || person.id)}>Delete</button>
+                <td style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <button onClick={() => onEdit && onEdit(person)} title="Tahrirlash" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
+                    <img src={images.pen_icon} alt="edit" width={22} height={22} />
+                  </button>
+                  <button onClick={() => onDelete && onDelete(person.user_id || person.id)} title="O'chirish" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
+                    <img src={images.deleteIcon} alt="delete" width={22} height={22} />
+                  </button>
                 </td>
               </>
             )}
@@ -220,9 +240,13 @@ const DataTable = ({ data = [], type, person, onEdit, onDelete, onDetail, onAddM
                 <td>{person.name}</td>
                 <td className="date">{person.date}</td>
                 <td className="sum">{person.summa}</td>
-                <td>
-                  <button onClick={() => onEdit && onEdit(person)}>Edit</button>
-                  <button onClick={() => onDelete && onDelete(person.user_id || person.id)}>Delete</button>
+                <td style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <button onClick={() => onEdit && onEdit(person)} title="Tahrirlash" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
+                    <img src={images.pen_icon} alt="edit" width={22} height={22} />
+                  </button>
+                  <button onClick={() => onDelete && onDelete(person.user_id || person.id)} title="O'chirish" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
+                    <img src={images.deleteIcon} alt="delete" width={22} height={22} />
+                  </button>
                 </td>
               </>
             )}

@@ -107,7 +107,7 @@ const Groups = () => {
       <div className="header-student-page">
         <h1>Guruhlar jadvali</h1>
         <div style={{marginLeft:'auto', display:'flex', gap:'10px'}}>
-          <Button onClick={() => setIsAddModalOpen(true)}>Qo‘shish</Button>
+          {/* <Button onClick={() => setIsAddModalOpen(true)}>Qo‘shish</Button> */}
           <Button onFilterClick={toggleFilter} />
         </div>
         {isFilterOpen && <Filter closeFilter={toggleFilter} />}

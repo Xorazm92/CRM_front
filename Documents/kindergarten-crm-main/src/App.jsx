@@ -15,7 +15,6 @@ import Student from "./Pages/Students/Students/Student";
 import Login from "./Pages/Login";
 import AddLessonModal from "./Pages/Lessons/AddLessonModal";
 
-import { AuthProvider } from "./context/AuthContext";
 import { useAuthStore } from "./store/useAuthStore";
 import ProtectedRoute from "./auth/ProtectedRoute";
 import { ROLES } from "./auth/roles";
@@ -34,20 +33,24 @@ function App() {
   const [showAddGroup, setShowAddGroup] = useState(false);
 
   return (
-    <AuthProvider>
-      {/* Yangi guruh qo‘shish tugmasi */}
-      <button
-        onClick={() => setShowAddGroup(true)}
-        style={{ margin: 20, padding: 12, fontSize: 16 }}
-      >
-        Yangi guruh qo‘shish
-      </button>
+    <>
+      {/* Yangi guruh qo'shish tugmasi */}
+      {isLogged && (
+        <button
+          onClick={() => setShowAddGroup(true)}
+          style={{ margin: 20, padding: 12, fontSize: 16, background: '#1976d2', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px rgba(25,118,210,0.15)' }}
+        >
+          Yangi guruh qo'shish
+        </button>
+      )}
+      
       {/* Modal */}
       <AddGroupModal
         isOpen={showAddGroup}
         onClose={() => setShowAddGroup(false)}
         onGroupAdded={() => setShowAddGroup(false)}
       />
+      
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route
@@ -72,7 +75,7 @@ function App() {
               <Student />
             </ProtectedRoute>
           } />
-          <Route path="students/add" element={
+          <Route path="add-student" element={
             <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.MANAGER]}>
               <AddStudent />
             </ProtectedRoute>
@@ -87,7 +90,7 @@ function App() {
               <Teachers />
             </ProtectedRoute>
           } />
-          <Route path="teachers/add" element={
+          <Route path="add-teacher" element={
             <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.MANAGER]}>
               <AddTeacher />
             </ProtectedRoute>
@@ -100,6 +103,11 @@ function App() {
           <Route path="groups" element={
             <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.MANAGER, ROLES.TEACHER]}>
               <Group />
+            </ProtectedRoute>
+          } />
+          <Route path="add-group" element={
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.MANAGER]}>
+              <AddGroupModal />
             </ProtectedRoute>
           } />
           <Route path="dashboard" element={
@@ -115,13 +123,18 @@ function App() {
           <Route path="lessons" element={
             <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.MANAGER, ROLES.TEACHER]}>
               <Lesson />
+            </ProtectedRoute> 
+          } />
+          <Route path="payments" element={
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.MANAGER, ROLES.TEACHER]}>
+              <Payments/>
             </ProtectedRoute>
           } />
           <Route path="assignments" element={<Assignments />} />
           <Route path="forbidden" element={<Forbidden />} />
         </Route>
       </Routes>
-    </AuthProvider>
+    </>
   );
 }
 

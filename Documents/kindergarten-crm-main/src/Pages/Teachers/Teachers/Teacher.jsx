@@ -74,8 +74,10 @@ function Teacher() {
       <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: '', type: 'success' })} />
       <div className="header-student-page">
         <h1>O’qituvchilar jadvali</h1>
-        <Button onClick={() => setIsAddModalOpen(true)}>Yangi o‘qituvchi qo‘shish</Button>
-        <Button onFilterClick={toggleFilter} />
+        <div style={{marginLeft:'auto', display:'flex', gap:'10px'}}>
+          {/* <Button onClick={() => setIsAddModalOpen(true)}>Yangi o‘qituvchi qo‘shish</Button> */}
+          <Button onFilterClick={toggleFilter} />
+        </div>
         {isFilterOpen && <Filter closeFilter={toggleFilter} />}
       </div>
       <AddTeacherModal
