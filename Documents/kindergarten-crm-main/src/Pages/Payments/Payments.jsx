@@ -103,7 +103,10 @@ const Payments = () => {
         open={showEdit}
         onClose={() => { setShowEdit(false); setEditItem(null); }}
         onSuccess={fetchPayments}
-        payment={editItem}
+        payment={editItem && {
+          ...editItem,
+          student_id: editItem.student_id || editItem.studentId
+        }}
       />
     </div>
   );

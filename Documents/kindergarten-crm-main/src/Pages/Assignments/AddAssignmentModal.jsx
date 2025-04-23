@@ -13,6 +13,7 @@ const AddAssignmentModal = ({ open, onClose, onSuccess }) => {
   const [toast, setToast] = useState({ message: '', type: 'success' });
   const [groups, setGroups] = useState([]);
   const [lessons, setLessons] = useState([]);
+  const [file, setFile] = useState(null);
 
   useEffect(() => {
     if (!open) return;
@@ -54,6 +55,10 @@ const AddAssignmentModal = ({ open, onClose, onSuccess }) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
   // DD.MM.YYYY format uchun yordamchi funksiya
   function formatDateDMY(date) {
     if (!date) return '';
@@ -66,14 +71,12 @@ const AddAssignmentModal = ({ open, onClose, onSuccess }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Faqat title va due_date majburiy. group_id va lesson_id required bo'lsa, ularni to'g'ri UUID formatda yuboramiz
     if (!form.title || !form.due_date) {
       setToast({ message: "Nom va tugash sanasi majburiy!", type: 'error' });
       alert("Nom va tugash sanasi majburiy!");
       return;
     }
     setLoading(true);
-    // deadline ni ISO 8601 formatga o'tkazamiz (toISOString())
     let deadlineISO = '';
     if (form.due_date instanceof Date) {
       deadlineISO = form.due_date.toISOString();
@@ -83,7 +86,6 @@ const AddAssignmentModal = ({ open, onClose, onSuccess }) => {
     } else {
       deadlineISO = '';
     }
-    // Guruh va dars idlarini to'g'ri UUID formatda aniqlash
     let groupId = undefined;
     let lessonId = undefined;
     if (form.group_id) {
@@ -94,19 +96,21 @@ const AddAssignmentModal = ({ open, onClose, onSuccess }) => {
       const l = lessons.find(l => l.lesson_id === form.lesson_id || l._id === form.lesson_id || l.id === form.lesson_id);
       if (l) lessonId = l.lesson_id || l._id || l.id;
     }
-    // MUHIM: deadline nomini to'g'ri yuborish (due_date emas, deadline!)
-    const payload = {
-      title: form.title,
-      deadline: deadlineISO,
-      description: form.description || undefined
-    };
-    if (groupId) payload.group_id = groupId;
-    if (lessonId) payload.lesson_id = lessonId;
+    const formData = new FormData();
+    formData.append('title', form.title);
+    formData.append('deadline', deadlineISO);
+    if (form.description) formData.append('description', form.description);
+    if (groupId) formData.append('group_id', groupId);
+    if (lessonId) formData.append('lesson_id', lessonId);
+    if (file) formData.append('file', file);
     try {
-      await instance.post("/assignments", payload);
+      await instance.post("/assignments", formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
       setToast({ message: "Vazifa muvaffaqiyatli qo'shildi!", type: 'success' });
       alert("Vazifa muvaffaqiyatli qo'shildi!");
       setForm({ title: '', description: '', group_id: '', lesson_id: '', due_date: null });
+      setFile(null);
       onSuccess && onSuccess();
       setTimeout(onClose, 1000);
     } catch (err) {
@@ -192,6 +196,11 @@ const AddAssignmentModal = ({ open, onClose, onSuccess }) => {
               dropdownMode="select"
               calendarStartDay={1}
             />
+          </div>
+          <div className="form-group">
+            <label>Fayl biriktirish</label>
+            <input type="file" onChange={handleFileChange} disabled={loading} />
+            {file && <span style={{fontSize:'12px', color:'#555'}}>Tanlangan fayl: {file.name}</span>}
           </div>
           <button type="submit" disabled={loading}>{loading ? <ClipLoader size={18} color="#fff" /> : "Qo'shish"}</button>
           <button type="button" className="cancel-btn" onClick={onClose} disabled={loading}>Bekor qilish</button>

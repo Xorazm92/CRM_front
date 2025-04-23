@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import instance from "../api/axios";
 import { useNavigate } from "react-router-dom";
+import "./Login.css";
+import logo from "../images/logo.png";
 
 const Login = () => {
   const { logIn } = useAuthStore();
@@ -35,6 +37,7 @@ const Login = () => {
   return (
     <div className="login-page">
       <form onSubmit={handleSubmit} className="login-form">
+        <img src={logo} alt="Logo" className="login-logo" />
         <h2>Login</h2>
         <input
           type="text"

@@ -98,16 +98,32 @@ const AddGroupModal = ({ isOpen, onClose, onGroupAdded }) => {
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <input name="name" placeholder="Guruh nomi" value={form.name} onChange={handleChange} required style={{ padding: 12, borderRadius: 8, border: '1px solid #bdbdbd', fontSize: 16 }} />
           <input name="description" placeholder="Tavsif (kamida 10 ta belgi)" value={form.description} onChange={handleChange} required style={{ padding: 12, borderRadius: 8, border: '1px solid #bdbdbd', fontSize: 16 }} />
-          <select name="course_id" value={form.course_id} onChange={handleChange} required style={{ padding: 12, borderRadius: 8, border: '1px solid #bdbdbd', fontSize: 16 }}>
-            <option value="">Kurs tanlang</option>
-            {courses.map(c => (
-              <option key={c._id} value={c._id}>{c.name}</option>
+          <select
+            name="course_id"
+            value={form.course_id}
+            onChange={handleChange}
+            required
+            style={{ padding: 12, borderRadius: 8, border: '1px solid #bdbdbd', fontSize: 16 }}
+          >
+            <option value="">Kursni tanlang</option>
+            {courses.map((c) => (
+              <option key={c._id} value={c._id}>
+                {c.name}
+              </option>
             ))}
           </select>
-          <select name="teacher_id" value={form.teacher_id} onChange={handleChange} required style={{ padding: 12, borderRadius: 8, border: '1px solid #bdbdbd', fontSize: 16 }}>
-            <option value="">O‘qituvchi tanlang</option>
-            {teachers.map(t => (
-              <option key={t._id} value={t._id}>{t.full_name || t.name}</option>
+          <select
+            name="teacher_id"
+            value={form.teacher_id}
+            onChange={handleChange}
+            required
+            style={{ padding: 12, borderRadius: 8, border: '1px solid #bdbdbd', fontSize: 16 }}
+          >
+            <option value="">O'qituvchini tanlang</option>
+            {teachers.map((t) => (
+              <option key={t._id} value={t._id}>
+                {t.full_name || t.name || t.username || t.lastname || 'No name'}
+              </option>
             ))}
           </select>
           <input name="start_date" type="date" value={form.start_date} onChange={handleChange} required style={{ padding: 12, borderRadius: 8, border: '1px solid #bdbdbd', fontSize: 16 }} />
