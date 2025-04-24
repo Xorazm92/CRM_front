@@ -4,7 +4,7 @@ import Toast from "../../components/Toast";
 import EditCourseModal from "./EditCourseModal";
 import AddCourseModal from "./AddCourseModal";
 import { Table, Button, Input, Spin } from "antd";
-import images from "../../images";
+import icons from "../Home/icons";
 
 interface CourseType {
   course_id: string | number;
@@ -72,8 +72,8 @@ const Course: React.FC = () => {
       key: 'actions',
       render: (_: any, record: CourseType) => (
         <span className="flex gap-2 items-center">
-          <Button type="link" icon={<img src={images.pen_icon} alt="edit" width={22} height={22} />} onClick={() => { setEditItem(record); setShowEdit(true); }} />
-          <Button type="link" danger icon={<img src={images.deleteIcon} alt="delete" width={22} height={22} />} onClick={() => handleDelete(record.course_id)} />
+          <Button type="link" icon={<img src={icons.pen_icon} alt="edit" width={22} height={22} />} onClick={() => { setEditItem(record); setShowEdit(true); }} />
+          <Button type="link" danger icon={<img src={icons.deleteIcon} alt="delete" width={22} height={22} />} onClick={() => handleDelete(record.course_id)} />
         </span>
       ),
     },

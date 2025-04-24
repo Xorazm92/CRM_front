@@ -3,7 +3,6 @@ import { Modal, Form, Input, Button, Select } from "antd";
 import instance from "../../api/axios";
 import Toast from "../../components/Toast";
 import ClipLoader from "react-spinners/ClipLoader";
-import "./Payments.css";
 
 interface AddPaymentModalProps {
   open: boolean;

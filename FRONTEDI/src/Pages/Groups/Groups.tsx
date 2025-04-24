@@ -21,7 +21,6 @@ import EditGroupModal from "./EditGroupModal";
 import AddGroupMemberModal from "./AddGroupMemberModal";
 import GroupDetailModal from "./GroupDetailModal";
 import AddGroupTeacherModal from "./AddGroupTeacherModal";
-import "./Groups.css";
 
 const Groups: React.FC = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);

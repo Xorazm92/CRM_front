@@ -10,7 +10,6 @@ import instance from "../../api/axios";
 import Toast from "../../components/Toast";
 import ClipLoader from "react-spinners/ClipLoader";
 import ExportExcelButton from "../../components/ReportButtons/ExportExcelButton";
-import "../../components/ReportButtons/ExportExcelButton.css";
 import ReportCharts from "./ReportCharts";
 
 interface Report {

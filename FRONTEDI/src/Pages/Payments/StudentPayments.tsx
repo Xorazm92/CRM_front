@@ -24,7 +24,7 @@ const StudentPayments: React.FC<StudentPaymentsProps> = ({ studentId }) => {
 
   const fetchPayments = () => {
     setLoading(true);
-    fetch(`/api/v1/payment/history/${studentId}`)
+    fetch(`/payment/history/${studentId}`)
       .then(res => res.json())
       .then(data => setPayments(Array.isArray(data) ? data : []))
       .catch(() => setError("To‘lovlarni olishda xatolik"))

@@ -5,8 +5,7 @@ import Toast from "../../components/Toast";
 import AddLessonModal from "./AddLessonModal";
 import EditLessonModal from "./EditLessonModal";
 import AttendanceModal from "./AttendanceModal";
-import "./Lesson.css";
-import images from '../../images';
+import icons from "../Home/icons";
 
 interface Lesson {
   lesson_id?: string;
@@ -78,7 +77,7 @@ const Lesson = () => {
   return (
     <div className="lesson-wrapper">
       <div className="header-lesson-page">
-        <h2><img src={images.lesson} alt="Darslar" style={{width:28,verticalAlign:'middle',marginRight:8}} /> Darslar</h2>
+        <h2><img src={icons.lesson} alt="Darslar" style={{width:28,verticalAlign:'middle',marginRight:8}} /> Darslar</h2>
         <button className="add-btn" onClick={() => setShowAdd(true)}>
           <span style={{fontSize:22,marginRight:6}}>+</span> Dars qo'shish
         </button>
@@ -113,10 +112,10 @@ const Lesson = () => {
                   <td>{l.recording_path}</td>
                   <td style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                     <button onClick={() => { setEditItem(l); setShowEdit(true); }} title="Tahrirlash" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-                      <img src={images.pen_icon} alt="edit" width={22} height={22} />
+                      <img src={icons.pen_icon} alt="edit" width={22} height={22} />
                     </button>
                     <button onClick={() => handleDelete(l.lesson_id || l.id)} title="O'chirish" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-                      <img src={images.deleteIcon} alt="delete" width={22} height={22} />
+                      <img src={icons.deleteIcon} alt="delete" width={22} height={22} />
                     </button>
                     <button className="attendance-btn" onClick={() => setAttendanceLesson(l)}>Davomat</button>
                   </td>

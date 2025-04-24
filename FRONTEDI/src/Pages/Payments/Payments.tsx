@@ -4,7 +4,6 @@ import ClipLoader from "react-spinners/ClipLoader";
 import Toast from "../../components/Toast";
 import AddPaymentModal from "./AddPaymentModal";
 import EditPaymentModal from "./EditPaymentModal";
-import "./Payments.css";
 
 interface Payment {
   id: number;

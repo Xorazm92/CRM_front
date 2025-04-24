@@ -22,7 +22,7 @@ const AddStudentPaymentModal: React.FC<AddStudentPaymentModalProps> = ({ student
   const handleFinish = async (values: AddStudentPaymentForm) => {
     setLoading(true);
     try {
-      const res = await fetch("/api/v1/payment/student", {
+      const res = await fetch("/payment/student", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

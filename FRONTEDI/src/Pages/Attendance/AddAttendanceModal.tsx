@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import instance from "../../api/axios";
 import { Modal, Form, Input, Button, Select } from "antd";
 import "antd/dist/reset.css";
-import "./Attendance.css";
 
 interface Student {
   _id: string;

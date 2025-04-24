@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import instance from "../../api/axios";
 import { Modal, Form, Input, Button, Select } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
-import "./Lesson.css";
 
 interface Group {
   group_id: string;

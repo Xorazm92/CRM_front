@@ -69,22 +69,19 @@ const DataTable: React.FC<DataTableProps> = ({ data = [], type, person, onEdit, 
         {
           title: "#",
           key: "index",
-          render: (_: any, __: any, idx: number) => (
-            <Space>
-              <Checkbox checked={isChecked[__.id]} onChange={() => handleCheckboxChange(__.id)} />
-              <span>{idx + 1}</span>
-            </Space>
-          ),
+          render: (_: any, __: any, idx: number) => <span>{idx + 1}</span>,
         },
         {
           title: "Bolalar F.I.O",
           dataIndex: "name",
           key: "name",
           render: (text, record) => (
-            <Space>
-              <UserOutlined style={{ fontSize: 20, color: '#1890ff' }} />
-              {text}
-            </Space>
+            <span
+              className="cursor-pointer text-blue-600"
+              onClick={() => onEdit && onEdit(record)}
+            >
+              <UserOutlined style={{ fontSize: 20, color: '#1890ff' }} /> {text}
+            </span>
           ),
         },
         {

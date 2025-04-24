@@ -1,21 +1,236 @@
-import React from 'react';
-import './Layout.css';
-import { Outlet } from 'react-router-dom';
-import Sidebar from '../Sidebar/Sidebar';
-import Header from '../Header/Header';
+import React, { useState } from "react";
+import { Outlet, useLocation, Link, Navigate, useNavigate } from "react-router-dom";
+import { Layout, Button, Avatar, Input, Row, Col, theme, Menu } from "antd";
+import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
+import logo from "../../images/logo.png";
+import searchIcon from "../../images/icons/search_icon.png";
+import notificationIcon from "../../images/icons/notification.png";
+import menuIcon from "../../images/icons/menu_icon.png";
+import menuSecond from "../../images/icons/menu_second.png";
+import groupIcon from "../../images/icons/group.png";
+import userIcon from "../../images/icons/user.png";
+import usersThree from "../../images/icons/users-three.png";
+import settingIcon from "../../images/icons/setting.png";
+import logoutIcon from "../../images/icons/logout.png";
+import cashIcon from "../../images/icons/cash.png";
+import { useAuthStore } from "../../store/useAuthStore";
 
-const Layout: React.FC = () => {
+const { Header, Sider, Content } = Layout;
+
+const menu = [
+  {
+    key: "1",
+    icon: <img src={menuIcon} width={24} height={24} alt="Asosiy" />,
+    label: <Link to="/">Asosiy</Link>,
+  },
+  {
+    key: "2",
+    icon: <img src={usersThree} width={24} height={24} alt="O’quvchilar" />,
+    label: <Link to="/students">O’quvchilar</Link>,
+  },
+  {
+    key: "3",
+    icon: <img src={userIcon} width={24} height={24} alt="O’qituvchilar" />,
+    label: <Link to="/teachers">O’qituvchilar</Link>,
+  },
+  {
+    key: "4",
+    icon: <img src={groupIcon} width={24} height={24} alt="Guruhlar" />,
+    label: <Link to="/groups">Guruhlar</Link>,
+  },
+  {
+    key: "5",
+    icon: <img src={menuSecond} width={24} height={24} alt="Hisobotlar" />,
+    label: <Link to="/reports">Hisobotlar</Link>,
+  },
+  {
+    key: "6",
+    icon: <img src={cashIcon} width={24} height={24} alt="To'lovlar" />,
+    label: <Link to="/payments">To'lovlar</Link>,
+  },
+];
+
+const menuBootm = [
+  {
+    key: "7",
+    icon: <img src={settingIcon} width={24} height={24} alt="Sozlamalar" />,
+    label: <Link to="/settings">Sozlamalar</Link>,
+  },
+  {
+    key: "8",
+    icon: <img src={logoutIcon} width={24} height={24} alt="Chiqish" />,
+    label: <Link to="/logout">Chiqish</Link>,
+  },
+];
+
+const SelectedKeys = {
+  "": "1",
+  students: "2",
+  teachers: "3",
+  groups: "4",
+  reports: "5",
+  payments: "6",
+  settings: "7",
+  logout: "8",
+};
+
+const AdminLayout = () => {
+  const [collapsed, setCollapsed] = useState(false);
+  const {
+    token: { colorBgContainer },
+  } = theme.useToken();
+  const location = useLocation();
+  const path = location.pathname.split("/")[1];
+  const selectedKey = SelectedKeys[path] || "1";
+
+  // Auth store
+  const { isLogged, user, logOut } = useAuthStore();
+  const navigate = useNavigate();
+
+  // Agar login qilinmagan bo‘lsa, login sahifasiga yo‘naltir
+  if (!isLogged) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // Logout tugmasi bosilganda sessionni tozalash va login sahifasiga o'tkazish
+  const handleLogout = () => {
+    logOut();
+    navigate("/login", { replace: true });
+  };
+
   return (
-    <div className="layout">
-      <Sidebar />
-      <header>
-        <Header />
-      </header>
-      <main>
-        <Outlet />
-      </main>
-    </div>
+    <Layout style={{ minHeight: "100vh", overflow: "hidden" }}>
+      <Sider
+        trigger={null}
+        collapsible
+        collapsed={collapsed}
+        width={220}
+        style={{
+          backgroundColor: "#fff",
+          position: "fixed",
+          height: "100vh",
+          left: 0,
+          top: 0,
+          zIndex: 100,
+          boxShadow: "2px 0 8px #f0f1f2",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between"
+        }}
+      >
+        <div>
+          <div
+            style={{
+              textAlign: "center",
+              padding: "10px",
+              marginBottom: "6px",
+              border: "2px solid #e6e8ec",
+              borderTop: "none",
+              background: "#fff",
+            }}
+          >
+            <img src={logo} alt="Logo" style={{ width: "80%" }} />
+          </div>
+          <Menu
+            mode="inline"
+            selectedKeys={[selectedKey]}
+            items={menu}
+            style={{ border: "none", background: "#fff" }}
+          />
+        </div>
+        <Menu
+          mode="inline"
+          selectedKeys={[]}
+          items={[
+            ...menuBootm.slice(0, 1),
+            {
+              ...menuBootm[1],
+              label: <span onClick={handleLogout} style={{ cursor: 'pointer' }}>Chiqish</span>,
+            },
+          ]}
+          style={{ border: "none", background: "#fff", marginBottom: 16 }}
+        />
+      </Sider>
+      <Layout style={{ marginLeft: collapsed ? 80 : 220, transition: "margin-left 0.2s" }}>
+        <Header
+          style={{
+            padding: 0,
+            height: "80px",
+            display: "flex",
+            alignItems: "center",
+            background: colorBgContainer,
+            boxShadow: "0 1px 4px #f0f1f2",
+          }}
+        >
+          <Row justify="space-between" style={{ width: "100%", alignItems: "center" }}>
+            <Row style={{ alignItems: "center", gap: "10px" }}>
+              <Button
+                type="text"
+                icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                onClick={() => setCollapsed(!collapsed)}
+                style={{
+                  fontSize: "16px",
+                  width: 64,
+                  height: 64,
+                }}
+              />
+              <Input
+                style={{
+                  maxWidth: "210px",
+                  padding: "6px 60px 6px 15px",
+                  border: "1px solid #e6e8ec",
+                  borderRadius: "4px",
+                  boxShadow: "2px 2px 2px 0 rgba(0, 0, 0, 0.1)",
+                  background: "#f7f8fa",
+                  fontWeight: 900,
+                  fontSize: "16px",
+                }}
+                placeholder="Qidiruv tizimi..."
+                prefix={<img width={24} height={24} src={searchIcon} />}
+              />
+            </Row>
+            <Row style={{ gap: "10px", alignItems: "center", marginRight: "20px" }}>
+              <Button
+                type="default"
+                shape="circle"
+                style={{
+                  width: 38,
+                  height: 38,
+                  padding: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: "#fff",
+                  border: "1px solid #e6e8ec"
+                }}
+              >
+                <img src={notificationIcon} width={24} height={24} alt="" />
+              </Button>
+              <Avatar src={user?.avatar || user?.images?.[1]?.url} alt="Logo" size={38} />
+              <Col>
+                <div style={{ fontWeight: 500, fontSize: 15, color: "#222", fontFamily: 'inherit' }}>
+                  {user?.name || user?.full_name || user?.username || "Foydalanuvchi"}
+                </div>
+                <div style={{ fontWeight: 400, fontSize: 15, color: "#888", fontFamily: 'inherit' }}>
+                  {user?.role || 'Foydalanuvchi'}
+                </div>
+              </Col>
+            </Row>
+          </Row>
+        </Header>
+        <Content
+          className="custom-scroll"
+          style={{
+            backgroundColor: "#f7f8fa",
+            overflowY: "auto",
+            height: "calc(100vh - 80px)",
+          }}
+        >
+          <Outlet />
+        </Content>
+      </Layout>
+    </Layout>
   );
 };
 
-export default Layout;
+export default AdminLayout;

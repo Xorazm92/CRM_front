@@ -1,6 +1,6 @@
 import React from "react";
 import { Modal, Descriptions } from "antd";
-import images from "../../images";
+import icons from "../../Pages/Home/icons";
 
 interface Person {
   name: string;
@@ -27,7 +27,7 @@ const Payment: React.FC<PaymentProps> = ({ personId, onClose, person }) => {
       open={!!personId}
       onCancel={onClose}
       footer={null}
-      title={<div className="flex items-center justify-between"><span>To'lov jadvali</span><button className="bg-transparent border-none" onClick={onClose}><img width={24} src={images.x_icon} alt="close" /></button></div>}
+      title={<div className="flex items-center justify-between"><span>To'lov jadvali</span><button className="bg-transparent border-none" onClick={onClose}><img width={24} src={icons.x_icon} alt="close" /></button></div>}
       closable={false}
     >
       <Descriptions column={1} bordered size="small">

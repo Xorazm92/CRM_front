@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Input, Badge, Avatar, Dropdown, List } from "antd";
-import { BellOutlined, SearchOutlined, UserOutlined } from "@ant-design/icons";
+import { Input, Badge, Avatar, Dropdown, List, Button } from "antd";
+import { BellOutlined, SearchOutlined, UserOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import images from "../../images";
 import { getUserFromCookie } from "./useCookieData";
 import { SearchContext } from "../../context/SearchContext";
 
-const Header: React.FC = () => {
+const Header: React.FC<{ collapsed: boolean; setCollapsed: (c: boolean) => void }> = ({ collapsed, setCollapsed }) => {
   const [user, setUser] = useState({
     name: "Guest",
     role: "Foydalanuvchi",
@@ -52,7 +52,18 @@ const Header: React.FC = () => {
   );
 
   return (
-    <header className="flex justify-between items-center px-6 py-3 bg-white border-b">
+    <header className="flex justify-between items-center px-6 py-3 bg-white border-b" style={{ display: 'flex', alignItems: 'center', padding: 0 }}>
+      <Button
+        type="text"
+        icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+        onClick={() => setCollapsed(!collapsed)}
+        style={{
+          fontSize: '16px',
+          width: 64,
+          height: 64,
+          marginRight: 8
+        }}
+      />
       <div className="flex items-center gap-2 w-1/2">
         <Input
           prefix={<SearchOutlined className="text-gray-400" />}
@@ -74,11 +85,11 @@ const Header: React.FC = () => {
           </Badge>
         </Dropdown>
         <div className="flex items-center gap-2">
-          <Avatar src={user.avatar} icon={<UserOutlined />} size={36} />
-          <div className="flex flex-col">
+          <div className="flex flex-col items-end mr-2">
             <span className="font-medium leading-tight">{user.name}</span>
             <span className="text-xs text-gray-500">{user.role}</span>
           </div>
+          <Avatar src={user.avatar} icon={<UserOutlined />} size={36} />
         </div>
       </div>
     </header>

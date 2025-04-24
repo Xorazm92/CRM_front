@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Modal, Button, Select, DatePicker, Checkbox, Form } from "antd";
-import images from "../../images";
+import icons from "../../Pages/Home/icons";
 
 interface FilterProps {
   closeFilter: () => void;
@@ -22,7 +22,7 @@ const Filter: React.FC<FilterProps> = ({ closeFilter }) => {
       open={true}
       onCancel={closeFilter}
       footer={null}
-      title={<div className="flex items-center justify-between"><span>Filtr</span><Button type="text" onClick={closeFilter} icon={<img width={24} src={images.x_icon} alt="close" />} /></div>}
+      title={<div className="flex items-center justify-between"><span>Filtr</span><Button type="text" onClick={closeFilter} icon={<img width={24} src={icons.x_icon} alt="close" />} /></div>}
       className="filter-modal"
       closable={false}
     >
@@ -54,7 +54,7 @@ const Filter: React.FC<FilterProps> = ({ closeFilter }) => {
       </Form>
       <div className="flex justify-end gap-2 mt-4">
         <Button onClick={closeFilter}>Bekor qilish</Button>
-        <Button type="primary" onClick={handleSave} icon={<img width={24} src={images.success} alt="save" />}>Saqlash</Button>
+        <Button type="primary" onClick={handleSave} icon={<img width={24} src={icons.success} alt="save" />}>Saqlash</Button>
       </div>
     </Modal>
   );

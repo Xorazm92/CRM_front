@@ -4,6 +4,7 @@ import instance from "../api/axios";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import logo from "../images/logo.png";
+import Cookie from "js-cookie";
 
 const Login = () => {
   const { logIn } = useAuthStore();
@@ -21,14 +22,16 @@ const Login = () => {
       const res = await instance.post("/auth/login", { username, password });
       console.log("Login response:", res.data);
       // Token va user obyektini backend javobidan to'g'ri oling
-      const token = res.data.data?.accessToken;
-      // Agar user obyekt backenddan kelmasa, hech bo'lmaganda rolni qo'lda bering
-      const user = res.data.data?.user || { role: "ADMIN", username };
-      if (!token) throw new Error("Token topilmadi. Backend javobini tekshiring.");
-      logIn({ user, token });
-      // Navigatsiya yoki modal ochilishi uchun quyidagilarni qo'shing:
+      const accessToken = res.data.accessToken;
+      const refreshToken = res.data.refreshToken;
+      const user = res.data.user || { role: "ADMIN", username };
+      if (!accessToken) throw new Error("Token topilmadi. Backend javobini tekshiring.");
+      // Tokenlarni cookie'ga yozish
+      Cookie.set("accessToken", accessToken, { expires: 1 / 24 }); // 1 soat
+      Cookie.set("refreshToken", refreshToken, { expires: 7 });    // 7 kun
+      logIn({ user, token: accessToken, refreshToken });
       setTimeout(() => {
-        navigate("/"); // yoki kerakli sahifaga (masalan, "/dashboard")
+        navigate("/");
       }, 100);
     } catch (err) {
       setError(err.response?.data?.message || err.message || "Login xatoligi");

@@ -1,223 +1,293 @@
-import React, { useEffect, useState } from "react";
-import instance from "../../api/axios";
-import { Doughnut } from 'react-chartjs-2';
-import { Chart, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Spin } from "antd";
-Chart.register(ArcElement, Tooltip, Legend);
+import { Button, Col, Dropdown, MenuProps, Row, Spin } from "antd";
+import Title from "antd/es/typography/Title";
+import { useState } from "react";
+// ICONS from your icons/index.js
+import icons from "./icons";
+import "./css/style.css";
+import { UserCard } from "./components/UserCard";
+import { StatistikaCard } from "./components/StatistikaCard";
+import { useGetDashboard } from "./service/query/useGetDashboard";
+import TodayArrivedStudentsComponents from "./components/TodayArrivedStudentsComponents";
+import AgeDistributionComponents from "./components/AgeDistributionComponents";
 
-interface Stats {
-  students: number;
-  payments: number;
-  teachers: number;
-  groups: number;
-}
+const items: MenuProps["items"] = [
+  {
+    key: "1",
+    label: (
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href="https://www.antgroup.com"
+      >
+        Teachers
+      </a>
+    ),
+  },
+];
 
-interface SideStats {
-  income: number | null;
-  expense: number | null;
-  students: number | null;
-  incomeDiff: number | null;
-  expenseDiff: number | null;
-  studentsDiff: number | null;
-  incomePositive: boolean | null;
-  expensePositive: boolean | null;
-  studentsPositive: boolean | null;
-}
+const Home = () => {
+  const [category, setCategory] = useState("Hamma");
 
-const Home: React.FC = () => {
-  const [stats, setStats] = useState<Stats>({ students: 0, payments: 0, teachers: 0, groups: 0 });
-  const [latestStudents, setLatestStudents] = useState<any[]>([]);
-  const [latestPayments, setLatestPayments] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [ageStats, setAgeStats] = useState<{ labels: string[]; data: number[] }>({ labels: [], data: [] });
-  const [ageLoading, setAgeLoading] = useState(true);
-  const [ageError, setAgeError] = useState("");
-  const [sideStats, setSideStats] = useState<SideStats>({
-    income: null, expense: null, students: null,
-    incomeDiff: null, expenseDiff: null, studentsDiff: null,
-    incomePositive: null, expensePositive: null, studentsPositive: null
-  });
-  const [sideStatsLoading, setSideStatsLoading] = useState(true);
-  const [sideStatsError, setSideStatsError] = useState("");
-
-  useEffect(() => {
-    const fetchStats = async () => {
-      setLoading(true);
-      setError("");
-      try {
-        const studentsRes = await instance.get("/student");
-        const students = studentsRes.data.data || [];
-        setStats((prev) => ({ ...prev, students: students.length }));
-        setLatestStudents(students.slice(-5).reverse());
-        const paymentsRes = await instance.get("/payments/student-payments");
-        const payments = Array.isArray(paymentsRes.data) ? paymentsRes.data : paymentsRes.data.results || [];
-        setStats((prev) => ({ ...prev, payments: payments.length }));
-        setLatestPayments(payments.slice(-5).reverse());
-        const teachersRes = await instance.get("/teacher");
-        const teachers = teachersRes.data.data || [];
-        setStats((prev) => ({ ...prev, teachers: teachers.length }));
-        const groupsRes = await instance.get("/groups");
-        const groups = groupsRes.data.data || [];
-        setStats((prev) => ({ ...prev, groups: groups.length }));
-      } catch (err: any) {
-        setError("Statistikalarni yuklashda xatolik: " + (err.message || ""));
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchStats();
-
-    const fetchAgeStats = async () => {
-      setAgeLoading(true);
-      setAgeError("");
-      try {
-        const res = await instance.get("/students/statistics");
-        const stats = res.data.data || [];
-        setAgeStats({
-          labels: stats.map((s: any) => s.age),
-          data: stats.map((s: any) => s.count)
-        });
-      } catch (err) {
-        setAgeError("Yosh statistikasi uchun ma'lumotlarni olishda xatolik");
-      } finally {
-        setAgeLoading(false);
-      }
-    };
-    fetchAgeStats();
-
-    const fetchSideStats = async () => {
-      setSideStatsLoading(true);
-      setSideStatsError("");
-      try {
-        const res = await instance.get("/dashboard/financial");
-        const d = res.data.data || {};
-        setSideStats({
-          income: d.income,
-          expense: d.expense,
-          students: d.students,
-          incomeDiff: d.incomeDiff,
-          expenseDiff: d.expenseDiff,
-          studentsDiff: d.studentsDiff,
-          incomePositive: d.incomeDiff >= 0,
-          expensePositive: d.expenseDiff >= 0,
-          studentsPositive: d.studentsDiff >= 0
-        });
-      } catch (err) {
-        setSideStatsError("O'ng taraf statistikasi uchun ma'lumotlarni olishda xatolik");
-      } finally {
-        setSideStatsLoading(false);
-      }
-    };
-    fetchSideStats();
-  }, []);
-
-  if (loading) {
-    return <div className="flex justify-center items-center h-96"><Spin size="large" /></div>;
-  }
-  if (error) {
-    return <div className="text-red-600 font-semibold text-center mt-12">{error}</div>;
-  }
-
+  const { data, isLoading } = useGetDashboard(
+    "",
+    category === "Hamma"
+      ? ""
+      : category === "O’qituvchilar"
+      ? "TEACHER"
+      : category === "O’quvchilar"
+      ? "STUDENT"
+      : ""
+  );
   return (
-    <div className="p-4 bg-white rounded shadow">
-      <div className="flex flex-col md:flex-row gap-8">
-        {/* Chap blok: Stat kartalar va jadval */}
-        <div className="flex-1 min-w-[320px]">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-blue-100 rounded p-4 text-center">
-              <div className="text-xs text-gray-600">O'quvchilar</div>
-              <div className="text-2xl font-bold">{stats.students}</div>
-            </div>
-            <div className="bg-green-100 rounded p-4 text-center">
-              <div className="text-xs text-gray-600">To'lovlar</div>
-              <div className="text-2xl font-bold">{stats.payments}</div>
-            </div>
-            <div className="bg-purple-100 rounded p-4 text-center">
-              <div className="text-xs text-gray-600">O'qituvchilar</div>
-              <div className="text-2xl font-bold">{stats.teachers}</div>
-            </div>
-            <div className="bg-yellow-100 rounded p-4 text-center">
-              <div className="text-xs text-gray-600">Guruhlar</div>
-              <div className="text-2xl font-bold">{stats.groups}</div>
-            </div>
-          </div>
-          <div className="bg-gray-50 rounded p-4 mb-8">
-            <div className="font-semibold mb-2">So‘nggi o‘quvchilar</div>
-            <table className="w-full text-sm">
-              <thead>
-                <tr>
-                  <th className="text-left">#</th>
-                  <th className="text-left">Ism</th>
-                  <th className="text-left">Jinsi</th>
-                </tr>
-              </thead>
-              <tbody>
-                {latestStudents.length === 0 ? (
-                  <tr>
-                    <td colSpan={3} className="text-center text-gray-400">Ma'lumot yo‘q</td>
-                  </tr>
-                ) : (
-                  latestStudents.slice(0, 4).map((s, i) => (
-                    <tr key={s._id || i}>
-                      <td>{i + 1}</td>
-                      <td>
-                        <span className="flex items-center gap-2">
-                          <img src={s.avatar || 'https://ui-avatars.com/api/?name='+encodeURIComponent(s.full_name||'Bolalar')+'&background=eee&color=444&size=32'} alt="avatar" className="w-8 h-8 rounded-full" />
-                          {s.full_name || s.name}
-                        </span>
-                      </td>
-                      <td className={s.gender === 'Qiz bola' ? 'text-red-600' : 'text-green-700'}>{s.gender || '-'}</td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-        {/* O‘ng blok: Stat kartalar va donut chart */}
-        <div className="flex flex-col gap-4 min-w-[250px] max-w-[320px] flex-1">
-          <div className="bg-white border rounded p-4">
-            <div className="text-gray-600 text-xs">Kirimlar</div>
-            <div className="text-xl font-bold">{sideStats.income !== null && sideStats.income !== undefined ? sideStats.income.toLocaleString() + ' so‘m' : '-'}</div>
-            <div className="text-xs">Kechagi kunga nisbatan <span className={sideStats.incomePositive ? 'text-green-600' : 'text-red-600'}>{sideStats.incomeDiff !== null && sideStats.incomeDiff !== undefined ? (sideStats.incomeDiff > 0 ? '+' : '') + sideStats.incomeDiff + '%' : '-'}</span></div>
-          </div>
-          <div className="bg-white border rounded p-4">
-            <div className="text-gray-600 text-xs">Chiqimlar</div>
-            <div className="text-xl font-bold">{sideStats.expense !== null && sideStats.expense !== undefined ? sideStats.expense.toLocaleString() + ' so‘m' : '-'}</div>
-            <div className="text-xs">O‘tgan haftaga nisbatan <span className={sideStats.expensePositive ? 'text-green-600' : 'text-red-600'}>{sideStats.expenseDiff !== null && sideStats.expenseDiff !== undefined ? (sideStats.expenseDiff > 0 ? '+' : '') + sideStats.expenseDiff + '%' : '-'}</span></div>
-          </div>
-          <div className="bg-white border rounded p-4">
-            <div className="text-gray-600 text-xs">Bolalar soni</div>
-            <div className="text-xl font-bold">{sideStats.students !== null && sideStats.students !== undefined ? sideStats.students.toLocaleString() + ' ta' : '-'}</div>
-            <div className="text-xs">O‘tgan oyga nisbatan <span className={sideStats.studentsPositive ? 'text-green-600' : 'text-red-600'}>{sideStats.studentsDiff !== null && sideStats.studentsDiff !== undefined ? (sideStats.studentsDiff > 0 ? '+' : '') + sideStats.studentsDiff + '%' : '-'}</span></div>
-          </div>
-          {/* Donut chart: bolalarni yosh bo‘yicha statistikasi */}
-          <div className="bg-gray-50 rounded p-4 mt-4">
-            <div className="font-semibold mb-2">Bolalarni yosh bo‘yicha statistikasi</div>
-            {ageLoading ? (
-              <div className="text-center py-10">Yuklanmoqda...</div>
-            ) : ageError ? (
-              <div className="text-center text-red-600">{ageError}</div>
-            ) : (
-              <Doughnut
-                data={{
-                  labels: ageStats.labels,
-                  datasets: [
-                    {
-                      data: ageStats.data,
-                      backgroundColor: ['#4db6ac', '#81c784', '#ffd54f', '#ba68c8', '#ff8a65', '#90caf9', '#bdbdbd', '#1976d2'],
-                      borderWidth: 2,
-                    },
-                  ],
+    <>
+      <Col
+        style={{
+          padding: "22px 20px 20px 20px",
+          borderBottom: "1px solid var(--qidiruv-tizimi-1)",
+        }}
+      >
+        <Title
+          level={2}
+          style={{
+            fontWeight: 600,
+            fontSize: "26px",
+            color: "var(--matn-rang-1)",
+            fontFamily: "var(--font-family)",
+            margin: 0,
+          }}
+        >
+          Asosiy bo’lim
+        </Title>
+      </Col>
+      <Col
+        style={{
+          padding: "40px 20px",
+          fontFamily: "var(--font-family)",
+          display: "flex",
+          flexDirection: "column",
+          gap: "20px",
+        }}
+      >
+        <Row style={{ width: "full", gap: "25px" }}>
+          <Col
+            style={{
+              background: "var(--oq-rang-1)",
+              border: "1px solid var(--qidiruv-tizimi-1)",
+              borderRadius: "4px",
+              width: "76%",
+            }}
+          >
+            <Row
+              justify={"space-between"}
+              style={{
+                padding: "20px",
+                borderBottom: "2px solid  var(--qidiruv-tizimi-1)",
+              }}
+            >
+              <Title
+                level={2}
+                style={{
+                  fontWeight: 400,
+                  fontSize: "26px",
+                  color: "var(--matn-rang-1)",
+                  fontFamily: "var(--font-family)",
+                  margin: 0,
                 }}
-                options={{ cutout: '70%', plugins: { legend: { position: 'bottom' } } }}
-              />
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
+              >
+                O’qituvchilar soni: <span style={{ fontSize: "22px", color: "var(--breand-rang-1)" }}>{data?.data?.studentCount}</span>
+              </Title>
+
+              <Row style={{ gap: "15px" }}>
+                <Dropdown menu={{ items }} placement="bottom">
+                  <Button style={{ padding: "0px 5px" }}>
+                    <img
+                      src={icons.menu_icon}
+                      style={{ width: "24px", height: "24px" }}
+                      alt=""
+                    />
+                  </Button>
+                </Dropdown>
+
+                {["Hamma", "O’qituvchilar", "O’quvchilar"].map(
+                  (item, index) => (
+                    <Button
+                      key={index}
+                      onClick={() => setCategory(item)}
+                      style={{
+                        fontWeight: 500,
+                        padding: "0px 20px",
+                        fontSize: "16px",
+                        color:
+                          category === item
+                            ? "var(--breand-rang-2)"
+                            : "var(--matn-rang-1)",
+                        boxShadow:
+                          category === item
+                            ? "2px 2px 2px 0 rgba(0, 0, 0, 0.1)"
+                            : "none",
+                        background: "var(--stroka-rang-2)",
+                      }}
+                    >
+                      {item}
+                    </Button>
+                  )
+                )}
+              </Row>
+            </Row>
+            <Row
+              style={{
+                flexDirection: "column",
+                padding: "0px  20px",
+              }}
+            >
+              <Row
+                style={{
+                  background: "var(--oq-rang-1)",
+                  borderRadius: "4px",
+                  padding: "20px 15px",
+                  gap: "38px",
+                }}
+              >
+                <Row style={{ gap: "20px", width: "300px" }}>
+                  {["#", "O’qituvchilar F.I.O"].map((item, index) => (
+                    <Title
+                      key={index}
+                      level={2}
+                      style={{
+                        fontWeight: 500,
+                        fontSize: "16px",
+                        color: "var(--filter-matn-rang-1)",
+                        fontFamily: "var(--font-family)",
+                        margin: 0,
+                      }}
+                    >
+                      {item}
+                    </Title>
+                  ))}
+                </Row>
+                <Row style={{ gap: "99px" }}>
+                  <Row style={{ gap: "48px" }}>
+                    {["Tug’ilgan sana", "Jinsi"].map((item, index) => (
+                      <Title
+                        key={index}
+                        level={2}
+                        style={{
+                          fontWeight: 500,
+                          fontSize: "16px",
+                          color: "var(--filter-matn-rang-1)",
+                          fontFamily: "var(--font-family)",
+                          margin: 0,
+                        }}
+                      >
+                        {item}
+                      </Title>
+                    ))}
+                  </Row>
+                  <Row style={{ gap: "88px" }}>
+                    {["Kontakt", "Yashash manzil"].map((item, index) => (
+                      <Title
+                        key={index}
+                        level={2}
+                        style={{
+                          fontWeight: 500,
+                          fontSize: "16px",
+                          color: "var(--filter-matn-rang-1)",
+                          fontFamily: "var(--font-family)",
+                          margin: 0,
+                        }}
+                      >
+                        {item}
+                      </Title>
+                    ))}
+                  </Row>
+                </Row>
+              </Row>
+              {isLoading ? (
+                <Col
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "225px",
+                  }}
+                >
+                  <Spin />
+                </Col>
+              ) : (
+                <Col
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "15px",
+                    height: "225px",
+                    overflowY: "auto",
+                    overflowX: "hidden",
+                    paddingRight: "10px",
+                  }}
+                  className="custom-scroll"
+                >
+                  {data?.data?.users?.map((items, index) => (
+                    <UserCard
+                      key={items.user_id}
+                      id={index + 1}
+                      avatar={items?.images?.[0]?.url}
+                      fullname={items?.full_name}
+                      birthDate={items?.data_of_birth}
+                      gender={items?.gender}
+                      phoneNumber={items?.phone_number}
+                      address={items?.address}
+                    />
+                  ))}
+                </Col>
+              )}
+            </Row>
+          </Col>
+          <Col
+            style={{
+              width: "22%",
+              display: "flex",
+              flexDirection: "column",
+              gap: "20px",
+            }}
+          >
+            <StatistikaCard
+              title={"Kirimlar"}
+              icon={icons.income}
+              price={data?.data?.income?.sum}
+              procent={data?.data?.income?.percent}
+            />
+            <StatistikaCard
+              title={"Chiqimlar"}
+              icon={icons.expense}
+              price={data?.data?.cost?.sum}
+              procent={data?.data?.cost?.percent}
+            />
+          </Col>
+        </Row>
+        <Row style={{ width: "full", gap: "25px" }}>
+          <Row style={{ gap: "20px", width: "76%" }}>
+            <TodayArrivedStudentsComponents />
+            <AgeDistributionComponents ageStats={data?.data?.ageStats} />
+          </Row>
+          <Col
+            style={{
+              width: "22%",
+              display: "flex",
+              flexDirection: "column",
+              gap: "20px",
+            }}
+          >
+            <StatistikaCard
+              title={"Bolalar soni"}
+              icon={icons.usersThree}
+              studentCount={data?.data?.studentCount}
+              procent={30}
+            />
+          </Col>
+        </Row>
+      </Col>
+    </>
   );
 };
 

@@ -1,6 +1,5 @@
 import React from 'react';
-import './Button.css';
-import images from '../../images';
+import icons from '../../Pages/Home/icons';
 import { useNavigate } from 'react-router-dom';
 
 export interface ButtonProps {
@@ -30,15 +29,15 @@ const Button: React.FC<ButtonProps> = ({ onFilterClick, showAdd = true }) => {
             className="add-button"
             type="button"
           >
-            <img width={24} src={images.add_icon} alt="add" />
+            <img width={24} src={icons.add_icon} alt="add" />
             <span>Qo'shish</span>
           </button>
         )}
         <button className="sharing" type="button">
-          <img width={24} src={images.sharing} alt="sharing" />
+          <img width={24} src={icons.sharing} alt="sharing" />
         </button>
         <button className="filtering" type="button" onClick={onFilterClick}>
-          <img width={24} src={images.filter} alt="Filter" />
+          <img width={24} src={icons.filter} alt="Filter" />
         </button>
       </div>
     </div>
