@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import instance from "../../api/axios";
+import { createAttendance } from "../../api/attendance";
 import { Modal, Form, Input, Button, Select } from "antd";
 import "antd/dist/reset.css";
+import { getEntityId } from "../../utils/getEntityId";
 
 interface Student {
   _id: string;
@@ -53,12 +54,17 @@ const AddAttendanceModal: React.FC<Props> = ({ open, onClose, onSuccess }) => {
     }
     setLoading(true);
     try {
-      await instance.post("/attendance", { student_id: values.student_id, date: values.date, status: values.status });
+      await createAttendance({
+        student_id: getEntityId(values.student_id) || values.student_id,
+        status: values.status,
+        date: values.date,
+        lesson_id: '', // Agar lesson_id kerak bo‘lsa, formga qo‘shing yoki backendga moslang
+      });
       setToast({ message: "Davomat qo'shildi!", type: 'success' });
       form.resetFields();
       onSuccess && onSuccess();
       setTimeout(onClose, 1000);
-    } catch (err) {
+    } catch (err: any) {
       setToast({ message: err.message || "Qo'shishda xatolik", type: 'error' });
     } finally {
       setLoading(false);

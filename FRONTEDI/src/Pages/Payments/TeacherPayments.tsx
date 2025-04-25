@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from "react";
 import { Table, Button, Modal, Spin, message } from "antd";
 import AddTeacherSalaryModal from "./AddTeacherSalaryModal";
+import { getTeacherPayments } from "../../api/payments";
+import { getEntityId } from "../../utils/getEntityId";
 
 interface TeacherPaymentsProps {
   teacherId: string;
@@ -22,13 +24,17 @@ const TeacherPayments: React.FC<TeacherPaymentsProps> = ({ teacherId, isAdmin })
   const [error, setError] = useState("");
   const [showModal, setShowModal] = useState(false);
 
-  const fetchSalaries = () => {
+  const fetchSalaries = async () => {
     setLoading(true);
-    fetch(`/payment/salary/history/${teacherId}`)
-      .then(res => res.json())
-      .then(data => setSalaries(Array.isArray(data) ? data : []))
-      .catch(() => setError("Oyliklarni olishda xatolik"))
-      .finally(() => setLoading(false));
+    setError("");
+    try {
+      const data = await getTeacherPayments(getEntityId(teacherId) || teacherId);
+      setSalaries(Array.isArray(data) ? data : []);
+    } catch (err) {
+      setError("Oyliklarni olishda xatolik");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -67,7 +73,7 @@ const TeacherPayments: React.FC<TeacherPaymentsProps> = ({ teacherId, isAdmin })
         />
       )}
       <AddTeacherSalaryModal
-        teacherId={teacherId}
+        teacherId={getEntityId(teacherId) || teacherId}
         open={showModal}
         onClose={() => setShowModal(false)}
         onSuccess={() => {

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import instance from "../../api/axios";
+import { getAttendance, deleteAttendance } from "../../api/attendance";
 import ClipLoader from "react-spinners/ClipLoader";
 import Toast from "../../components/Toast";
 import AddAttendanceModal from "./AddAttendanceModal";
 import EditAttendanceModal from "./EditAttendanceModal";
 import icons from "../Home/icons";
+import { getEntityId } from "../../utils/getEntityId";
 
 interface Attendance {
   attendance_id?: number;
@@ -37,9 +38,9 @@ const Attendance = () => {
   const fetchAttendance = async () => {
     setLoading(true);
     try {
-      const res = await instance.get("/attendance");
-      setAttendance(res.data || []);
-    } catch (err) {
+      const data = await getAttendance();
+      setAttendance(Array.isArray(data) ? data : []);
+    } catch (err: any) {
       setError("Davomatlarni olishda xatolik");
       setToast({ message: err.message || "Davomatlarni olishda xatolik", type: 'error' });
     } finally {
@@ -56,10 +57,10 @@ const Attendance = () => {
     if (!window.confirm("Haqiqatan ham o'chirmoqchimisiz?")) return;
     setLoading(true);
     try {
-      await instance.delete(`/attendance/${id}`);
+      await deleteAttendance(String(getEntityId(id) || id));
       setToast({ message: "Davomat o'chirildi!", type: 'success' });
       fetchAttendance();
-    } catch (err) {
+    } catch (err: any) {
       setToast({ message: err.message || "O'chirishda xatolik", type: 'error' });
     } finally {
       setLoading(false);
@@ -95,7 +96,7 @@ const Attendance = () => {
                 <td>
                   {a.student
                     ? `${a.student.name || ''} ${a.student.lastname || ''}`.trim()
-                    : a.student_id || a.studentId}
+                    : getEntityId(a.student) || a.student_id || a.studentId}
                 </td>
                 <td>
                   {a.lesson?.lesson_date
@@ -127,7 +128,10 @@ const Attendance = () => {
         open={showEdit}
         onClose={() => { setShowEdit(false); setEditItem(null); }}
         onSuccess={fetchAttendance}
-        attendance={editItem}
+        attendance={editItem && {
+          ...editItem,
+          student_id: getEntityId(editItem.student) || editItem.student_id || editItem.studentId
+        }}
       />
     </div>
   );

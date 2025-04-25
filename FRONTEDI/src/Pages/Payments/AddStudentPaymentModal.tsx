@@ -1,6 +1,8 @@
 // Converted from AddStudentPaymentModal.jsx to AddStudentPaymentModal.tsx with TypeScript, Ant Design, and professional UX
 import React, { useState } from "react";
 import { Modal, Form, Input, Select, Button, message, Spin } from "antd";
+import { createStudentPayment } from "../../api/payments";
+import { getEntityId } from "../../utils/getEntityId";
 
 interface AddStudentPaymentModalProps {
   studentId: string;
@@ -22,23 +24,17 @@ const AddStudentPaymentModal: React.FC<AddStudentPaymentModalProps> = ({ student
   const handleFinish = async (values: AddStudentPaymentForm) => {
     setLoading(true);
     try {
-      const res = await fetch("/payment/student", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          student_id: studentId, // MEMORY: backend expects student_id
-          amount: Number(values.amount),
-          payment_type: values.payment_type,
-          description: values.description,
-        }),
+      await createStudentPayment({
+        student_id: getEntityId(studentId) || studentId, // always send student_id
+        amount: Number(values.amount),
+        type: values.payment_type as any, // PaymentType enum yoki string
       });
-      if (!res.ok) throw new Error("To‘lovni amalga oshirishda xatolik");
       message.success("To‘lov muvaffaqiyatli amalga oshirildi!");
       form.resetFields();
       onSuccess && onSuccess();
       onClose();
     } catch (err: any) {
-      message.error(err.message);
+      message.error(err.message || "To‘lovni amalga oshirishda xatolik");
     } finally {
       setLoading(false);
     }

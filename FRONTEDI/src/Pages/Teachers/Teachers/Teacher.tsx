@@ -4,7 +4,6 @@ import { Spin } from "antd";
 import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import instance from "../../../api/axios";
 import { useNavigate } from "react-router-dom";
-import dayjs from "dayjs";
 import DataTable from "../../../components/DataTable/DataTable";
 import { Button } from "antd/es";
 import Toast from "../../../components/Toast";
@@ -21,6 +20,9 @@ interface TeacherType {
   birthdate?: string;
   gender?: string;
   phone_number?: string;
+  address?: string;
+  group?: string;
+  status?: string;
   [key: string]: any;
 }
 
@@ -30,7 +32,7 @@ const TeacherPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedStudent, setSelectedStudent] = useState<TeacherType | null>(null);
+  const [selectedTeacher, setSelectedTeacher] = useState<TeacherType | null>(null);
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" }>({ message: '', type: 'success' });
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -44,8 +46,8 @@ const TeacherPage: React.FC = () => {
     try {
       const res = await instance.get(`/users?role=teacher&page=${page}&limit=${limit}`);
       const mapped = (res.data.data || res.data || [])
-        .filter((s: any) => s.role === 'teacher' || s.role === 'TEACHER')
-        .map((s: any) => ({
+        .filter((s: Record<string, unknown>) => s.role === 'teacher' || s.role === 'TEACHER')
+        .map((s: Record<string, any>) => ({
           user_id: s.user_id,
           name: s.name,
           lastname: s.lastname,
@@ -60,7 +62,7 @@ const TeacherPage: React.FC = () => {
       setTeachers(mapped);
       setTotal(res.data.total || 0);
     } catch (err: any) {
-      setError(err.message || "O'quvchilarni yuklashda xatolik");
+      setError(err.message || "O'qituvchilarni yuklashda xatolik");
     } finally {
       setLoading(false);
     }
@@ -80,7 +82,8 @@ const TeacherPage: React.FC = () => {
   };
 
   const handleEdit = (teacher: TeacherType) => {
-    navigate(`/teachers/edit/${teacher.user_id || teacher._id || teacher.id}`);
+    setSelectedTeacher(teacher);
+    setIsEditModalOpen(true);
   };
 
   const handleDelete = async (id: string) => {
@@ -88,20 +91,21 @@ const TeacherPage: React.FC = () => {
     try {
       await instance.delete(`/users/${id}`);
       fetchTeachers();
-      // Toast yoki message.success qo'shishingiz mumkin
+      setToast({ message: "O‘qtuvchi muvaffaqiyatli o‘chirildi!", type: "success" });
+      setTimeout(() => setToast({ message: '', type: 'success' }), 3000);
     } catch (err: any) {
-      // Toast yoki message.error qo'shishingiz mumkin
+      setToast({ message: err.message || "O‘chirishda xatolik", type: "error" });
+      setTimeout(() => setToast({ message: '', type: 'success' }), 3000);
     }
   };
+
   const handleTeacherEdited = () => {
     fetchTeachers();
     setToast({ message: "O‘qtuvchi muvaffaqiyatli tahrirlandi!", type: "success" });
     setTimeout(() => setToast({ message: '', type: 'success' }), 3000);
   };
 
-  function toggleFilter(): void {
-    throw new Error("Function not implemented.");
-  }
+  const toggleFilter = () => setIsFilterOpen((prev) => !prev);
 
   return (
     <div className="p-4 bg-white rounded shadow">
@@ -109,17 +113,14 @@ const TeacherPage: React.FC = () => {
       <div className="flex items-center justify-between gap-2 mb-4">
         <h1 className="text-xl font-bold">O’qituvchilar jadvali</h1>
         <div className="flex gap-2 items-center">
-          <Button type="primary" onClick={() => navigate("/teachers/add")}>
-            Yangi o‘qtuvchi qo‘shish
-          </Button>
+          <Button type="primary" onClick={() => navigate("/teachers/add")}>Yangi o‘qtuvchi qo‘shish</Button>
           {isFilterOpen && <Filter closeFilter={toggleFilter} />}
         </div>
       </div>
-
       <EditTeacherModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
-        teacher={selectedStudent}
+        teacher={selectedTeacher}
         onTeacherEdited={handleTeacherEdited}
       />
       {loading ? (
@@ -131,7 +132,6 @@ const TeacherPage: React.FC = () => {
       ) : (
         <DataTable data={teachers} type="teachers" onEdit={handleEdit} onDelete={handleDelete} />
       )}
-      {/* Pagination UI */}
       <div className="flex justify-end mt-4">
         <button
           disabled={currentPage === 1}
@@ -154,4 +154,3 @@ const TeacherPage: React.FC = () => {
 };
 
 export default TeacherPage;
-

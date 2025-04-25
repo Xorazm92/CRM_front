@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from "react";
 import { Table, Button, Modal, Spin, message } from "antd";
 import AddStudentPaymentModal from "./AddStudentPaymentModal";
+import { getStudentPayments } from "../../api/payments";
+import { getEntityId } from "../../utils/getEntityId";
 
 interface StudentPaymentsProps {
   studentId: string;
@@ -22,13 +24,17 @@ const StudentPayments: React.FC<StudentPaymentsProps> = ({ studentId }) => {
   const [error, setError] = useState("");
   const [showModal, setShowModal] = useState(false);
 
-  const fetchPayments = () => {
+  const fetchPayments = async () => {
     setLoading(true);
-    fetch(`/payment/history/${studentId}`)
-      .then(res => res.json())
-      .then(data => setPayments(Array.isArray(data) ? data : []))
-      .catch(() => setError("To‘lovlarni olishda xatolik"))
-      .finally(() => setLoading(false));
+    setError("");
+    try {
+      const data = await getStudentPayments(getEntityId(studentId) || studentId);
+      setPayments(Array.isArray(data) ? data : []);
+    } catch (err) {
+      setError("To‘lovlarni olishda xatolik");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -68,7 +74,7 @@ const StudentPayments: React.FC<StudentPaymentsProps> = ({ studentId }) => {
         />
       )}
       <AddStudentPaymentModal
-        studentId={studentId}
+        studentId={getEntityId(studentId) || studentId}
         open={showModal}
         onClose={() => setShowModal(false)}
         onSuccess={() => {

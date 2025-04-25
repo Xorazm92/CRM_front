@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Form, Select, Button, message, Spin } from "antd";
 import instance from "../../api/axios";
+import { getEntityId } from "../../utils/getEntityId";
 
 interface AddGroupMemberModalProps {
   isOpen: boolean;
@@ -52,7 +53,7 @@ const AddGroupMemberModal: React.FC<AddGroupMemberModalProps> = ({ isOpen, onClo
     try {
       await instance.post("/admin/addMembersToGroup", {
         group_id: groupId,
-        user_ids: selected
+        user_ids: selected.map(id => getEntityId(students.find(s => getEntityId(s) === id)) || id)
       });
       message.success("A'zolar muvaffaqiyatli qo'shildi!");
       onMembersAdded && onMembersAdded();
@@ -75,7 +76,7 @@ const AddGroupMemberModal: React.FC<AddGroupMemberModalProps> = ({ isOpen, onClo
               value={selected}
               onChange={setSelected}
               placeholder="O'quvchilarni tanlang"
-              options={students.map(s => ({ value: s.id || s.user_id, label: s.full_name || s.name || s.username || 'No name' }))}
+              options={students.map(s => ({ value: getEntityId(s), label: s.full_name || s.name || s.username || 'No name' }))}
               style={{ width: '100%' }}
             />
           </Form.Item>

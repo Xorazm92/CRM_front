@@ -4,6 +4,7 @@ import ClipLoader from "react-spinners/ClipLoader";
 import Toast from "../../components/Toast";
 import AddPaymentModal from "./AddPaymentModal";
 import EditPaymentModal from "./EditPaymentModal";
+import { getEntityId } from "../../utils/getEntityId";
 
 interface Payment {
   id: number;
@@ -53,7 +54,7 @@ const Payments = () => {
     if (!window.confirm("Haqiqatan ham o'chirmoqchimisiz?")) return;
     setLoading(true);
     try {
-      await instance.delete(`/payments/student/${id}`);
+      await instance.delete(`/payments/student/${getEntityId(id) || id}`);
       setToast({ message: "To‘lov o‘chirildi!", type: 'success' });
       fetchPayments();
     } catch (err) {
@@ -118,7 +119,7 @@ const Payments = () => {
         onSuccess={fetchPayments}
         payment={editItem && {
           ...editItem,
-          student_id: editItem.student_id || editItem.studentId
+          student_id: getEntityId(editItem.student) || editItem.student_id || editItem.studentId
         }}
       />
     </div>

@@ -2,6 +2,7 @@
 import React, { useEffect } from "react";
 import { Modal, Form, Input, Select, DatePicker, Button, message, Spin } from "antd";
 import instance from "../../api/axios";
+import { getEntityId } from "../../utils/getEntityId";
 
 interface EditGroupModalProps {
   isOpen: boolean;
@@ -45,10 +46,10 @@ const EditGroupModal: React.FC<EditGroupModalProps> = ({ isOpen, onClose, group,
       form.setFieldsValue({
         name: group.name || "",
         description: group.description || "",
-        course_id: group.course_id || group.courseId || group.course?._id || group.course?.id || "",
+        course_id: getEntityId(group.course || { course_id: group.course_id, id: group.courseId, _id: group.course?._id }) || "",
         status: group.status || "ACTIVE",
         start_date: group.start_date ? (typeof group.start_date === 'string' ? group.start_date : undefined) : group.startDate ? (typeof group.startDate === 'string' ? group.startDate : undefined) : undefined,
-        teacher_id: group.teacher_id || group.teacherId || group.teacher?._id || group.teacher?.id || ""
+        teacher_id: getEntityId(group.teacher || { user_id: group.teacher_id, id: group.teacherId, _id: group.teacher?._id }) || ""
       });
     }
     if (isOpen) {
@@ -87,12 +88,12 @@ const EditGroupModal: React.FC<EditGroupModalProps> = ({ isOpen, onClose, group,
       const payload = {
         name: values.name,
         description: values.description,
-        course_id: values.course_id,
+        course_id: getEntityId(courses.find(c => getEntityId(c) === values.course_id)) || values.course_id,
         status: values.status,
         start_date: typeof values.start_date === 'string' ? values.start_date : values.start_date.format("YYYY-MM-DD"),
-        teacher_id: values.teacher_id
+        teacher_id: getEntityId(teachers.find(t => getEntityId(t) === values.teacher_id)) || values.teacher_id
       };
-      await instance.put(`/groups/${group.id || group.group_id || group._id}`, payload);
+      await instance.put(`/groups/${getEntityId(group)}`, payload);
       message.success("Guruh muvaffaqiyatli tahrirlandi!");
       onGroupEdited && onGroupEdited();
       onClose();
@@ -109,10 +110,10 @@ const EditGroupModal: React.FC<EditGroupModalProps> = ({ isOpen, onClose, group,
         <Form form={form} layout="vertical" onFinish={handleFinish}>
           <Form.Item name="name" label="Guruh nomi" rules={[{ required: true, message: "Guruh nomi majburiy!" }]}> <Input /> </Form.Item>
           <Form.Item name="description" label="Guruh tavsifi" rules={[{ required: true, message: "Tavsif majburiy!" }]}> <Input.TextArea rows={3} /> </Form.Item>
-          <Form.Item name="course_id" label="Kurs" rules={[{ required: true, message: "Kurs majburiy!" }]}> <Select placeholder="Kursni tanlang" options={courses.map(c => ({ value: c._id || c.id, label: c.name }))} /> </Form.Item>
+          <Form.Item name="course_id" label="Kurs" rules={[{ required: true, message: "Kurs majburiy!" }]}> <Select placeholder="Kursni tanlang" options={courses.map(c => ({ value: getEntityId(c), label: c.name }))} /> </Form.Item>
           <Form.Item name="status" label="Holat" rules={[{ required: true, message: "Holat majburiy!" }]} initialValue="ACTIVE"> <Select options={[{ value: "ACTIVE", label: "Aktiv" }, { value: "INACTIVE", label: "Noaktiv" }, { value: "COMPLETED", label: "Yakunlangan" }]} /> </Form.Item>
           <Form.Item name="start_date" label="Boshlanish sanasi" rules={[{ required: true, message: "Boshlanish sana majburiy!" }]}> <DatePicker className="w-full" /> </Form.Item>
-          <Form.Item name="teacher_id" label="O'qituvchi" rules={[{ required: true, message: "O'qituvchi majburiy!" }]}> <Select placeholder="O'qituvchini tanlang" options={teachers.map(t => ({ value: t._id || t.id, label: t.full_name || t.name || t.username || t.lastname || 'No name' }))} /> </Form.Item>
+          <Form.Item name="teacher_id" label="O'qituvchi" rules={[{ required: true, message: "O'qituvchi majburiy!" }]}> <Select placeholder="O'qituvchini tanlang" options={teachers.map(t => ({ value: getEntityId(t), label: t.full_name || t.name || t.username || t.lastname || 'No name' }))} /> </Form.Item>
           <div className="flex justify-end gap-2">
             <Button onClick={onClose}>Bekor qilish</Button>
             <Button type="primary" htmlType="submit" loading={loading}>Saqlash</Button>

@@ -1,21 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { Form, Input, Select, DatePicker, Button, message, Spin, Card } from "antd";
+import { Form, Input, Select, DatePicker, Button, message, Card } from "antd";
 import { useNavigate } from "react-router-dom";
 import instance from "../../../api/axios";
 import ImageUpload from "../../../components/ImageUpload/ImageUpload";
-import dayjs from "dayjs";
+import { createStudent, addStudentToGroup } from "../../../api/users";
+
+interface GroupType {
+  group_id?: string;
+  _id?: string;
+  id?: string;
+  name?: string;
+}
 
 const AddStudentPage: React.FC = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const [groups, setGroups] = useState<any[]>([]);
+  const [groups, setGroups] = useState<GroupType[]>([]);
   const [image, setImage] = useState<File | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     setLoading(true);
     instance.get('/groups').then(res => {
-      let data = res.data;
+      const data = res.data;
       if (Array.isArray(data)) setGroups(data);
       else if (Array.isArray(data.data)) setGroups(data.data);
       else if (Array.isArray(data.results)) setGroups(data.results);
@@ -23,11 +30,12 @@ const AddStudentPage: React.FC = () => {
     }).finally(() => setLoading(false));
   }, []);
 
-  const handleFinish = async (values: any) => {
+  const handleFinish = async (values: Record<string, any>) => {
     setLoading(true);
     try {
       const genderEnum = values.gender === 'male' ? 'MALE' : 'FEMALE';
-      const userRes = await instance.post("/users", {
+      // 1. Student yaratish
+      const userRes = await createStudent({
         name: values.name,
         lastname: values.lastname,
         middlename: values.middlename,
@@ -35,16 +43,13 @@ const AddStudentPage: React.FC = () => {
         gender: genderEnum,
         address: values.address,
         phone_number: values.phone_number,
-        role: "STUDENT",
         username: values.username,
         password: values.password
       });
-      const user_id = userRes.data.user_id || userRes.data.id || userRes.data._id;
+      const user_id = userRes.user_id || userRes.id || userRes._id;
+      // 2. Studentni guruhga biriktirish
       if (user_id && values.group_id) {
-        await instance.post("/admin/addMembersToGroup", {
-          group_id: values.group_id,
-          user_ids: [user_id]
-        });
+        await addStudentToGroup(values.group_id, user_id);
       }
       message.success("O‘quvchi muvaffaqiyatli qo‘shildi!");
       form.resetFields();

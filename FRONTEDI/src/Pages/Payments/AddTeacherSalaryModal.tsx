@@ -1,6 +1,8 @@
 // Converted from AddTeacherSalaryModal.jsx to AddTeacherSalaryModal.tsx with TypeScript, Ant Design, and professional UX
 import React, { useState } from "react";
 import { Modal, Form, Input, Button, message, Spin } from "antd";
+import { createTeacherSalary } from "../../api/payments";
+import { getEntityId } from "../../utils/getEntityId";
 
 interface AddTeacherSalaryModalProps {
   teacherId: string;
@@ -21,22 +23,16 @@ const AddTeacherSalaryModal: React.FC<AddTeacherSalaryModalProps> = ({ teacherId
   const handleFinish = async (values: AddTeacherSalaryForm) => {
     setLoading(true);
     try {
-      const res = await fetch("/payment/teacher", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          teacher_id: teacherId, // backend expects teacher_id
-          amount: Number(values.amount),
-          description: values.description,
-        }),
+      await createTeacherSalary({
+        teacher_id: getEntityId(teacherId) || teacherId, // always send teacher_id
+        amount: Number(values.amount),
       });
-      if (!res.ok) throw new Error("Oylikni amalga oshirishda xatolik");
       message.success("Oylik muvaffaqiyatli hisoblandi!");
       form.resetFields();
       onSuccess && onSuccess();
       onClose();
     } catch (err: any) {
-      message.error(err.message);
+      message.error(err.message || "Oylikni amalga oshirishda xatolik");
     } finally {
       setLoading(false);
     }

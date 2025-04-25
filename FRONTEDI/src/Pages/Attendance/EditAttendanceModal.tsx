@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Form, Select, DatePicker, Button, message, Spin } from "antd";
-import instance from "../../api/axios";
+import { updateAttendance } from "../../api/attendance";
+import { getEntityId } from "../../utils/getEntityId";
 
 interface EditAttendanceModalProps {
   open: boolean;
@@ -30,8 +31,8 @@ const EditAttendanceModal: React.FC<EditAttendanceModalProps> = ({ open, onClose
   useEffect(() => {
     if (attendance && open) {
       form.setFieldsValue({
-        student_id: attendance.student_id || attendance.student?.student_id || attendance.student?._id || attendance.student?.id || '',
-        lesson_id: attendance.lesson_id || attendance.lesson?.lesson_id || attendance.lesson?._id || attendance.lesson?.id || '',
+        student_id: getEntityId(attendance.student) || attendance.student_id || attendance.student?.student_id || attendance.student?._id || attendance.student?.id || '',
+        lesson_id: getEntityId(attendance.lesson) || attendance.lesson_id || attendance.lesson?.lesson_id || attendance.lesson?._id || attendance.lesson?.id || '',
         status: attendance.status || '',
         date: attendance.lesson?.lesson_date ? attendance.lesson.lesson_date : attendance.created_at ? attendance.created_at : undefined
       });
@@ -41,10 +42,11 @@ const EditAttendanceModal: React.FC<EditAttendanceModalProps> = ({ open, onClose
   const handleFinish = async (values: any) => {
     setLoading(true);
     try {
-      await instance.put(`/attendance/${attendance.attendance_id || attendance.id}`,
+      await updateAttendance(
+        attendance.attendance_id || attendance.id,
         {
-          student_id: values.student_id,
-          lesson_id: values.lesson_id,
+          student_id: getEntityId(values.student_id) || values.student_id,
+          lesson_id: getEntityId(values.lesson_id) || values.lesson_id,
           status: values.status,
           date: values.date ? (typeof values.date === 'string' ? values.date : values.date.toISOString()) : undefined
         }

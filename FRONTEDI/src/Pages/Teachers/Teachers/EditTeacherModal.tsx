@@ -5,10 +5,30 @@ import { UploadOutlined } from "@ant-design/icons";
 import instance from "../../../api/axios";
 import dayjs from "dayjs";
 
+interface TeacherType {
+  user_id?: string;
+  id?: string;
+  name?: string;
+  lastname?: string;
+  middlename?: string;
+  birthDate?: string;
+  gender?: string;
+  address?: string;
+  phone_number?: string;
+  specialty?: string;
+  experience?: string;
+  education?: string;
+  salaryType?: string;
+  salaryDate?: string;
+  salary?: string;
+  photo?: string;
+  [key: string]: any;
+}
+
 interface EditTeacherModalProps {
   isOpen: boolean;
   onClose: () => void;
-  teacher: any;
+  teacher: TeacherType | null;
   onTeacherEdited?: () => void;
 }
 
@@ -48,14 +68,14 @@ const EditTeacherModal: React.FC<EditTeacherModalProps> = ({ isOpen, onClose, te
     }
   };
 
-  const handleFinish = async (values: any) => {
+  const handleFinish = async (values: Record<string, any>) => {
     setLoading(true);
     try {
       const formData = new FormData();
       Object.entries(values).forEach(([key, value]) => {
         if (value) {
           if (key === "birthDate" || key === "salaryDate") {
-            formData.append(key, value.format("YYYY-MM-DD"));
+            formData.append(key, typeof value === 'string' ? value : value.format("YYYY-MM-DD"));
           } else {
             formData.append(key, value);
           }
@@ -65,7 +85,7 @@ const EditTeacherModal: React.FC<EditTeacherModalProps> = ({ isOpen, onClose, te
         formData.append("photo", imageUrl);
       }
       formData.append("role", "TEACHER");
-      await instance.put(`/users/${teacher.user_id || teacher.id}`, formData, {
+      await instance.put(`/users/${teacher?.user_id || teacher?.id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       message.success("O'qituvchi yangilandi!");

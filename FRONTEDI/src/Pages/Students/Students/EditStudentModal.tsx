@@ -1,24 +1,42 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Form, Input, Select, DatePicker, Button, message, Spin } from "antd";
+import { updateStudent } from "../../../api/users";
 import instance from "../../../api/axios";
+
+interface GroupType {
+  group_id?: string;
+  _id?: string;
+  id?: string;
+  name?: string;
+}
+
+interface StudentType {
+  user_id?: string;
+  id?: string;
+  name?: string;
+  birthDate?: string;
+  gender?: string;
+  group_id?: string;
+  group?: GroupType;
+}
 
 interface EditStudentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  student: any;
+  student: StudentType;
   onStudentEdited: () => void;
 }
 
 const EditStudentModal: React.FC<EditStudentModalProps> = ({ isOpen, onClose, student, onStudentEdited }) => {
   const [form] = Form.useForm();
-  const [groups, setGroups] = useState<any[]>([]);
+  const [groups, setGroups] = useState<GroupType[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!isOpen) return;
     setLoading(true);
     instance.get('/groups').then(res => {
-      let data = res.data;
+      const data = res.data;
       if (Array.isArray(data)) setGroups(data);
       else if (Array.isArray(data.data)) setGroups(data.data);
       else if (Array.isArray(data.results)) setGroups(data.results);
@@ -37,17 +55,15 @@ const EditStudentModal: React.FC<EditStudentModalProps> = ({ isOpen, onClose, st
     }
   }, [student, isOpen, form]);
 
-  const handleFinish = async (values: any) => {
+  const handleFinish = async (values: Record<string, any>) => {
     setLoading(true);
     try {
-      await instance.put(`/student/${student.id || student.user_id}`,
-        {
-          name: values.name,
-          birthDate: values.birthDate ? (typeof values.birthDate === 'string' ? values.birthDate : values.birthDate.toISOString()) : undefined,
-          gender: values.gender,
-          group_id: values.group_id
-        }
-      );
+      await updateStudent(student.user_id || student.id, {
+        name: values.name,
+        birthdate: values.birthDate ? (typeof values.birthDate === 'string' ? values.birthDate : values.birthDate.toISOString()) : undefined,
+        gender: values.gender,
+        group_id: values.group_id
+      });
       message.success("O‘quvchi muvaffaqiyatli tahrirlandi!");
       onStudentEdited();
       onClose();

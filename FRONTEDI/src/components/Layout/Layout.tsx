@@ -14,65 +14,9 @@ import settingIcon from "../../images/icons/setting.png";
 import logoutIcon from "../../images/icons/logout.png";
 import cashIcon from "../../images/icons/cash.png";
 import { useAuthStore } from "../../store/useAuthStore";
+import { getSidebarMenu } from "./sidebarMenus";
 
 const { Header, Sider, Content } = Layout;
-
-const menu = [
-  {
-    key: "1",
-    icon: <img src={menuIcon} width={24} height={24} alt="Asosiy" />,
-    label: <Link to="/">Asosiy</Link>,
-  },
-  {
-    key: "2",
-    icon: <img src={usersThree} width={24} height={24} alt="O’quvchilar" />,
-    label: <Link to="/students">O’quvchilar</Link>,
-  },
-  {
-    key: "3",
-    icon: <img src={userIcon} width={24} height={24} alt="O’qituvchilar" />,
-    label: <Link to="/teachers">O’qituvchilar</Link>,
-  },
-  {
-    key: "4",
-    icon: <img src={groupIcon} width={24} height={24} alt="Guruhlar" />,
-    label: <Link to="/groups">Guruhlar</Link>,
-  },
-  {
-    key: "5",
-    icon: <img src={menuSecond} width={24} height={24} alt="Hisobotlar" />,
-    label: <Link to="/reports">Hisobotlar</Link>,
-  },
-  {
-    key: "6",
-    icon: <img src={cashIcon} width={24} height={24} alt="To'lovlar" />,
-    label: <Link to="/payments">To'lovlar</Link>,
-  },
-];
-
-const menuBootm = [
-  {
-    key: "7",
-    icon: <img src={settingIcon} width={24} height={24} alt="Sozlamalar" />,
-    label: <Link to="/settings">Sozlamalar</Link>,
-  },
-  {
-    key: "8",
-    icon: <img src={logoutIcon} width={24} height={24} alt="Chiqish" />,
-    label: <Link to="/logout">Chiqish</Link>,
-  },
-];
-
-const SelectedKeys = {
-  "": "1",
-  students: "2",
-  teachers: "3",
-  groups: "4",
-  reports: "5",
-  payments: "6",
-  settings: "7",
-  logout: "8",
-};
 
 const AdminLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -81,7 +25,7 @@ const AdminLayout = () => {
   } = theme.useToken();
   const location = useLocation();
   const path = location.pathname.split("/")[1];
-  const selectedKey = SelectedKeys[path] || "1";
+  const selectedKey = path;
 
   // Auth store
   const { isLogged, user, logOut } = useAuthStore();
@@ -97,6 +41,58 @@ const AdminLayout = () => {
     logOut();
     navigate("/login", { replace: true });
   };
+
+  // TypeScript uchun menyu itemlarini aniq tipda yozamiz
+  type SidebarMenuItem = {
+    key: string;
+    label: string;
+    to: string;
+    icon: any;
+  };
+  type SidebarMenuGroup = {
+    type: "group";
+    label: string;
+    children: SidebarMenuItem[];
+  };
+  type SidebarMenu = (SidebarMenuItem | SidebarMenuGroup)[];
+
+  // Role normalization: har doim katta harflarga o'tkaziladi
+  const normRole = user?.role?.toUpperCase?.();
+  const sidebarMenu: SidebarMenu = getSidebarMenu(normRole);
+
+  // Menu uchun Ant Design formatiga o‘tkazish:
+  const menuItems = sidebarMenu.map(item => {
+    if ("type" in item && item.type === "group") {
+      return {
+        type: "group" as const,
+        label: item.label,
+        children: item.children.map(child => ({
+          key: child.key,
+          icon: <img src={child.icon} width={22} height={22} alt={child.label} />,
+          label: <Link to={child.to}>{child.label}</Link>
+        }))
+      };
+    }
+    return {
+      key: item.key,
+      icon: <img src={item.icon} width={22} height={22} alt={item.label} />,
+      label: <Link to={item.to}>{item.label}</Link>
+    };
+  });
+
+  // Pastki menyu (settings, logout)
+  const bottomMenu = [
+    {
+      key: "settings",
+      icon: <img src={settingIcon} width={22} height={22} alt="Sozlamalar" />,
+      label: <Link to="/settings">Sozlamalar</Link>
+    },
+    {
+      key: "logout",
+      icon: <img src={logoutIcon} width={22} height={22} alt="Chiqish" />,
+      label: <span onClick={handleLogout} style={{ cursor: 'pointer' }}>Chiqish</span>
+    }
+  ];
 
   return (
     <Layout style={{ minHeight: "100vh", overflow: "hidden" }}>
@@ -134,20 +130,14 @@ const AdminLayout = () => {
           <Menu
             mode="inline"
             selectedKeys={[selectedKey]}
-            items={menu}
+            items={menuItems}
             style={{ border: "none", background: "#fff" }}
           />
         </div>
         <Menu
           mode="inline"
           selectedKeys={[]}
-          items={[
-            ...menuBootm.slice(0, 1),
-            {
-              ...menuBootm[1],
-              label: <span onClick={handleLogout} style={{ cursor: 'pointer' }}>Chiqish</span>,
-            },
-          ]}
+          items={bottomMenu}
           style={{ border: "none", background: "#fff", marginBottom: 16 }}
         />
       </Sider>
@@ -203,6 +193,7 @@ const AdminLayout = () => {
                   background: "#fff",
                   border: "1px solid #e6e8ec"
                 }}
+                onClick={() => navigate("/notifications")}
               >
                 <img src={notificationIcon} width={24} height={24} alt="" />
               </Button>

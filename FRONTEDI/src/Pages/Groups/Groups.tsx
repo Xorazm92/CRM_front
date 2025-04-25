@@ -1,19 +1,17 @@
 // types.tsx
-interface GroupType {
-  id?: string;
+interface Groups {
   group_id?: string;
   name?: string;
   [key: string]: any;
 }
 
-export { GroupType };
+export { Groups };
 
 // Groups.tsx
 import React, { useState, useEffect } from "react";
-import { Spin, message } from "antd";
-import instance from "../../api/axios";
+import { Spin, message, Button } from "antd";
+import { fetchGroups, deleteGroup } from "../../api/groups";
 import Toast from "../../components/Toast";
-import Button from "../../components/Button/Button";
 import Filter from "../../components/Filter/Filter";
 import DataTable from "../../components/DataTable/DataTable";
 import AddGroupModal from "./AddGroupModal";
@@ -21,72 +19,80 @@ import EditGroupModal from "./EditGroupModal";
 import AddGroupMemberModal from "./AddGroupMemberModal";
 import GroupDetailModal from "./GroupDetailModal";
 import AddGroupTeacherModal from "./AddGroupTeacherModal";
+import { Groups } from "../../types/models";
+import { Navigate } from "react-router-dom";
+import { getEntityId } from "../../utils/getEntityId";
 
 const Groups: React.FC = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [groups, setGroups] = useState<GroupType[]>([]);
+  const [groups, setGroups] = useState<Groups[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedGroup, setSelectedGroup] = useState<GroupType | null>(null);
+  const [selectedGroup, setSelectedGroup] = useState<Groups | null>(null);
   const [toast, setToast] = useState({ message: '', type: 'success' });
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [addMemberModalOpen, setAddMemberModalOpen] = useState(false);
   const [addTeacherModalOpen, setAddTeacherModalOpen] = useState(false);
 
-  const fetchGroups = async () => {
+  const fetchGroupsHandler = async () => {
     setLoading(true);
     setError("");
     try {
-      const res = await instance.get("/groups");
-      setGroups(res.data.data || []);
+      const data = await fetchGroups();
+      // group_id mappingni professional qilish
+      const mapped = (data || []).map((g: any) => ({
+        ...g,
+        group_id: getEntityId(g),
+      }));
+      setGroups(mapped);
     } catch (err: any) {
-      setError(err.message || "Guruhlarni yuklashda xatolik");
-      setToast({ message: err.message || "Guruhlarni yuklashda xatolik", type: 'error' });
+      setError(err.message || err.response?.data?.message || "Guruhlarni yuklashda xatolik");
+      setToast({ message: err.message || err.response?.data?.message || "Guruhlarni yuklashda xatolik", type: 'error' });
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchGroups();
+    fetchGroupsHandler();
   }, []);
 
   const toggleFilter = () => {
     setIsFilterOpen((prev) => !prev);
   };
 
-  const handleEdit = (group: GroupType) => {
+  const handleEdit = (group: Groups) => {
     setSelectedGroup(group);
     setIsEditModalOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (group_id: string) => {
     if (!window.confirm("O‘chirishga ishonchingiz komilmi?")) return;
     try {
-      await instance.delete(`/group/${id}`);
-      fetchGroups();
+      await deleteGroup(group_id);
+      fetchGroupsHandler();
       setToast({ message: "Guruh muvaffaqiyatli o‘chirildi!", type: "success" });
     } catch (err: any) {
-      setToast({ message: err.response?.data?.message || "O‘chirishda xatolik", type: "error" });
+      setToast({ message: err.response?.data?.message || err.message || "O‘chirishda xatolik", type: "error" });
     }
     setTimeout(() => setToast({ message: '', type: 'success' }), 3000);
   };
 
   const handleGroupAdded = () => {
-    fetchGroups();
+    fetchGroupsHandler();
     setToast({ message: "Guruh muvaffaqiyatli qo‘shildi!", type: "success" });
     setTimeout(() => setToast({ message: '', type: 'success' }), 3000);
   };
 
   const handleGroupEdited = () => {
-    fetchGroups();
+    fetchGroupsHandler();
     setToast({ message: "Guruh muvaffaqiyatli tahrirlandi!", type: "success" });
     setTimeout(() => setToast({ message: '', type: 'success' }), 3000);
   };
 
-  const openDetailModal = (group: GroupType) => {
+  const openDetailModal = (group: Groups) => {
     setSelectedGroup(group);
     setDetailModalOpen(true);
   };
@@ -94,7 +100,7 @@ const Groups: React.FC = () => {
     setDetailModalOpen(false);
     setSelectedGroup(null);
   };
-  const openAddMemberModal = (group: GroupType) => {
+  const openAddMemberModal = (group: Groups) => {
     setSelectedGroup(group);
     setAddMemberModalOpen(true);
   };
@@ -102,7 +108,7 @@ const Groups: React.FC = () => {
     setAddMemberModalOpen(false);
     setSelectedGroup(null);
   };
-  const openAddTeacherModal = (group: GroupType) => {
+  const openAddTeacherModal = (group: Groups) => {
     setSelectedGroup(group);
     setAddTeacherModalOpen(true);
   };
@@ -112,15 +118,22 @@ const Groups: React.FC = () => {
   };
 
   return (
-    <div className="groups-wrapper">
-      <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: '', type: 'success' })} />
-      <div className="header-student-page">
-        <h1>Guruhlar jadvali</h1>
-        <div style={{marginLeft:'auto', display:'flex', gap:'10px'}}>
-          <Button onFilterClick={toggleFilter} />
-        </div>
-        {isFilterOpen && <Filter closeFilter={toggleFilter} />}
+    <div className="p-4 bg-white rounded shadow">
+    <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: '', type: 'success' })} />
+    <div className="flex items-center justify-between gap-2 mb-4">
+      <h1 className="text-xl font-bold">Guruhlar jadvali</h1>
+      <div className="flex gap-2 items-center">
+          <Button type="primary" onClick={() => setIsAddModalOpen(true)}>
+            Yangi guruh qo'oshish
+          </Button>
+          {isFilterOpen && <Filter closeFilter={toggleFilter} />}
       </div>
+      {/* <div className="flex gap-2 items-center">
+        <Button onClick={() => setIsAddModalOpen(true)} />
+        <Button onClick={toggleFilter} />
+        {isFilterOpen && <Filter closeFilter={toggleFilter} />}
+      </div> */}
+    </div>
       <AddGroupModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
@@ -140,21 +153,21 @@ const Groups: React.FC = () => {
             data={groups} 
             type="groups" 
             onEdit={handleEdit} 
-            onDelete={handleDelete} 
-            onDetail={(group: GroupType) => openDetailModal(group)} 
-            onAddMember={(group: GroupType) => openAddMemberModal(group)} 
-            onAddTeacher={(group: GroupType) => openAddTeacherModal(group)} 
+            onDelete={(group: Groups) => handleDelete(getEntityId(group))}
+            onDetail={(group: Groups) => openDetailModal(group)} 
+            onAddMember={(group: Groups) => openAddMemberModal(group)} 
+            onAddTeacher={(group: Groups) => openAddTeacherModal(group)} 
           />
         )}
       </Spin>
       {detailModalOpen && (
-        <GroupDetailModal isOpen={detailModalOpen} groupId={selectedGroup?.group_id || selectedGroup?.id} onClose={closeDetailModal} />
+        <GroupDetailModal isOpen={detailModalOpen} groupId={getEntityId(selectedGroup)} onClose={closeDetailModal} />
       )}
       {addMemberModalOpen && (
-        <AddGroupMemberModal isOpen={addMemberModalOpen} groupId={selectedGroup?.group_id || selectedGroup?.id} onClose={closeAddMemberModal} />
+        <AddGroupMemberModal isOpen={addMemberModalOpen} groupId={getEntityId(selectedGroup)} onClose={closeAddMemberModal} />
       )}
       {addTeacherModalOpen && (
-        <AddGroupTeacherModal isOpen={addTeacherModalOpen} groupId={selectedGroup?.group_id || selectedGroup?.id} onClose={closeAddTeacherModal} />
+        <AddGroupTeacherModal isOpen={addTeacherModalOpen} groupId={getEntityId(selectedGroup)} onClose={closeAddTeacherModal} />
       )}
     </div>
   );

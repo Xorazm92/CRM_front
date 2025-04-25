@@ -1,7 +1,8 @@
 // Converted from EditPaymentModal.jsx to EditPaymentModal.tsx with TypeScript, Ant Design, and backend naming conventions
 import React, { useEffect } from "react";
 import { Modal, Form, Input, DatePicker, Select, Button, message, Spin } from "antd";
-import instance from "../../api/axios";
+import { updateStudentPayment } from "../../api/payments";
+import { getEntityId } from "../../utils/getEntityId";
 
 interface EditPaymentModalProps {
   open: boolean;
@@ -24,7 +25,7 @@ const EditPaymentModal: React.FC<EditPaymentModalProps> = ({ open, onClose, onSu
   useEffect(() => {
     if (payment && open) {
       form.setFieldsValue({
-        student_id: payment.student_id || payment.studentId || '',
+        student_id: getEntityId(payment.student || { student_id: payment.student_id, id: payment.studentId, _id: payment.student?._id }) || '',
         date: payment.date ? payment.date : undefined,
         amount: payment.amount,
         status: payment.status
@@ -41,8 +42,8 @@ const EditPaymentModal: React.FC<EditPaymentModalProps> = ({ open, onClose, onSu
     }
     setLoading(true);
     try {
-      await instance.put(`/payments/student/${payment.id}`, {
-        student_id: values.student_id, // MEMORY: backend expects student_id, not studentId
+      await updateStudentPayment(payment.id, {
+        student_id: getEntityId(values.student_id) || values.student_id, // always send student_id
         date: typeof values.date === 'string' ? values.date : values.date?.format("YYYY-MM-DD"),
         amount: Number(values.amount),
         status: values.status

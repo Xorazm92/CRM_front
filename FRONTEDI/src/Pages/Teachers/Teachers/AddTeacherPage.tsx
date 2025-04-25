@@ -1,21 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { Form, Input, Select, DatePicker, Button, message, Spin, Card } from "antd";
+import { Form, Input, Select, DatePicker, Button, message, Card } from "antd";
 import { useNavigate } from "react-router-dom";
 import instance from "../../../api/axios";
 import ImageUpload from "../../../components/ImageUpload/ImageUpload";
 import dayjs from "dayjs";
 
+interface GroupType {
+  group_id?: string;
+  _id?: string;
+  id?: string;
+  name?: string;
+}
+
 const AddTeacherPage: React.FC = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const [groups, setGroups] = useState<any[]>([]);
+  const [groups, setGroups] = useState<GroupType[]>([]);
   const [image, setImage] = useState<File | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     setLoading(true);
     instance.get('/groups').then(res => {
-      let data = res.data;
+      const data = res.data;
       if (Array.isArray(data)) setGroups(data);
       else if (Array.isArray(data.data)) setGroups(data.data);
       else if (Array.isArray(data.results)) setGroups(data.results);
@@ -23,10 +30,9 @@ const AddTeacherPage: React.FC = () => {
     }).finally(() => setLoading(false));
   }, []);
 
-  const handleFinish = async (values: any) => {
+  const handleFinish = async (values: Record<string, any>) => {
     setLoading(true);
     try {
-      // 1. Upload avatar if exists
       let avatarPath = undefined;
       if (image) {
         const formData = new FormData();
@@ -36,8 +42,6 @@ const AddTeacherPage: React.FC = () => {
         });
         avatarPath = uploadRes.data?.filePath || uploadRes.data?.path || uploadRes.data?.url;
       }
-
-      // 2. Create teacher user
       const genderEnum = values.gender === "male" ? "MALE" : "FEMALE";
       const userRes = await instance.post("/users", {
         name: values.name,
@@ -53,15 +57,12 @@ const AddTeacherPage: React.FC = () => {
         avatar: avatarPath,
       });
       const teacher_id = userRes.data.user_id || userRes.data.id || userRes.data._id;
-
-      // 3. Assign teacher to group if group selected
       if (teacher_id && values.group_id) {
         await instance.post("/admin/addTeacherToGroup", {
           group_id: values.group_id,
           teacher_id: teacher_id
         });
       }
-
       message.success("O‘qituvchi muvaffaqiyatli qo‘shildi!");
       form.resetFields();
       setImage(null);
