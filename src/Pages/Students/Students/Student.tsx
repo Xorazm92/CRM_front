@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import DataTable from "../../../components/DataTable/DataTable";
 import Button from "../../../components/Button/Button";
 import Filter from "../../../components/Filter/Filter";
-import { getStudents, deleteStudent } from "../../../api/users";
+import { getUsers, deleteStudent } from "../../../api/users";
 import EditStudentModal from "./EditStudentModal";
 import Toast from "../../../components/Toast";
 import { Spin } from "antd";
 import { useNavigate } from "react-router-dom";
+import ViewStudentModal from "./ViewStudentModal";
 
 interface GroupMemberType {
   group?: {
@@ -15,7 +16,7 @@ interface GroupMemberType {
   // kerak bo'lsa, boshqa fieldlar ham qo'shiladi
 }
 
-interface StudentType {
+export interface StudentType {
   user_id?: string;
   name?: string;
   lastname?: string;
@@ -36,6 +37,8 @@ const StudentPage: React.FC = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<StudentType | null>(null);
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" }>({ message: '', type: 'success' });
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [viewStudent, setViewStudent] = useState<StudentType | null>(null);
   const navigate = useNavigate();
 
   // State for pagination
@@ -47,8 +50,21 @@ const StudentPage: React.FC = () => {
     setLoading(true);
     setError("");
     try {
-      const res = await getStudents({ page, limit });
-      const mapped = (res.data || res || [])
+      const res = await getUsers({ role: "STUDENT", page, limit });
+      // UNIVERSAL BACKEND RESPONSE HANDLING
+      let studentsArr: any[] = [];
+      if (Array.isArray(res)) {
+        studentsArr = res;
+      } else if (Array.isArray(res.data)) {
+        studentsArr = res.data;
+      } else if (Array.isArray(res.results)) {
+        studentsArr = res.results;
+      } else if (res.data && Array.isArray(res.data.data)) {
+        studentsArr = res.data.data;
+      } else {
+        studentsArr = [];
+      }
+      const mapped = studentsArr
         .filter((s: Record<string, unknown>) => s.role === 'student' || s.role === 'STUDENT')
         .map((s: Record<string, any>) => ({
           user_id: s.user_id || s.id || s._id,
@@ -56,14 +72,18 @@ const StudentPage: React.FC = () => {
           lastname: s.lastname,
           middlename: s.middlename,
           birthDate: s.birthdate,
-          gender: s.gender,
+          gender: s.gender === 'MALE' ? "O'g'il bola" : s.gender === 'FEMALE' ? 'Qiz bola' : s.gender,
           address: s.address,
           phone_number: s.phone_number,
-          group: s.group_members && s.group_members.length > 0 ? s.group_members[0].group?.name : '',
+          group: Array.isArray(s.group_members) && s.group_members.length > 0
+            ? s.group_members.map((gm: any) => gm.group?.name).filter(Boolean).join(', ')
+            : (s.group?.name || s.group_name || ''),
           status: s.status,
         }));
       setStudents(mapped);
-      setTotal(res.total || 0);
+      setTotal(
+        res.total || res.count || (res.data && res.data.total) || studentsArr.length || 0
+      );
     } catch (err: any) {
       setError(err.message || "O'quvchilarni yuklashda xatolik");
     } finally {
@@ -82,6 +102,11 @@ const StudentPage: React.FC = () => {
   const handleEdit = (student: StudentType) => {
     setSelectedStudent(student);
     setIsEditModalOpen(true);
+  };
+
+  const handleView = (student: StudentType) => {
+    setViewStudent(student);
+    setIsViewModalOpen(true);
   };
 
   const handleDelete = async (id: string) => {
@@ -103,12 +128,12 @@ const StudentPage: React.FC = () => {
   };
 
   return (
-    <div className="p-4 bg-white rounded shadow">
+    <div className="student-page-wrapper">
       <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: '', type: 'success' })} />
-      <div className="flex items-center justify-between gap-2 mb-4">
-        <h1 className="text-xl font-bold">O’quvchilar jadvali</h1>
-        <div className="flex gap-2 items-center">
-          <Button type="primary" onClick={() => navigate("/students/add")}>Yangi o‘quvchi qo‘shish</Button>
+      <div className="student-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+        <h1 className="student-title" style={{ margin: 0 }}>O‘quvchilar jadvali</h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <Button type="primary" onClick={() => navigate("/students/add")}>+ Qo'shish</Button>
           {isFilterOpen && <Filter closeFilter={toggleFilter} />}
         </div>
       </div>
@@ -119,21 +144,21 @@ const StudentPage: React.FC = () => {
         student={selectedStudent}
         onStudentEdited={handleStudentEdited}
       />
+      <ViewStudentModal isOpen={isViewModalOpen} onClose={() => setIsViewModalOpen(false)} student={viewStudent} />
       {loading ? (
-        <div className="flex justify-center items-center h-48">
+        <div className="student-spinner-wrapper">
           <Spin size="large" />
         </div>
       ) : error ? (
-        <div className="text-red-600 font-semibold">{error}</div>
+        <div className="student-error-message">{error}</div>
       ) : (
-        <DataTable data={students} type="students" onEdit={(person) => handleEdit(person as StudentType)} onDelete={(id) => typeof id === "string" ? handleDelete(id) : undefined} />
+        <DataTable data={students} type="students" onEdit={(person) => handleEdit(person as StudentType)} onDelete={(id) => typeof id === "string" ? handleDelete(id) : undefined} onDetail={(person) => handleView(person as StudentType)} />
       )}
-      {/* Pagination UI */}
-      <div className="flex justify-end mt-4">
+      <div className="student-pagination">
         <button
           disabled={currentPage === 1}
           onClick={() => setCurrentPage(currentPage - 1)}
-          className="px-2 py-1 border rounded mx-1"
+          className="pagination-btn"
         >
           Oldingi
         </button>
@@ -141,7 +166,7 @@ const StudentPage: React.FC = () => {
         <button
           disabled={currentPage === Math.ceil(total / pageSize) || total === 0}
           onClick={() => setCurrentPage(currentPage + 1)}
-          className="px-2 py-1 border rounded mx-1"
+          className="pagination-btn"
         >
           Keyingi
         </button>

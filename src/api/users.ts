@@ -22,8 +22,17 @@ export const getStudents = async (params: { page?: number; limit?: number } = {}
   return res.data;
 };
 
+// Universal getUsers function for any role
+export const getUsers = async (params: { role?: string; page?: number; limit?: number } = {}) => {
+  const { role, page = 1, limit = 10 } = params;
+  let url = `/users?page=${page}&limit=${limit}`;
+  if (role) url += `&role=${role.toUpperCase()}`;
+  const res = await instance.get(url);
+  return res.data;
+};
+
 export const createStudent = async (payload: StudentPayload) => {
-  // Always send role: STUDENT
+  // Always send role: STUDUDENT
   const res = await instance.post("/users", { ...payload, role: "STUDENT" });
   return res.data;
 };

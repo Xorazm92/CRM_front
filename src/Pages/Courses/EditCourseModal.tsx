@@ -2,6 +2,7 @@
 import React, { useEffect } from "react";
 import { Modal, Form, Input, Select, Button, message, Spin } from "antd";
 import instance from "../../api/axios";
+import "./EditCourseModal.css";
 
 interface EditCourseModalProps {
   open: boolean;
@@ -54,10 +55,12 @@ const EditCourseModal: React.FC<EditCourseModalProps> = ({ open, onClose, onSucc
           <Form.Item name="description" label="Izoh" rules={[{ required: true, message: "Izoh majburiy!" }]}> <Input placeholder="Izoh" disabled={loading} /> </Form.Item>
           <Form.Item name="duration" label="Davomiyligi (oy)" rules={[{ required: true, message: "Davomiylik majburiy!" }]}> <Input type="number" min={1} placeholder="Davomiyligi (oy)" disabled={loading} /> </Form.Item>
           <Form.Item name="status" label="Status" rules={[{ required: true, message: "Status majburiy!" }]}> <Select disabled={loading}> <Select.Option value="ACTIVE">Faol</Select.Option> <Select.Option value="INACTIVE">Nofaol</Select.Option> </Select> </Form.Item>
-          <div className="flex justify-end gap-2 mt-2">
-            <Button onClick={onClose} disabled={loading}>Bekor qilish</Button>
-            <Button type="primary" htmlType="submit" loading={loading}>Saqlash</Button>
-          </div>
+          <Form.Item>
+            <div className="edit-course-modal-footer">
+              <Button onClick={onClose} disabled={loading}>Bekor qilish</Button>
+              <Button type="primary" htmlType="submit" loading={loading}>Saqlash</Button>
+            </div>
+          </Form.Item>
         </Form>
       </Spin>
     </Modal>

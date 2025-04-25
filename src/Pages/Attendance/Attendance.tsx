@@ -4,7 +4,7 @@ import ClipLoader from "react-spinners/ClipLoader";
 import Toast from "../../components/Toast";
 import AddAttendanceModal from "./AddAttendanceModal";
 import EditAttendanceModal from "./EditAttendanceModal";
-import icons from "../Home/icons";
+import icons from "../../images/icons";
 import { getEntityId } from "../../utils/getEntityId";
 
 interface Attendance {
@@ -108,10 +108,10 @@ const Attendance = () => {
                 <td>{a.status}</td>
                 <td style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                   <button onClick={() => { setEditItem(a); setShowEdit(true); }} title="Tahrirlash" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-                    <img src={icons.pen_icon} alt="edit" width={22} height={22} />
+                    <img src={icons.pen} alt="edit" width={22} height={22} />
                   </button>
                   <button onClick={() => handleDelete(a.attendance_id || a.id)} title="O'chirish" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-                    <img src={icons.deleteIcon} alt="delete" width={22} height={22} />
+                    <img src={icons.delete} alt="delete" width={22} height={22} />
                   </button>
                 </td>
               </tr>

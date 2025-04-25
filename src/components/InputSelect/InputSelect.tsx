@@ -1,25 +1,51 @@
-import React from "react";
-import { Select } from "antd";
+import React, { useState } from "react";
+import './InputSelect.css';
+import images from "../../images";
 
-interface InputSelectProps {
-  label: string;
-  value?: string;
-  options: string[];
-  onChange?: (value: string) => void;
+export interface InputSelectProps {
+  label?: string;
+  options: (string | number)[];
+  onChange?: (value: string | number) => void;
+  defaultValue?: string | number;
 }
 
-const InputSelect: React.FC<InputSelectProps> = ({ label, value, options, onChange }) => {
+const InputSelect: React.FC<InputSelectProps> = ({ label, options, onChange, defaultValue }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedOption, setSelectedOption] = useState<string | number>(defaultValue ?? "");
+
+  const handleSelectClick = () => {
+    setIsOpen((prev) => !prev);
+  };
+
+  const handleOptionClick = (option: string | number) => {
+    setSelectedOption(option);
+    setIsOpen(false);
+    if (onChange) onChange(option);
+  };
+
   return (
-    <div className="mb-2">
-      <label className="block text-sm font-medium mb-1">{label}</label>
-      <Select
-        className="w-full"
-        value={value}
-        placeholder={label}
-        onChange={onChange}
-        options={options.map(option => ({ value: option, label: option }))}
-        allowClear
-      />
+    <div className="custom-select-container">
+      <div className="custom-select" onClick={handleSelectClick} tabIndex={0} role="button" aria-haspopup="listbox">
+        {selectedOption || label}
+        <span className={`arrow${isOpen ? " open" : ""}`}>
+          <img width={16} src={images.top} alt="toggle" />
+        </span>
+      </div>
+      {isOpen && (
+        <ul className="custom-options" role="listbox">
+          {options.map((option, index) => (
+            <li
+              key={index}
+              className="custom-option"
+              onClick={() => handleOptionClick(option)}
+              role="option"
+              aria-selected={selectedOption === option}
+            >
+              {option}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };

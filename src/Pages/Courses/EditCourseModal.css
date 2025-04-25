@@ -1,0 +1,10 @@
+.edit-course-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.edit-course-modal-footer .ant-btn {
+  min-width: 100px;
+}

@@ -33,7 +33,7 @@ const adminPanel = [
 const universal = [
   { key: "dashboard", label: "Bosh sahifa", to: "/", icon: menuIcon },
   // { key: "notifications", label: "Bildirishnomalar", to: "/notifications", icon: notificationIcon }, // OLIB TASHLANDI
-  { key: "profile", label: "Profil", to: "/profile", icon: userIcon },
+  // { key: "profile", label: "Profil", to: "/profile", icon: userIcon }, // PROFIL SIDEBARDAN OLIB TASHLANDI
 ];
 
 export const getSidebarMenu = (role: string) => {

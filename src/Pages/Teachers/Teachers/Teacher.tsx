@@ -5,10 +5,11 @@ import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import instance from "../../../api/axios";
 import { useNavigate } from "react-router-dom";
 import DataTable from "../../../components/DataTable/DataTable";
-import { Button } from "antd/es";
+import Button from "../../../components/Button/Button";
 import Toast from "../../../components/Toast";
 import Filter from "../../../components/Filter/Filter";
 import EditTeacherModal from './EditTeacherModal';
+import TeacherDetailModal from './TeacherDetailModal';
 
 interface TeacherType {
   user_id?: string;
@@ -34,6 +35,8 @@ const TeacherPage: React.FC = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedTeacher, setSelectedTeacher] = useState<TeacherType | null>(null);
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" }>({ message: '', type: 'success' });
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [detailTeacher, setDetailTeacher] = useState<TeacherType | null>(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -44,7 +47,7 @@ const TeacherPage: React.FC = () => {
     setLoading(true);
     setError("");
     try {
-      const res = await instance.get(`/users?role=teacher&page=${page}&limit=${limit}`);
+      const res = await instance.get(`/users?role=TEACHER&page=${page}&limit=${limit}`);
       const mapped = (res.data.data || res.data || [])
         .filter((s: Record<string, unknown>) => s.role === 'teacher' || s.role === 'TEACHER')
         .map((s: Record<string, any>) => ({
@@ -76,9 +79,9 @@ const TeacherPage: React.FC = () => {
   const genderTag = (gender?: string) => {
     if (!gender) return null;
     const g = gender.toLowerCase();
-    if (g.includes("male") || g.includes("o‘g‘il")) return <span className="px-3 py-1 rounded-full text-xs font-semibold bg-teal-50 text-teal-600">O‘g‘il bola</span>;
-    if (g.includes("female") || g.includes("qiz")) return <span className="px-3 py-1 rounded-full text-xs font-semibold bg-pink-50 text-pink-500">Qiz bola</span>;
-    return <span className="px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">{gender}</span>;
+    if (g.includes("male") || g.includes("o‘g‘il")) return <span className="gender-tag male">O‘g‘il bola</span>;
+    if (g.includes("female") || g.includes("qiz")) return <span className="gender-tag female">Qiz bola</span>;
+    return <span className="gender-tag">{gender}</span>;
   };
 
   const handleEdit = (teacher: TeacherType) => {
@@ -105,38 +108,46 @@ const TeacherPage: React.FC = () => {
     setTimeout(() => setToast({ message: '', type: 'success' }), 3000);
   };
 
+  const handleDetail = (teacher: TeacherType) => {
+    setDetailTeacher(teacher);
+    setIsDetailModalOpen(true);
+  };
+
   const toggleFilter = () => setIsFilterOpen((prev) => !prev);
 
   return (
-    <div className="p-4 bg-white rounded shadow">
+    <div className="teacher-page-wrapper">
       <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: '', type: 'success' })} />
-      <div className="flex items-center justify-between gap-2 mb-4">
-        <h1 className="text-xl font-bold">O’qituvchilar jadvali</h1>
-        <div className="flex gap-2 items-center">
-          <Button type="primary" onClick={() => navigate("/teachers/add")}>Yangi o‘qtuvchi qo‘shish</Button>
-          {isFilterOpen && <Filter closeFilter={toggleFilter} />}
-        </div>
+      <div className="teacher-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <h1 className="teacher-title" style={{ margin: 0 }}>O’qituvchilar jadvali</h1>
+        <Button onFilterClick={toggleFilter} />
       </div>
+      {isFilterOpen && <Filter closeFilter={toggleFilter} />}
       <EditTeacherModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         teacher={selectedTeacher}
         onTeacherEdited={handleTeacherEdited}
       />
+      <TeacherDetailModal
+        open={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
+        teacher={detailTeacher}
+      />
       {loading ? (
-        <div className="flex justify-center items-center h-48">
+        <div className="teacher-spinner-wrapper">
           <Spin size="large" />
         </div>
       ) : error ? (
-        <div className="text-red-600 font-semibold">{error}</div>
+        <div className="teacher-error-message">{error}</div>
       ) : (
-        <DataTable data={teachers} type="teachers" onEdit={handleEdit} onDelete={handleDelete} />
+        <DataTable data={teachers} type="teachers" onEdit={handleEdit} onDelete={handleDelete} onDetail={handleDetail} />
       )}
-      <div className="flex justify-end mt-4">
+      <div className="teacher-pagination">
         <button
           disabled={currentPage === 1}
           onClick={() => setCurrentPage(currentPage - 1)}
-          className="px-2 py-1 border rounded mx-1"
+          className="pagination-btn"
         >
           Oldingi
         </button>
@@ -144,7 +155,7 @@ const TeacherPage: React.FC = () => {
         <button
           disabled={currentPage === Math.ceil(total / pageSize) || total === 0}
           onClick={() => setCurrentPage(currentPage + 1)}
-          className="px-2 py-1 border rounded mx-1"
+          className="pagination-btn"
         >
           Keyingi
         </button>

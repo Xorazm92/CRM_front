@@ -1,36 +1,52 @@
-import React, { useRef } from "react";
+import React, { useState, ChangeEvent } from "react";
+import "./ImageUpload.css";
+import icons from "../../images/icons";
 
-interface ImageUploadProps {
-  onChange: (file: File | null) => void;
-}
+const ImageUpload: React.FC = () => {
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-const ImageUpload: React.FC<ImageUploadProps> = ({ onChange }) => {
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      onChange(e.target.files[0]);
-    } else {
-      onChange(null);
+  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files && e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
   return (
-    <div>
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={handleFileChange}
-      />
-      <button
-        type="button"
-        className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
-        onClick={() => inputRef.current?.click()}
-      >
-        Rasm yuklash
-      </button>
+    <div className="image-upload-container">
+      <label className="image-upload-label">Rasm</label>
+      <div className="image-upload-box">
+        <input
+          type="file"
+          accept="image/*"
+          className="image-upload-input"
+          id="imageInput"
+          onChange={handleImageChange}
+          style={{ display: "none" }}
+        />
+        <label htmlFor="imageInput" className="image-upload-placeholder">
+          {imagePreview ? (
+            <img
+              src={imagePreview}
+              alt="Uploaded Preview"
+              className="image-preview"
+            />
+          ) : (
+            <div className="upload-placeholder-content">
+              <img
+                src={icons.imageAdd}
+                alt="Upload Icon"
+                className="upload-icon"
+              />
+              <p>Rasmni kiriting</p>
+            </div>
+          )}
+        </label>
+      </div>
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Modal, Button, Select, DatePicker, Checkbox, Form } from "antd";
-import icons from "../../Pages/Home/icons";
+import icons from "../../images/icons";
 
 interface FilterProps {
   closeFilter: () => void;
@@ -22,13 +22,13 @@ const Filter: React.FC<FilterProps> = ({ closeFilter }) => {
       open={true}
       onCancel={closeFilter}
       footer={null}
-      title={<div className="flex items-center justify-between"><span>Filtr</span><Button type="text" onClick={closeFilter} icon={<img width={24} src={icons.x_icon} alt="close" />} /></div>}
+      title={<div className="filter-header"><span>Filtr</span><Button type="text" onClick={closeFilter} icon={<img width={24} src={icons.x_icon} alt="close" />} /></div>}
       className="filter-modal"
       closable={false}
     >
-      <Form form={form} layout="vertical" className="space-y-2">
+      <Form form={form} layout="vertical">
         <Form.Item name="birthDate" label="Tug'ilgan sana">
-          <DatePicker className="w-full" picker="year" placeholder="Yilni tanlang" />
+          <DatePicker className="filter-date-picker" picker="year" placeholder="Yilni tanlang" />
         </Form.Item>
         <Form.Item name="gender" label="Jinsi">
           <Select placeholder="Jinsni tanlang">
@@ -48,11 +48,11 @@ const Filter: React.FC<FilterProps> = ({ closeFilter }) => {
             <Checkbox>Ha</Checkbox>
           </Form.Item>
           <Form.Item name="attendanceNo" valuePropName="checked" noStyle>
-            <Checkbox className="ml-4">Yo'q</Checkbox>
+            <Checkbox className="filter-checkbox-gap">Yo'q</Checkbox>
           </Form.Item>
         </Form.Item>
       </Form>
-      <div className="flex justify-end gap-2 mt-4">
+      <div className="filter-footer">
         <Button onClick={closeFilter}>Bekor qilish</Button>
         <Button type="primary" onClick={handleSave} icon={<img width={24} src={icons.success} alt="save" />}>Saqlash</Button>
       </div>

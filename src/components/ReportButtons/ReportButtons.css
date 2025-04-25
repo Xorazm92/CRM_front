@@ -1,0 +1,22 @@
+.btn-report-groups {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.btn-report {
+    border-radius: 4px;
+    border: 1px solid var(--color-light-gray-2);
+    padding: 8px 20px;
+    font-family: Mada;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20.8px;
+    text-align: left;
+    color: var(--color-gray);
+    cursor: pointer;
+}
+
+.btn-report.active {
+    color: var(--color-primary-2)
+}

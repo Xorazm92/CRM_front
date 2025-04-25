@@ -3,8 +3,10 @@ import instance from "../../api/axios";
 import Toast from "../../components/Toast";
 import EditCourseModal from "./EditCourseModal";
 import AddCourseModal from "./AddCourseModal";
-import { Table, Button, Input, Spin } from "antd";
-import icons from "../Home/icons";
+import { Table, Input, Spin, Button } from "antd";
+import icons from "../../images/icons";
+import ButtonComponent from "../../components/Button/Button";
+import "./Course.css";
 
 interface CourseType {
   course_id: string | number;
@@ -71,9 +73,13 @@ const Course: React.FC = () => {
       title: 'Amallar',
       key: 'actions',
       render: (_: any, record: CourseType) => (
-        <span className="flex gap-2 items-center">
-          <Button type="link" icon={<img src={icons.pen_icon} alt="edit" width={22} height={22} />} onClick={() => { setEditItem(record); setShowEdit(true); }} />
-          <Button type="link" danger icon={<img src={icons.deleteIcon} alt="delete" width={22} height={22} />} onClick={() => handleDelete(record.course_id)} />
+        <span className="course-table-actions">
+          <Button type="link" onClick={() => { setEditItem(record); setShowEdit(true); }}>
+            Tahrirlash
+          </Button>
+          <Button type="link" danger onClick={() => handleDelete(record.course_id)}>
+            O'chirish
+          </Button>
         </span>
       ),
     },
@@ -82,9 +88,13 @@ const Course: React.FC = () => {
   return (
     <div className="p-4 bg-white rounded shadow">
       <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: '', type: 'success' })} />
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2">
+      <div className="student-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
         <h1 className="text-xl font-bold mb-2 md:mb-0">Kurslar jadvali</h1>
-        <Button type="primary" onClick={() => setShowAdd(true)} icon={<span className="add-btn-icon">＋</span>}>Kurs qo'shish</Button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div className="course-header-add-btn">
+            <ButtonComponent showAdd={true} onAddClick={() => setShowAdd(true)} />
+          </div>
+        </div>
       </div>
       <div className="mb-4">
         <Input

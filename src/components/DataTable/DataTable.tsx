@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Tooltip, Checkbox, Space, Modal } from "antd";
+import { Table, Button, Tooltip, Space, Modal } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import {
   EditOutlined,
@@ -77,8 +77,9 @@ const DataTable: React.FC<DataTableProps> = ({ data = [], type, person, onEdit, 
           key: "name",
           render: (text, record) => (
             <span
-              className="cursor-pointer text-blue-600"
-              onClick={() => onEdit && onEdit(record)}
+              className="student-table-link"
+              onClick={() => onDetail ? onDetail(record) : (onEdit && onEdit(record))}
+              style={{ cursor: 'pointer', color: '#1890ff', textDecoration: 'underline' }}
             >
               <UserOutlined style={{ fontSize: 20, color: '#1890ff' }} /> {text}
             </span>
@@ -95,7 +96,7 @@ const DataTable: React.FC<DataTableProps> = ({ data = [], type, person, onEdit, 
           dataIndex: "gender",
           key: "gender",
           render: (gender) => (
-            <span className={gender === "O'g'il bola" ? "text-green-600" : "text-red-600"}>{gender}</span>
+            <span className={gender === "O'g'il bola" ? "gender-male" : "gender-female"}>{gender}</span>
           ),
         },
         {
@@ -144,24 +145,46 @@ const DataTable: React.FC<DataTableProps> = ({ data = [], type, person, onEdit, 
           render: (_: any, __: any, idx: number) => <span>{idx + 1}</span>,
         },
         {
-          title: "O'qituvchilar F.I.O",
+          title: "F.I.O",
           dataIndex: "name",
           key: "name",
+          render: (text, record) => (
+            <span
+              className="teacher-table-link"
+              onClick={() => onDetail && onDetail(record)}
+              style={{ cursor: 'pointer', color: '#1890ff', textDecoration: 'underline' }}
+            >
+              <UserOutlined style={{ fontSize: 20, color: '#1890ff' }} /> {text}
+            </span>
+          ),
         },
         {
           title: "Tug'ilgan sana",
           dataIndex: "birthDate",
           key: "birthDate",
+          render: (date) => date ? new Date(date).toLocaleDateString('uz-UZ', { year: 'numeric', month: '2-digit', day: '2-digit' }) : '',
         },
         {
           title: "Jinsi",
           dataIndex: "gender",
           key: "gender",
+          render: (gender) => {
+            if (!gender) return '';
+            const g = gender.toLowerCase();
+            if (g.includes("male") || g.includes("o‘g‘il")) return "O‘g‘il bola";
+            if (g.includes("female") || g.includes("qiz")) return "Qiz bola";
+            return gender;
+          },
         },
         {
           title: "Kontakt",
-          dataIndex: "contact",
-          key: "contact",
+          dataIndex: "phone_number",
+          key: "phone_number",
+        },
+        {
+          title: "Guruh",
+          dataIndex: "group",
+          key: "group",
         },
         {
           title: "Imkoniyatlar",
@@ -190,7 +213,7 @@ const DataTable: React.FC<DataTableProps> = ({ data = [], type, person, onEdit, 
           title: "Nomi",
           dataIndex: "name",
           key: "name",
-          render: (text, record) => <span className="cursor-pointer text-blue-600" onClick={() => onDetail && onDetail(record)}>{text}</span>,
+          render: (text, record) => <span className="student-table-link" onClick={() => onDetail && onDetail(record)}>{text}</span>,
         },
         {
           title: "Boshlangan sana",

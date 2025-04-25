@@ -1,0 +1,88 @@
+.teacher-page-wrapper {
+  width: calc(100% - 237px);
+  min-height: 100vh;
+  margin-left: 237px;
+  margin-top: 100px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  padding: 24px 24px 0 24px;
+}
+
+.teacher-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.teacher-title {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--color-primary-3, #1a237e);
+  margin: 0;
+}
+
+.teacher-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.teacher-spinner-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 180px;
+}
+
+.teacher-error-message {
+  color: #e53935;
+  font-weight: 600;
+  text-align: center;
+  margin: 24px 0;
+}
+
+.teacher-pagination {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+  padding-bottom: 24px;
+}
+
+.pagination-btn {
+  padding: 6px 18px;
+  border: 1px solid var(--color-light-gray-2, #e0e0e0);
+  border-radius: 6px;
+  background: #f5f5f5;
+  color: #333;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.pagination-btn:disabled {
+  background: #eee;
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+.gender-tag {
+  display: inline-block;
+  padding: 4px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  background: #f3f6f9;
+  color: #333;
+}
+.gender-tag.male {
+  background: #e0f7fa;
+  color: #009688;
+}
+.gender-tag.female {
+  background: #fce4ec;
+  color: #d81b60;
+}

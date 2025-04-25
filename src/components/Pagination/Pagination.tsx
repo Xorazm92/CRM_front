@@ -1,52 +1,71 @@
 import React, { useState } from "react";
-import { Pagination as AntPagination, Select } from "antd";
+import "./Pagination.css";
+import icons from "../../images/icons";
 
 interface PaginationProps {
-  totalPages?: number;
-  currentItemsPerPage?: number;
-  onPageChange?: (page: number) => void;
-  onItemsPerPageChange?: (perPage: number) => void;
+  totalPages: number;
+  currentItemsPerPage: number;
+  onPageChange: (page: number) => void;
+  onItemsPerPageChange: (itemsPerPage: number) => void;
 }
 
 const Pagination: React.FC<PaginationProps> = ({
-  totalPages = 1,
-  currentItemsPerPage = 10,
+  totalPages,
+  currentItemsPerPage,
   onPageChange,
   onItemsPerPageChange,
 }) => {
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    if (onPageChange) onPageChange(page);
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+      onPageChange(currentPage - 1);
+    }
   };
 
-  const handlePageSizeChange = (value: number) => {
-    if (onItemsPerPageChange) onItemsPerPageChange(value);
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+      onPageChange(currentPage + 1);
+    }
+  };
+
+  const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    onItemsPerPageChange(Number(e.target.value));
   };
 
   return (
-    <div className="flex items-center gap-4 justify-end mt-4">
-      <span className="text-sm">Sahifalar</span>
-      <AntPagination
-        current={currentPage}
-        total={totalPages * currentItemsPerPage}
-        pageSize={currentItemsPerPage}
-        onChange={handlePageChange}
-        showSizeChanger={false}
-        simple
-      />
-      <Select
-        value={currentItemsPerPage}
-        onChange={handlePageSizeChange}
-        style={{ width: 80 }}
-        options={[
-          { value: 10, label: '10' },
-          { value: 20, label: '20' },
-          { value: 30, label: '30' },
-          { value: 50, label: '50' },
-        ]}
-      />
+    <div className="pagination-container">
+      <span className="pagination-label">Sahifalar</span>
+      <button
+        onClick={handlePreviousPage}
+        disabled={currentPage === 1}
+        className="pagination-arrow"
+      >
+        <img width={20} src={icons.left} alt="left" />
+      </button>
+      <span className="pagination-page">{currentPage}</span>
+      <button
+        onClick={handleNextPage}
+        disabled={currentPage === totalPages}
+        className="pagination-arrow"
+      >
+        <img width={20} src={icons.right} alt="right" />
+      </button>
+      <div className="custom-selects-container">
+        <select
+          value={currentItemsPerPage}
+          onChange={handleItemsPerPageChange}
+          className="custom-selects"
+        >
+          <option value={10}>10</option>
+          <option value={20}>20</option>
+          <option value={30}>30</option>
+          <option value={50}>50</option>
+        </select>
+        <div className="custom-selects-arrow"></div>
+      </div>
     </div>
   );
 };

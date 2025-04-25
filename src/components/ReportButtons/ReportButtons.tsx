@@ -1,25 +1,36 @@
 import React, { useState } from "react";
-import { Button } from "antd";
+import "./ReportButtons.css";
 
-const BUTTONS = [
-  { key: "Daromad", label: "Daromad" },
-  { key: "Harajat", label: "Harajat" },
-  { key: "Maosh", label: "Maosh" },
-];
+export interface ReportButtonsProps {
+  buttons?: string[];
+  onChange?: (active: string) => void;
+  defaultActive?: string;
+}
 
-const ReportButtons: React.FC = () => {
-  const [activeButton, setActiveButton] = useState<string>("Daromad");
+const defaultButtons = ["Daromad", "Harajat", "Maosh"];
+
+const ReportButtons: React.FC<ReportButtonsProps> = ({
+  buttons = defaultButtons,
+  onChange,
+  defaultActive = buttons[0],
+}) => {
+  const [activeButton, setActiveButton] = useState<string>(defaultActive);
+
+  const handleButtonClick = (buttonName: string) => {
+    setActiveButton(buttonName);
+    if (onChange) onChange(buttonName);
+  };
 
   return (
-    <div className="flex gap-2 mb-2">
-      {BUTTONS.map(btn => (
-        <Button
-          key={btn.key}
-          type={activeButton === btn.key ? "primary" : "default"}
-          onClick={() => setActiveButton(btn.key)}
+    <div className="btn-report-groups">
+      {buttons.map((btn) => (
+        <button
+          key={btn}
+          className={`btn-report${activeButton === btn ? " active" : ""}`}
+          onClick={() => handleButtonClick(btn)}
         >
-          {btn.label}
-        </Button>
+          {btn}
+        </button>
       ))}
     </div>
   );

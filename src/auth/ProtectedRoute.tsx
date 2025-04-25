@@ -32,7 +32,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles, children,
     return <Navigate to={redirectPath} replace />;
   }
 
-  if (!allowedRoles.includes(user?.role)) {
+  if (!allowedRoles.includes(user?.role) && !["SUPERADMIN", "superadmin"].includes(user?.role)) {
     return <Navigate to="/forbidden" replace />;
   }
 

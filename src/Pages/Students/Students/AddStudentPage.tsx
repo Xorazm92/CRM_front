@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import instance from "../../../api/axios";
 import ImageUpload from "../../../components/ImageUpload/ImageUpload";
 import { createStudent, addStudentToGroup } from "../../../api/users";
+import { sendSms } from "../../../api/sms";
 
 interface GroupType {
   group_id?: string;
@@ -33,7 +34,11 @@ const AddStudentPage: React.FC = () => {
   const handleFinish = async (values: Record<string, any>) => {
     setLoading(true);
     try {
-      const genderEnum = values.gender === 'male' ? 'MALE' : 'FEMALE';
+      // Map frontend gender to backend enum
+      let genderEnum = '';
+      if (values.gender === "O'g'il bola") genderEnum = 'MALE';
+      else if (values.gender === "Qiz bola") genderEnum = 'FEMALE';
+      else genderEnum = values.gender;
       // 1. Student yaratish
       const userRes = await createStudent({
         name: values.name,
@@ -51,7 +56,16 @@ const AddStudentPage: React.FC = () => {
       if (user_id && values.group_id) {
         await addStudentToGroup(values.group_id, user_id);
       }
-      message.success("O‘quvchi muvaffaqiyatli qo‘shildi!");
+      // 3. SMS yuborish (backend tayyor bo‘lsa ishlaydi)
+      try {
+        await sendSms(
+          values.phone_number,
+          `CRM tizimi uchun login: ${values.username}, parol: ${values.password}`
+        );
+        message.success("O‘quvchi muvaffaqiyatli qo‘shildi va SMS yuborildi!");
+      } catch (smsErr) {
+        message.warning("O‘quvchi qo‘shildi, lekin SMS yuborilmadi!");
+      }
       form.resetFields();
       navigate("/students");
     } catch (err: any) {
@@ -94,7 +108,7 @@ const AddStudentPage: React.FC = () => {
                 <DatePicker className="w-full" format="DD.MM.YYYY" style={{width:'100%'}} />
               </Form.Item>
               <Form.Item name="gender" label="Jinsi" rules={[{ required: true, message: "Jinsi majburiy!" }]}> 
-                <Select placeholder="Jinsi tanlang" options={[{ value: 'male', label: 'O‘g‘il bola' }, { value: 'female', label: 'Qiz bola' }]} />
+                <Select placeholder="Jinsi tanlang" options={[{ value: "O'g'il bola", label: "O‘g‘il bola" }, { value: "Qiz bola", label: "Qiz bola" }]} />
               </Form.Item>
               <Form.Item name="address" label="Yashash manzili"> 
                 <Input placeholder="Toshkent, Guliston" />

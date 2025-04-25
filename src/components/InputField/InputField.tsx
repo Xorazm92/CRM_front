@@ -1,9 +1,9 @@
-import React from "react";
-import { Input, Select } from "antd";
+import React, { ChangeEvent } from "react";
+import "./InputField.css";
 
-export interface OptionType {
-  label: string;
+interface OptionType {
   value: string | number;
+  label: string;
 }
 
 interface InputFieldProps {
@@ -12,7 +12,7 @@ interface InputFieldProps {
   placeholder?: string;
   name?: string;
   value?: string | number;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | any) => void;
+  onChange?: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   options?: OptionType[];
   className?: string;
 }
@@ -28,23 +28,29 @@ const InputField: React.FC<InputFieldProps> = ({
   className = "",
 }) => {
   return (
-    <div className={`flex flex-col gap-1 ${className}`}>
-      {label && <label className="font-medium text-gray-700 mb-1">{label}</label>}
+    <div className={`input-field ${className}`}>
+      {label && <label className="input-label">{label}</label>}
       {type === "select" ? (
-        <Select
+        <select
+          name={name}
           value={value}
           onChange={onChange}
-          className="w-full"
-          options={options}
-          placeholder={placeholder}
-        />
+          className="input-select"
+        >
+          {options.map((option, index) => (
+            <option key={index} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
       ) : (
-        <Input
+        <input
           type={type}
           name={name}
           value={value}
           onChange={onChange}
           placeholder={placeholder}
+          className="input-element"
         />
       )}
     </div>

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Outlet, useLocation, Link, Navigate, useNavigate } from "react-router-dom";
-import { Layout, Button, Avatar, Input, Row, Col, theme, Menu } from "antd";
+import { Layout, Button, Avatar, Input, Row, Col, theme, Menu, Popover } from "antd";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import logo from "../../images/logo.png";
 import searchIcon from "../../images/icons/search_icon.png";
@@ -60,25 +60,21 @@ const AdminLayout = () => {
   const normRole = user?.role?.toUpperCase?.();
   const sidebarMenu: SidebarMenu = getSidebarMenu(normRole);
 
-  // Menu uchun Ant Design formatiga o‘tkazish:
-  const menuItems = sidebarMenu.map(item => {
-    if ("type" in item && item.type === "group") {
-      return {
-        type: "group" as const,
-        label: item.label,
-        children: item.children.map(child => ({
-          key: child.key,
-          icon: <img src={child.icon} width={22} height={22} alt={child.label} />,
-          label: <Link to={child.to}>{child.label}</Link>
-        }))
-      };
-    }
-    return {
-      key: item.key,
-      icon: <img src={item.icon} width={22} height={22} alt={item.label} />,
-      label: <Link to={item.to}>{item.label}</Link>
-    };
-  });
+  // SubMenu uchun destructure
+  const { SubMenu } = Menu;
+
+  // Profil menyusi uchun alohida komponent
+  const ProfileMenu = ({ user, onLogout }: { user: any, onLogout: () => void }) => (
+    <div style={{ minWidth: 180 }}>
+      <div style={{ fontWeight: 600 }}>{user?.name || user?.full_name || user?.username}</div>
+      <div style={{ color: "#888" }}>{user?.role}</div>
+      <hr />
+      <div>
+        <Link to="/profile">Profil</Link>
+      </div>
+      <div style={{ color: "red", cursor: "pointer" }} onClick={onLogout}>Chiqish</div>
+    </div>
+  );
 
   // Pastki menyu (settings, logout)
   const bottomMenu = [
@@ -127,12 +123,33 @@ const AdminLayout = () => {
           >
             <img src={logo} alt="Logo" style={{ width: "80%" }} />
           </div>
+          {/* SubMenu Sidebar */}
           <Menu
             mode="inline"
             selectedKeys={[selectedKey]}
-            items={menuItems}
             style={{ border: "none", background: "#fff" }}
-          />
+          >
+            {/* Oddiy itemlar */}
+            {sidebarMenu.filter(i => !("type" in i && i.type === "group")).map(item => (
+              <Menu.Item key={item.key} icon={<img src={item.icon} width={22} height={22} alt={item.label} />}>
+                <Link to={item.to}>{item.label}</Link>
+              </Menu.Item>
+            ))}
+            {/* Group (SubMenu) itemlar */}
+            {sidebarMenu.filter(i => "type" in i && i.type === "group").map((group, idx) => (
+              <SubMenu
+                key={group.label}
+                icon={null}
+                title={group.label}
+              >
+                {group.children.map(child => (
+                  <Menu.Item key={child.key} icon={<img src={child.icon} width={22} height={22} alt={child.label} />}>
+                    <Link to={child.to}>{child.label}</Link>
+                  </Menu.Item>
+                ))}
+              </SubMenu>
+            ))}
+          </Menu>
         </div>
         <Menu
           mode="inline"
@@ -197,15 +214,18 @@ const AdminLayout = () => {
               >
                 <img src={notificationIcon} width={24} height={24} alt="" />
               </Button>
-              <Avatar src={user?.avatar || user?.images?.[1]?.url} alt="Logo" size={38} />
-              <Col>
-                <div style={{ fontWeight: 500, fontSize: 15, color: "#222", fontFamily: 'inherit' }}>
-                  {user?.name || user?.full_name || user?.username || "Foydalanuvchi"}
-                </div>
-                <div style={{ fontWeight: 400, fontSize: 15, color: "#888", fontFamily: 'inherit' }}>
-                  {user?.role || 'Foydalanuvchi'}
-                </div>
-              </Col>
+              <Popover
+                placement="bottomRight"
+                trigger="click"
+                content={<ProfileMenu user={user} onLogout={handleLogout} />}
+              >
+                <Avatar
+                  src={user?.avatar || user?.images?.[1]?.url}
+                  alt="Logo"
+                  size={38}
+                  style={{ cursor: "pointer" }}
+                />
+              </Popover>
             </Row>
           </Row>
         </Header>
@@ -215,6 +235,7 @@ const AdminLayout = () => {
             backgroundColor: "#f7f8fa",
             overflowY: "auto",
             height: "calc(100vh - 80px)",
+            padding: "20px",
           }}
         >
           <Outlet />
