@@ -88,6 +88,7 @@ const DataTable: React.FC<DataTableProps> = ({ data = [], type, person, onEdit, 
           title: "Tug'ilgan sana",
           dataIndex: "birthDate",
           key: "birthDate",
+          render: (date) => date ? new Date(date).toLocaleDateString('uz-UZ', { year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'UTC' }) : '',
         },
         {
           title: "Jinsi",
@@ -168,10 +169,10 @@ const DataTable: React.FC<DataTableProps> = ({ data = [], type, person, onEdit, 
           render: (_, record) => (
             <Space>
               <Tooltip title="Tahrirlash">
-                <Button type="link" icon={<img src={images.pen_icon} alt="edit" width={22} height={22} />} onClick={() => onEdit && onEdit(record)} />
+                <Button type="link" icon={<EditOutlined style={{ color: '#1890ff', fontSize: 20 }} />} onClick={() => onEdit && onEdit(record)} />
               </Tooltip>
               <Tooltip title="O'chirish">
-                <Button type="link" icon={<img src={images.deleteIcon} alt="delete" width={22} height={22} />} onClick={() => onDelete && onDelete(record.user_id || record.id)} />
+                <Button type="link" danger icon={<DeleteOutlined style={{ fontSize: 20 }} />} onClick={() => onDelete && onDelete(record.user_id || record.id)} />
               </Tooltip>
             </Space>
           ),
@@ -207,10 +208,10 @@ const DataTable: React.FC<DataTableProps> = ({ data = [], type, person, onEdit, 
           render: (_, record) => (
             <Space>
               <Tooltip title="Tahrirlash">
-                <Button type="link" icon={<img src={images.pen_icon} alt="edit" width={22} height={22} />} onClick={() => onEdit && onEdit(record)} />
+                <Button type="link" icon={<EditOutlined style={{ color: '#1890ff', fontSize: 20 }} />} onClick={() => onEdit && onEdit(record)} />
               </Tooltip>
               <Tooltip title="O'chirish">
-                <Button type="link" icon={<img src={images.deleteIcon} alt="delete" width={22} height={22} />} onClick={() => onDelete && onDelete(record.user_id || record.id)} />
+                <Button type="link" danger icon={<DeleteOutlined style={{ fontSize: 20 }} />} onClick={() => onDelete && onDelete(record.user_id || record.id)} />
               </Tooltip>
               <Tooltip title="Student qo‘shish">
                 <Button type="link" icon={<img src={images.usersThree} alt="student add" width={22} height={22} />} onClick={() => onAddMember && onAddMember(record)} />
@@ -266,10 +267,10 @@ const DataTable: React.FC<DataTableProps> = ({ data = [], type, person, onEdit, 
           render: (_, record) => (
             <Space>
               <Tooltip title="Tahrirlash">
-                <Button type="link" icon={<img src={images.pen_icon} alt="edit" width={22} height={22} />} onClick={() => onEdit && onEdit(record)} />
+                <Button type="link" icon={<EditOutlined style={{ color: '#1890ff', fontSize: 20 }} />} onClick={() => onEdit && onEdit(record)} />
               </Tooltip>
               <Tooltip title="O'chirish">
-                <Button type="link" icon={<img src={images.deleteIcon} alt="delete" width={22} height={22} />} onClick={() => onDelete && onDelete(record.user_id || record.id)} />
+                <Button type="link" danger icon={<DeleteOutlined style={{ fontSize: 20 }} />} onClick={() => onDelete && onDelete(record.user_id || record.id)} />
               </Tooltip>
             </Space>
           ),
@@ -304,10 +305,10 @@ const DataTable: React.FC<DataTableProps> = ({ data = [], type, person, onEdit, 
           render: (_, record) => (
             <Space>
               <Tooltip title="Tahrirlash">
-                <Button type="link" icon={<img src={images.pen_icon} alt="edit" width={22} height={22} />} onClick={() => onEdit && onEdit(record)} />
+                <Button type="link" icon={<EditOutlined style={{ color: '#1890ff', fontSize: 20 }} />} onClick={() => onEdit && onEdit(record)} />
               </Tooltip>
               <Tooltip title="O'chirish">
-                <Button type="link" icon={<img src={images.deleteIcon} alt="delete" width={22} height={22} />} onClick={() => onDelete && onDelete(record.user_id || record.id)} />
+                <Button type="link" danger icon={<DeleteOutlined style={{ fontSize: 20 }} />} onClick={() => onDelete && onDelete(record.user_id || record.id)} />
               </Tooltip>
             </Space>
           ),

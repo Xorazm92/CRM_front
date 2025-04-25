@@ -11,13 +11,14 @@ const Button: React.FC<ButtonProps> = ({ onFilterClick, showAdd = true }) => {
   const navigate = useNavigate();
   const handleClickBtn = () => {
     if (location.pathname.includes('students')) {
-      navigate('/add-student');
+      navigate('/students/add');
     } else if (location.pathname.includes('parents')) {
       navigate('/add-parents');
     } else if (location.pathname.includes('teacher')) {
-      navigate('/add-teacher');
+      navigate('/teacher/add');
     } else if (location.pathname.includes('group')) {
       navigate('/add-group');
+      
     }
   };
   return (

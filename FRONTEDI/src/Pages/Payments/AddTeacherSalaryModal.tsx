@@ -21,7 +21,7 @@ const AddTeacherSalaryModal: React.FC<AddTeacherSalaryModalProps> = ({ teacherId
   const handleFinish = async (values: AddTeacherSalaryForm) => {
     setLoading(true);
     try {
-      const res = await fetch("/api/v1/payment/teacher", {
+      const res = await fetch("/payment/teacher", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

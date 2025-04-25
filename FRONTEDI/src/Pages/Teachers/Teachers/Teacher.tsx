@@ -1,38 +1,66 @@
 // Converted from Teachers/Teacher.jsx to Teachers/Teacher.tsx with TypeScript support
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Spin } from "antd";
+import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import instance from "../../../api/axios";
-import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
-import AddTeacherModal from "./AddTeacherModal";
+import { useNavigate } from "react-router-dom";
+import dayjs from "dayjs";
+import DataTable from "../../../components/DataTable/DataTable";
+import { Button } from "antd/es";
+import Toast from "../../../components/Toast";
+import Filter from "../../../components/Filter/Filter";
+import EditTeacherModal from './EditTeacherModal';
 
 interface TeacherType {
-  user_id: string;
-  name: string;
-  lastname: string;
+  user_id?: string;
+  _id?: string;
+  id?: string;
+  name?: string;
+  lastname?: string;
   middlename?: string;
   birthdate?: string;
   gender?: string;
   phone_number?: string;
+  [key: string]: any;
 }
 
 const TeacherPage: React.FC = () => {
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [teachers, setTeachers] = useState<TeacherType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState<TeacherType | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: "success" | "error" }>({ message: '', type: 'success' });
+
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
-  const [modalOpen, setModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   const fetchTeachers = async (page = 1, limit = 10) => {
     setLoading(true);
     setError("");
     try {
-      const res = await instance.get(`/users?role=TEACHER&page=${page}&limit=${limit}`);
-      setTeachers(res.data.data || res.data || []);
+      const res = await instance.get(`/users?role=teacher&page=${page}&limit=${limit}`);
+      const mapped = (res.data.data || res.data || [])
+        .filter((s: any) => s.role === 'teacher' || s.role === 'TEACHER')
+        .map((s: any) => ({
+          user_id: s.user_id,
+          name: s.name,
+          lastname: s.lastname,
+          middlename: s.middlename,
+          birthDate: s.birthdate,
+          gender: s.gender,
+          address: s.address,
+          phone_number: s.phone_number,
+          group: s.group_members && s.group_members.length > 0 ? s.group_members[0].group?.name : '',
+          status: s.status,
+        }));
+      setTeachers(mapped);
       setTotal(res.data.total || 0);
     } catch (err: any) {
-      setError(err.message || "O‘qituvchilarni yuklashda xatolik");
+      setError(err.message || "O'quvchilarni yuklashda xatolik");
     } finally {
       setLoading(false);
     }
@@ -42,94 +70,88 @@ const TeacherPage: React.FC = () => {
     fetchTeachers(currentPage, pageSize);
   }, [currentPage, pageSize]);
 
-  const handleEdit = (teacher: TeacherType) => {
-    // TODO: Edit modal yoki sahifaga yo'naltirish
+  // Gender tag
+  const genderTag = (gender?: string) => {
+    if (!gender) return null;
+    const g = gender.toLowerCase();
+    if (g.includes("male") || g.includes("o‘g‘il")) return <span className="px-3 py-1 rounded-full text-xs font-semibold bg-teal-50 text-teal-600">O‘g‘il bola</span>;
+    if (g.includes("female") || g.includes("qiz")) return <span className="px-3 py-1 rounded-full text-xs font-semibold bg-pink-50 text-pink-500">Qiz bola</span>;
+    return <span className="px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">{gender}</span>;
   };
 
-  const handleDelete = async (user_id: string) => {
+  const handleEdit = (teacher: TeacherType) => {
+    navigate(`/teachers/edit/${teacher.user_id || teacher._id || teacher.id}`);
+  };
+
+  const handleDelete = async (id: string) => {
     if (!window.confirm("O‘chirishga ishonchingiz komilmi?")) return;
     try {
-      await instance.delete(`/api/v1/users/${user_id}`);
-      fetchTeachers(currentPage, pageSize);
-    } catch (err) {
-      alert("O‘chirishda xatolik");
+      await instance.delete(`/users/${id}`);
+      fetchTeachers();
+      // Toast yoki message.success qo'shishingiz mumkin
+    } catch (err: any) {
+      // Toast yoki message.error qo'shishingiz mumkin
     }
   };
+  const handleTeacherEdited = () => {
+    fetchTeachers();
+    setToast({ message: "O‘qtuvchi muvaffaqiyatli tahrirlandi!", type: "success" });
+    setTimeout(() => setToast({ message: '', type: 'success' }), 3000);
+  };
+
+  function toggleFilter(): void {
+    throw new Error("Function not implemented.");
+  }
 
   return (
-    <div className="p-6 bg-white rounded-xl shadow max-w-6xl mx-auto mt-6">
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold">O‘qituvchilar jadvali</h1>
+    <div className="p-4 bg-white rounded shadow">
+      <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: '', type: 'success' })} />
+      <div className="flex items-center justify-between gap-2 mb-4">
+        <h1 className="text-xl font-bold">O’qituvchilar jadvali</h1>
+        <div className="flex gap-2 items-center">
+          <Button type="primary" onClick={() => navigate("/teachers/add")}>
+            Yangi o‘qtuvchi qo‘shish
+          </Button>
+          {isFilterOpen && <Filter closeFilter={toggleFilter} />}
+        </div>
+      </div>
+
+      <EditTeacherModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        teacher={selectedStudent}
+        onTeacherEdited={handleTeacherEdited}
+      />
+      {loading ? (
+        <div className="flex justify-center items-center h-48">
+          <Spin size="large" />
+        </div>
+      ) : error ? (
+        <div className="text-red-600 font-semibold">{error}</div>
+      ) : (
+        <DataTable data={teachers} type="teachers" onEdit={handleEdit} onDelete={handleDelete} />
+      )}
+      {/* Pagination UI */}
+      <div className="flex justify-end mt-4">
         <button
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition"
-          onClick={() => setModalOpen(true)}
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage(currentPage - 1)}
+          className="px-2 py-1 border rounded mx-1"
         >
-          <PlusOutlined /> Qo‘shish
+          Oldingi
+        </button>
+        <span>{currentPage} / {Math.max(1, Math.ceil(total / pageSize))}</span>
+        <button
+          disabled={currentPage === Math.ceil(total / pageSize) || total === 0}
+          onClick={() => setCurrentPage(currentPage + 1)}
+          className="px-2 py-1 border rounded mx-1"
+        >
+          Keyingi
         </button>
       </div>
-      <div className="overflow-x-auto rounded-xl border">
-        <table className="min-w-full bg-white">
-          <thead>
-            <tr className="bg-gray-50 text-gray-700 text-sm">
-              <th className="py-3 px-4 text-left font-semibold">#</th>
-              <th className="py-3 px-4 text-left font-semibold">O‘qituvchilar F.I.O</th>
-              <th className="py-3 px-4 text-left font-semibold">Tug‘ilgan sana</th>
-              <th className="py-3 px-4 text-left font-semibold">Jinsi</th>
-              <th className="py-3 px-4 text-left font-semibold">Kontakt</th>
-              <th className="py-3 px-4 text-center font-semibold">Imkoniyatlar</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr><td colSpan={6} className="py-8 text-center"><Spin size="large" /></td></tr>
-            ) : error ? (
-              <tr><td colSpan={6} className="py-8 text-center text-red-600">{error}</td></tr>
-            ) : teachers.length === 0 ? (
-              <tr><td colSpan={6} className="py-8 text-center">Ma'lumot yo‘q</td></tr>
-            ) : (
-              teachers.map((t, idx) => (
-                <tr key={t.user_id} className="border-b hover:bg-gray-50 transition">
-                  <td className="py-3 px-4">{(currentPage - 1) * pageSize + idx + 1}</td>
-                  <td className="py-3 px-4 font-medium flex items-center gap-2">
-                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-bold">
-                      {t.name?.[0] || ''}
-                    </span>
-                    {t.lastname} {t.name} {t.middlename || ''}
-                  </td>
-                  <td className="py-3 px-4">{t.birthdate ? new Date(t.birthdate).toLocaleDateString() : ''}</td>
-                  <td className={"py-3 px-4 " + (t.gender === "MALE" ? "text-teal-600" : "text-pink-500")}>{t.gender === "MALE" ? "O‘g‘il bola" : t.gender === "FEMALE" ? "Qiz bola" : ''}</td>
-                  <td className="py-3 px-4">{t.phone_number || ''}</td>
-                  <td className="py-3 px-4 text-center">
-                    <button className="p-1 hover:bg-gray-100 rounded" onClick={() => handleEdit(t)}>
-                      <EditOutlined className="text-xl text-blue-500" />
-                    </button>
-                    <button className="p-1 hover:bg-gray-100 rounded ml-2" onClick={() => handleDelete(t.user_id)}>
-                      <DeleteOutlined className="text-xl text-red-500" />
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
-      {/* Pagination */}
-      <div className="flex justify-between items-center mt-4">
-        <div className="text-sm text-gray-500">Sahifalar</div>
-        <div className="flex items-center gap-2">
-          <button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)} className="px-2 py-1 border rounded disabled:opacity-50">&lt;</button>
-          <span className="px-2">{currentPage}</span>
-          <button disabled={currentPage === Math.ceil(total / pageSize) || total === 0} onClick={() => setCurrentPage(currentPage + 1)} className="px-2 py-1 border rounded disabled:opacity-50">&gt;</button>
-        </div>
-        <div className="text-sm text-gray-500">{pageSize}</div>
-      </div>
-      <AddTeacherModal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onTeacherAdded={() => fetchTeachers(currentPage, pageSize)}
-      />
     </div>
   );
 };
 
 export default TeacherPage;
+

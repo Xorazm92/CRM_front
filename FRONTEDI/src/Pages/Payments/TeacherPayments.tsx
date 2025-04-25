@@ -24,7 +24,7 @@ const TeacherPayments: React.FC<TeacherPaymentsProps> = ({ teacherId, isAdmin })
 
   const fetchSalaries = () => {
     setLoading(true);
-    fetch(`/api/v1/payment/salary/history/${teacherId}`)
+    fetch(`/payment/salary/history/${teacherId}`)
       .then(res => res.json())
       .then(data => setSalaries(Array.isArray(data) ? data : []))
       .catch(() => setError("Oyliklarni olishda xatolik"))
@@ -37,7 +37,7 @@ const TeacherPayments: React.FC<TeacherPaymentsProps> = ({ teacherId, isAdmin })
   }, [teacherId]);
 
   const downloadReceipt = (salaryId: string) => {
-    window.open(`/api/v1/payment/${salaryId}/receipt`, '_blank');
+    window.open(`/payment/${salaryId}/receipt`, '_blank');
   };
 
   const columns = [

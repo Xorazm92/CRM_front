@@ -37,7 +37,7 @@ const StudentPayments: React.FC<StudentPaymentsProps> = ({ studentId }) => {
   }, [studentId]);
 
   const downloadReceipt = (paymentId: string) => {
-    window.open(`/api/v1/payment/${paymentId}/receipt`, '_blank');
+    window.open(`/payment/${paymentId}/receipt`, '_blank');
   };
 
   const columns = [

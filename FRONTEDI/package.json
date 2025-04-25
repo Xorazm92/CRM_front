@@ -17,6 +17,7 @@
     "axios-auth-refresh": "^3.3.6",
     "chart.js": "^4.4.9",
     "date-fns": "^4.1.0",
+    "dayjs": "^1.11.13",
     "js-cookie": "^3.0.5",
     "react": "^18.2.0",
     "react-calendar": "^5.0.0",
@@ -31,7 +32,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.14.1",
-    "@types/react": "^18.2.37",
+    "@types/react": "^18.3.20",
     "@types/react-dom": "^18.2.15",
     "@vitejs/plugin-react-swc": "^3.5.0",
     "autoprefixer": "^10.4.21",

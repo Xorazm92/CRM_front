@@ -23,7 +23,7 @@ const Header: React.FC<{ collapsed: boolean; setCollapsed: (c: boolean) => void 
       avatar: cookieUser?.avatar_url || images.user
     });
     if (cookieUser?._id) {
-      fetch(`/api/v1/notifications/${cookieUser._id}`)
+      fetch(`/notifications/${cookieUser._id}`)
         .then(res => res.json())
         .then(data => setNotifications(data))
         .catch(() => setNotifications([]));

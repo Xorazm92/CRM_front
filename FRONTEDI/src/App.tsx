@@ -5,9 +5,8 @@ import Group from "./Pages/Groups/Groups";
 import Home from "./Pages/Home/Home";
 import Settings from "./Pages/Settings/Settings";
 import AddGroupModal from "./Pages/Groups/AddGroupModal";
-import AddTeacher from "./Pages/Teachers/AddTeachers/AddTeacher";
-import Teacher from "./Pages/Teachers/Teachers/Teacher";
-import Teachers from "./Pages/Teachers/Teachers";
+import AddTeacher from "./Pages/Teachers/Teachers/AddTeacherPage";
+import Teachers from "./Pages/Teachers/Teachers/Teacher";
 import Report from "./Pages/Report/Report";
 import Layout from "./components/Layout/Layout";
 import Student from "./Pages/Students/Students/Student";
@@ -15,6 +14,7 @@ import Login from "./Pages/Login";
 import AddLessonModal from "./Pages/Lessons/AddLessonModal";
 import Header from "./components/Header/Header";
 import AddStudentPage from "./Pages/Students/Students/AddStudentPage";
+import AddTeacherPage from "./Pages/Teachers/Teachers/AddTeacherPage";
 
 import { useAuthStore } from "./store/useAuthStore";
 import ProtectedRoute from "./auth/ProtectedRoute";
@@ -81,16 +81,12 @@ function App() {
             } />
             <Route path="students/add" element={<AddStudentPage />} />
 
-            <Route path="teacher" element={
-              <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.MANAGER]}>
-                <Teacher />
-              </ProtectedRoute>
-            } />
             <Route path="teachers" element={
               <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.MANAGER]}>
                 <Teachers />
               </ProtectedRoute>
             } />
+            <Route path="teachers/add" element={<AddTeacherPage />} />
             <Route path="add-teacher" element={
               <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.MANAGER]}>
                 <AddTeacher />

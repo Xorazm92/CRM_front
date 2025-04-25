@@ -13,7 +13,7 @@ interface StudentType {
   name?: string;
   lastname?: string;
   middlename?: string;
-  birthdate?: string;
+  birthDate?: string;
   gender?: string;
   address?: string;
   phone_number?: string;
@@ -40,20 +40,22 @@ const StudentPage: React.FC = () => {
     setLoading(true);
     setError("");
     try {
-      const res = await instance.get(`/users?role=STUDENT&page=${page}&limit=${limit}`);
-      // Mapping for table
-      const mapped = (res.data.data || res.data || []).map((s: any) => ({
+      // Faqat studentlar uchun so'rov va filter
+      const res = await instance.get(`/users?role=student&page=${page}&limit=${limit}`);
+      const mapped = (res.data.data || res.data || [])
+        .filter((s: any) => s.role === 'student' || s.role === 'STUDENT')
+        .map((s: any) => ({
         user_id: s.user_id,
         name: s.name,
         lastname: s.lastname,
         middlename: s.middlename,
-        birthdate: s.birthdate,
+        birthDate: s.birthdate,
         gender: s.gender,
         address: s.address,
         phone_number: s.phone_number,
         group: s.group_members && s.group_members.length > 0 ? s.group_members[0].group?.name : '',
         status: s.status,
-      }));
+        }));
       setStudents(mapped);
       setTotal(res.data.total || 0);
     } catch (err: any) {
@@ -79,7 +81,7 @@ const StudentPage: React.FC = () => {
   const handleDelete = async (id: string) => {
     if (!window.confirm("O‘chirishga ishonchingiz komilmi?")) return;
     try {
-      await instance.delete(`/api/v1/users/${id}`);
+      await instance.delete(`/users/${id}`);
       fetchStudents();
       setToast({ message: "O‘quvchi muvaffaqiyatli o‘chirildi!", type: "success" });
     } catch (err: any) {
