@@ -18,6 +18,7 @@ import Assignments from "./Pages/Assignments/Assignments";
 import Payments from "./Pages/Payments/Payments";
 import Course from "./Pages/Courses/Course";
 import Lesson from "./Pages/Lessons/Lesson";
+import Lessons from "./Pages/Lessons/Lessons";
 // import StatisticsDashboard from "./Pages/Dashboard/StatisticsDashboard";
 import { SearchProvider } from "./context/SearchContext";
 import React from "react";
@@ -85,8 +86,8 @@ function App() {
 
           <Route path="lessons" element={
             <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.MANAGER, ROLES.TEACHER, ROLES.SUPERADMIN]}>
-              <Lesson />
-            </ProtectedRoute> 
+              <Lessons />
+            </ProtectedRoute>
           } />
           <Route path="payments" element={
             <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.MANAGER, ROLES.TEACHER, ROLES.SUPERADMIN]}>

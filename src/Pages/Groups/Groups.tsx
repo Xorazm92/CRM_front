@@ -4,7 +4,7 @@ import Toast from "../../components/Toast";
 import AddGroupModal from "./AddGroupModal";
 import EditGroupModal from "./EditGroupModal";
 import GroupDetailModal from "./GroupDetailModal";
-import { Table, Input, Spin, Button } from "antd";
+import { Table, Input, Spin, Modal } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import ButtonComponent from "../../components/Button/Button";
 import "./Groups.css";
@@ -54,18 +54,25 @@ const Groups: React.FC = () => {
 
   const filteredGroups = groups.filter(group => group.name.toLowerCase().includes(filter.toLowerCase()));
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm("Haqiqatan ham o'chirmoqchimisiz?")) return;
-    setLoading(true);
-    try {
-      await instance.delete(`/groups/${id}`);
-      setToast({ message: "Guruh o'chirildi!", type: 'success' });
-      fetchGroups();
-    } catch (err: any) {
-      setToast({ message: err.message || "O'chirishda xatolik", type: 'error' });
-    } finally {
-      setLoading(false);
-    }
+  const handleDelete = (id: string) => {
+    Modal.confirm({
+      title: "Guruhni o'chirishni tasdiqlaysizmi?",
+      okText: "Ha, o'chirish",
+      okType: "danger",
+      cancelText: "Bekor qilish",
+      onOk: async () => {
+        setLoading(true);
+        try {
+          await instance.delete(`/groups/${id}`);
+          setToast({ message: "Guruh o'chirildi!", type: 'success' });
+          fetchGroups();
+        } catch (err: any) {
+          setToast({ message: err.message || "O'chirishda xatolik", type: 'error' });
+        } finally {
+          setLoading(false);
+        }
+      }
+    });
   };
 
   const columns = [
@@ -87,8 +94,8 @@ const Groups: React.FC = () => {
       key: 'actions',
       render: (_: any, record: GroupType) => (
         <span className="group-table-actions">
-          <Button type="link" icon={<EditOutlined />} onClick={() => { setEditItem(record); setShowEdit(true); }} />
-          <Button type="link" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record.group_id)} />
+          <button className="edit-btn" onClick={() => { setEditItem(record); setShowEdit(true); }}>Tahrirlash</button>
+          <button className="delete-btn" onClick={() => handleDelete(record.group_id)}>O'chirish</button>
         </span>
       ),
     },

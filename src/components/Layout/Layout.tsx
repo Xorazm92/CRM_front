@@ -92,6 +92,29 @@ const AdminLayout = () => {
     }
   ];
 
+  // --- Rasm importlarini to'g'rilash uchun images.d.ts mavjud, importlar to'g'ri ishlaydi ---
+  // --- Menu items massivini TypeScriptga mos va to'g'ri strukturada shakllantirish ---
+  // Avval sidebarMenu ni Menu uchun kerakli formatga o'zgartiramiz:
+  const menuItems = sidebarMenu.map(item => {
+    if ("type" in item && item.type === "group") {
+      return {
+        key: item.label,
+        label: item.label,
+        children: item.children.map(child => ({
+          key: child.key,
+          icon: <img src={child.icon} width={22} height={22} alt={child.label} />,
+          label: <Link to={child.to}>{child.label}</Link>,
+        }))
+      };
+    } else {
+      return {
+        key: item.key,
+        icon: <img src={item.icon} width={22} height={22} alt={item.label} />,
+        label: <Link to={item.to}>{item.label}</Link>,
+      };
+    }
+  });
+
   return (
     <Layout style={{ minHeight: "100vh", overflow: "hidden" }}>
       <Sider
@@ -130,28 +153,8 @@ const AdminLayout = () => {
             mode="inline"
             selectedKeys={[selectedKey]}
             style={{ border: "none", background: "#fff" }}
-          >
-            {/* Oddiy itemlar */}
-            {sidebarMenu.filter(i => !("type" in i && i.type === "group")).map(item => (
-              <Menu.Item key={item.key} icon={<img src={item.icon} width={22} height={22} alt={item.label} />}>
-                <Link to={item.to}>{item.label}</Link>
-              </Menu.Item>
-            ))}
-            {/* Group (SubMenu) itemlar */}
-            {sidebarMenu.filter(i => "type" in i && i.type === "group").map((group, idx) => (
-              <SubMenu
-                key={group.label}
-                icon={null}
-                title={group.label}
-              >
-                {group.children.map(child => (
-                  <Menu.Item key={child.key} icon={<img src={child.icon} width={22} height={22} alt={child.label} />}>
-                    <Link to={child.to}>{child.label}</Link>
-                  </Menu.Item>
-                ))}
-              </SubMenu>
-            ))}
-          </Menu>
+            items={menuItems}
+          />
         </div>
         <Menu
           mode="inline"

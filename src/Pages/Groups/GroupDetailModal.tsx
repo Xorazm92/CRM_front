@@ -2,8 +2,10 @@
 // The actual code will be migrated from the .jsx file and refactored to TypeScript.
 
 import React, { useEffect, useState } from "react";
-import { Modal, Descriptions, Spin, Collapse, List, Typography } from "antd";
+import { Modal, Descriptions, Spin, Collapse, List, Typography, Button } from "antd";
 import instance from "../../api/axios";
+import AddStudentToGroupModal from "./AddStudentToGroupModal";
+import AttendanceModal from "./AttendanceModal"; // Import AttendanceModal
 
 interface GroupMember {
   group_member_id: string;
@@ -27,6 +29,8 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({ groupId, isOpen, on
   const [loading, setLoading] = useState(false);
   const [group, setGroup] = useState<any>(null);
   const [error, setError] = useState("");
+  const [showAddStudent, setShowAddStudent] = useState(false);
+  const [attendanceModalVisible, setAttendanceModalVisible] = useState(false); // Add state for attendance modal visibility
 
   useEffect(() => {
     if (isOpen && groupId) {
@@ -35,9 +39,6 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({ groupId, isOpen, on
       instance.get(`/groups/${groupId}`)
         .then(res => {
           setGroup(res.data);
-          // group_members massivini groupdan olamiz
-          // (agar yo‘q bo‘lsa, bo‘sh array)
-          // Konsolga chiqarish: backenddan kelayotgan group obyektini tekshirish uchun
           console.log("GROUP RESPONSE:", res.data);
         })
         .catch(err => setError(err?.response?.data?.message || err.message || "Xatolik"))
@@ -47,6 +48,19 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({ groupId, isOpen, on
       setError("");
     }
   }, [isOpen, groupId]);
+
+  // Guruhga talaba qo'shilganda groupni yangilash uchun
+  const handleStudentAdded = () => {
+    setShowAddStudent(false);
+    // Guruhni qayta yuklash
+    if (groupId) {
+      setLoading(true);
+      instance.get(`/groups/${groupId}`)
+        .then(res => setGroup(res.data))
+        .catch(() => {})
+        .finally(() => setLoading(false));
+    }
+  };
 
   return (
     <Modal open={isOpen} onCancel={onClose} footer={null} title="Guruh tafsilotlari" destroyOnClose>
@@ -65,7 +79,7 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({ groupId, isOpen, on
             <Descriptions.Item label="Boshlanish sanasi">{group.start_date || '-'}</Descriptions.Item>
           </Descriptions>
           <Collapse style={{ marginTop: 24 }}>
-            <Collapse.Panel header="Guruhdagi o'quvchilar" key="students">
+            <Collapse.Panel header={<span>Guruhdagi o'quvchilar <Button type="link" style={{ float: 'right' }} onClick={e => { e.stopPropagation(); setShowAddStudent(true); }}>+ Talaba qo'shish</Button></span>} key="students">
               {group.group_members?.length === 0 ? (
                 <Typography.Text type="secondary">O'quvchilar topilmadi</Typography.Text>
               ) : (
@@ -75,13 +89,26 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({ groupId, isOpen, on
                     <List.Item key={gm.group_member_id}>
                       <b>{gm.user.full_name || gm.user.name}</b>
                       {gm.user.phone_number ? ` - ${gm.user.phone_number}` : ""}
-                      {/* {gm.created_at ? ` (Qo'shilgan: ${new Date(gm.created_at).toLocaleDateString()})` : ""} */}
                     </List.Item>
                   )}
                 />
               )}
             </Collapse.Panel>
           </Collapse>
+          <Button onClick={() => setAttendanceModalVisible(true)} type="primary" style={{ marginLeft: 8 }}>Davomat</Button>
+          <AddStudentToGroupModal
+            groupId={groupId || ''}
+            open={showAddStudent}
+            onClose={() => setShowAddStudent(false)}
+            onSuccess={handleStudentAdded}
+          />
+          {group && (
+            <AttendanceModal
+              visible={attendanceModalVisible}
+              groupId={group.group_id}
+              onClose={() => setAttendanceModalVisible(false)}
+            />
+          )}
         </>
       ) : (
         <div style={{ padding: 24 }}>Ma'lumot topilmadi</div>
