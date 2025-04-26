@@ -1,13 +1,9 @@
-// Migration placeholder for AddGroupModal.jsx to .tsx
-// The actual code will be migrated from the .jsx file and refactored to TypeScript.
-
-import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
-import ClipLoader from "react-spinners/ClipLoader";
-import Toast from "../../components/Toast";
+import React from "react";
+import { Modal, Form, Input, Select, Button, DatePicker, Spin, message } from "antd";
 import instance from "../../api/axios";
+import dayjs from "dayjs";
 import "./Groups.css";
 
-// Types for teacher and course objects based on backend schema
 interface Teacher {
   user_id: string;
   full_name?: string;
@@ -27,134 +23,100 @@ interface AddGroupModalProps {
   onGroupAdded?: () => void;
 }
 
-interface FormState {
+interface AddGroupForm {
   name: string;
   description: string;
   course_id: string;
-  status: string;
-  start_date: string;
   teacher_id: string;
+  status: string;
+  start_date?: string;
 }
 
 const AddGroupModal: React.FC<AddGroupModalProps> = ({ isOpen, onClose, onGroupAdded }) => {
-  const [form, setForm] = useState<FormState>({
-    name: "",
-    description: "",
-    course_id: "",
-    status: "ACTIVE",
-    start_date: "",
-    teacher_id: ""
-  });
-  const [loading, setLoading] = useState(false);
-  const [toast, setToast] = useState<{ message: string; type: string }>({ message: '', type: 'success' });
-  const [teachers, setTeachers] = useState<Teacher[]>([]);
-  const [courses, setCourses] = useState<Course[]>([]);
+  const [form] = Form.useForm<AddGroupForm>();
+  const [loading, setLoading] = React.useState(false);
+  const [courses, setCourses] = React.useState<Course[]>([]);
+  const [teachers, setTeachers] = React.useState<Teacher[]>([]);
 
-  useEffect(() => {
+  React.useEffect(() => {
+    if (!isOpen) form.resetFields();
+  }, [isOpen, form]);
+
+  React.useEffect(() => {
     if (isOpen) {
-      instance.get("/teacher").then(res => {
-        let data = res.data;
-        if (!Array.isArray(data)) {
-          if (data && Array.isArray(data.data)) {
-            data = data.data;
-          } else {
-            data = [];
-          }
-        }
-        setTeachers(data);
-      });
       instance.get("/course").then(res => {
-        let data = res.data;
-        if (!Array.isArray(data)) {
-          if (data && Array.isArray(data.data)) {
-            data = data.data;
-          } else {
-            data = [];
-          }
-        }
-        setCourses(data);
+        setCourses(Array.isArray(res.data.data) ? res.data.data : []);
+      });
+      instance.get("/users?role=TEACHER").then(res => {
+        console.log("TEACHER users response:", res.data);
+        setTeachers(Array.isArray(res.data.data) ? res.data.data : []);
+      }).catch(err => {
+        console.log("TEACHER fetch error:", err);
+        setTeachers([]);
       });
     }
   }, [isOpen]);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!form.name || !form.course_id || !form.teacher_id || !form.start_date) {
-      setToast({ message: "Barcha majburiy maydonlarni to‘ldiring", type: "error" });
-      return;
-    }
-    if (!form.description || form.description.length < 10) {
-      setToast({ message: "Tavsif kamida 10 ta belgidan iborat bo‘lishi kerak", type: "error" });
-      return;
-    }
+  const handleFinish = async (values: AddGroupForm) => {
     setLoading(true);
     try {
-      // Use backend schema: course_id, teacher_id must match backend IDs
-      const selectedCourse = courses.find(c => c.course_id === form.course_id);
-      const selectedTeacher = teachers.find(t => t.user_id === form.teacher_id);
       const payload = {
-        ...form,
-        course_id: selectedCourse ? selectedCourse.course_id : '',
-        teacher_id: selectedTeacher ? selectedTeacher.user_id : ''
+        ...values,
+        start_date: values.start_date ? dayjs(values.start_date).format("YYYY-MM-DD") : undefined,
       };
-      // Send only required fields
       await instance.post("/groups", payload);
-      setToast({ message: "Guruh muvaffaqiyatli qo'shildi!", type: "success" });
-      setForm({
-        name: "",
-        description: "",
-        course_id: "",
-        status: "ACTIVE",
-        start_date: "",
-        teacher_id: ""
-      });
-      if (onGroupAdded) onGroupAdded();
-      if (onClose) onClose();
+      message.success("Guruh qo'shildi!");
+      form.resetFields();
+      onGroupAdded && onGroupAdded();
+      setTimeout(onClose, 800);
     } catch (err: any) {
-      setToast({ message: err.response?.data?.message || err.message || "Xatolik yuz berdi", type: "error" });
+      message.error(err?.response?.data?.message || err.message || "Qo'shishda xatolik");
     } finally {
       setLoading(false);
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="modal-overlay">
-      <div className="modal add-group-modal">
-        <h2>Yangi guruh qo'shish</h2>
-        <form onSubmit={handleSubmit}>
-          <input name="name" placeholder="Guruh nomi" value={form.name} onChange={handleChange} required />
-          <input name="description" placeholder="Tavsif (kamida 10 ta belgi)" value={form.description} onChange={handleChange} required />
-          <select name="course_id" value={form.course_id} onChange={handleChange} required>
-            <option value="">Kurs tanlang</option>
-            {courses.map(c => (
-              <option key={c.course_id} value={c.course_id}>{c.name}</option>
-            ))}
-          </select>
-          <select name="teacher_id" value={form.teacher_id} onChange={handleChange} required>
-            <option value="">O‘qituvchi tanlang</option>
-            {teachers.map(t => (
-              <option key={t.user_id} value={t.user_id}>{t.full_name || t.name}</option>
-            ))}
-          </select>
-          <input name="start_date" type="date" value={form.start_date} onChange={handleChange} required />
-          <select name="status" value={form.status} onChange={handleChange}>
-            <option value="ACTIVE">Aktiv</option>
-            <option value="INACTIVE">Passiv</option>
-          </select>
-          <div className="modal-actions">
-            <button type="button" onClick={onClose}>Bekor qilish</button>
-            <button type="submit" disabled={loading}>{loading ? <ClipLoader size={16} color="#fff" /> : "Qo'shish"}</button>
-          </div>
-        </form>
-        <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: '', type: 'success' })} />
-      </div>
-    </div>
+    <Modal open={isOpen} onCancel={onClose} footer={null} title="Guruh qo'shish" destroyOnClose>
+      <Spin spinning={loading}>
+        <Form form={form} layout="vertical" onFinish={handleFinish}>
+          <Form.Item name="name" label="Guruh nomi" rules={[{ required: true, message: "Guruh nomi majburiy!" }]}> 
+            <Input placeholder="Guruh nomi" disabled={loading} />
+          </Form.Item>
+          <Form.Item name="description" label="Izoh" rules={[{ required: true, message: "Izoh majburiy!" }]}> 
+            <Input placeholder="Izoh" disabled={loading} />
+          </Form.Item>
+          <Form.Item name="course_id" label="Kurs" rules={[{ required: true, message: "Kurs majburiy!" }]}> 
+            <Select placeholder="Kursni tanlang" disabled={loading} showSearch optionFilterProp="children">
+              {courses.map(course => (
+                <Select.Option key={course.course_id} value={course.course_id}>{course.name}</Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item name="teacher_id" label="O'qituvchi" rules={[{ required: true, message: "O'qituvchi majburiy!" }]}> 
+            <Select placeholder="O'qituvchini tanlang" disabled={loading} showSearch optionFilterProp="children">
+              {teachers.map(teacher => (
+                <Select.Option key={teacher.user_id} value={teacher.user_id}>{teacher.full_name || teacher.name}</Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item name="status" label="Status" initialValue="ACTIVE" rules={[{ required: true, message: "Status majburiy!" }]}> 
+            <Select disabled={loading}> 
+              <Select.Option value="ACTIVE">Faol</Select.Option> 
+              <Select.Option value="INACTIVE">Nofaol</Select.Option> 
+              <Select.Option value="DRAFT">Qoralama</Select.Option> 
+            </Select> 
+          </Form.Item>
+          <Form.Item name="start_date" label="Boshlanish sanasi"> 
+            <DatePicker format="YYYY-MM-DD" style={{ width: "100%" }} disabled={loading} />
+          </Form.Item>
+          <Form.Item>
+            <Button onClick={onClose} disabled={loading} style={{ marginRight: 8 }}>Bekor qilish</Button>
+            <Button type="primary" htmlType="submit" loading={loading}>Qo'shish</Button>
+          </Form.Item>
+        </Form>
+      </Spin>
+    </Modal>
   );
 };
 
