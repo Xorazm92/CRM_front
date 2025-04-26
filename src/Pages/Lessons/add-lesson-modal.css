@@ -1,0 +1,15 @@
+.add-lesson-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.add-lesson-form .ant-form-item {
+  margin-bottom: 12px;
+}
+
+.add-lesson-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}

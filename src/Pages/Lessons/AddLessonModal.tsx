@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import instance from "../../api/axios";
 import { Modal, Form, Input, Button, Select } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
+import "./add-lesson-modal.css";
 
 interface Group {
   group_id: string;
@@ -79,6 +80,7 @@ const AddLessonModal: React.FC<AddLessonModalProps> = ({ open, onClose, onSucces
       <Form
         form={form}
         onFinish={handleSubmit}
+        className="add-lesson-form"
       >
         <Form.Item name="group_id">
           <Select>
@@ -97,12 +99,14 @@ const AddLessonModal: React.FC<AddLessonModalProps> = ({ open, onClose, onSucces
         <Form.Item name="recording_path">
           <Input placeholder="Yozuv yo‘li" />
         </Form.Item>
-        <Button type="primary" htmlType="submit" loading={loading}>
-          Qo'shish
-        </Button>
-        <Button type="default" onClick={onClose} disabled={loading}>
-          Bekor qilish
-        </Button>
+        <div className="add-lesson-buttons">
+          <Button type="primary" htmlType="submit" loading={loading}>
+            Qo'shish
+          </Button>
+          <Button type="default" onClick={onClose} disabled={loading}>
+            Bekor qilish
+          </Button>
+        </div>
       </Form>
     </Modal>
   );

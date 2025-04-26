@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Table, Select, Button, Spin, message } from "antd";
 import instance from "../../api/axios";
+import "./attendance-modal.css";
 
 const statusOptions = [
   { value: "PRESENT", label: "Keldi" },
@@ -119,7 +120,7 @@ const AttendanceModal: React.FC<AttendanceModalProps> = ({ open, onClose, lesson
           pagination={false}
         />
       )}
-      <div className="flex justify-end gap-2 mt-4">
+      <div className="attendance-modal-actions">
         <Button onClick={onClose} disabled={saving}>Bekor qilish</Button>
         <Button type="primary" onClick={handleSave} loading={saving || loading}>Saqlash</Button>
       </div>

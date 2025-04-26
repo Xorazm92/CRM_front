@@ -40,6 +40,8 @@ import user from './user.png';
 import usersThree from './users-three.png';
 import x from './x_icon.png';
 import x1 from './x_icon_1.png';
+import lessonIcon from './lesson.png';
+
 
 const icons = {
   add,
@@ -82,6 +84,7 @@ const icons = {
   usersThree,
   x,
   x1,
+  lessonIcon
 };
 
 export default icons;

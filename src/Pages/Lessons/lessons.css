@@ -1,0 +1,74 @@
+.lesson-wrapper {
+  padding: 24px;
+  background: #fff;
+  border-radius: 12px;
+  min-height: 400px;
+}
+
+.header-lesson-page {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.add-btn {
+  background: #009688;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.add-btn:hover {
+  background: #00796b;
+}
+
+.loader-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 120px;
+}
+
+.error-msg {
+  color: #e53935;
+  text-align: center;
+  margin: 16px 0;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.lesson-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+  background: #fafafa;
+}
+.lesson-table th,
+.lesson-table td {
+  border: 1px solid #e0e0e0;
+  padding: 8px 12px;
+  text-align: left;
+}
+.lesson-table th {
+  background: #f5f5f5;
+}
+
+.attendance-btn {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.attendance-btn:hover {
+  background: #1565c0;
+}

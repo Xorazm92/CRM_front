@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Modal, Form, Input, DatePicker, Button, Select, Spin, message } from "antd";
 import instance from "../../api/axios";
 import dayjs from "dayjs";
+import "./edit-lesson-modal.css";
 
 interface GroupType {
   group_id?: string;
@@ -96,7 +97,7 @@ const EditLessonModal: React.FC<EditLessonModalProps> = ({ open, onClose, onSucc
             <Select.Option key={g.group_id || g._id} value={g.group_id || g._id}>{g.name}</Select.Option>
           ))} </Select> </Form.Item>
           <Form.Item name="topic" label="Mavzu" rules={[{ required: true, message: "Mavzuni kiriting!" }]}> <Input disabled={loading} /> </Form.Item>
-          <Form.Item name="lesson_date" label="Dars sanasi" rules={[{ required: true, message: "Sanani tanlang!" }]}> <DatePicker showTime className="w-full" disabled={loading} /> </Form.Item>
+          <Form.Item name="lesson_date" label="Dars sanasi" rules={[{ required: true, message: "Sanani tanlang!" }]}> <DatePicker showTime className="edit-lesson-modal-date" disabled={loading} /> </Form.Item>
           <Form.Item name="recording_path" label="Yozuv yo‘li"> <Input disabled={loading} /> </Form.Item>
           <Form.Item label="Kurs">
             <Input value={courseName} disabled readOnly />
@@ -104,7 +105,7 @@ const EditLessonModal: React.FC<EditLessonModalProps> = ({ open, onClose, onSucc
           <Form.Item label="O'qituvchi">
             <Input value={teacherName} disabled readOnly />
           </Form.Item>
-          <div className="flex justify-end gap-2 mt-2">
+          <div className="edit-lesson-modal-actions">
             <Button onClick={onClose} disabled={loading}>Bekor qilish</Button>
             <Button type="primary" htmlType="submit" loading={loading}>Saqlash</Button>
           </div>

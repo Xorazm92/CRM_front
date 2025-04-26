@@ -1,3 +1,4 @@
+import React from "react";
 import menuIcon from "../../images/icons/menu_icon.png";
 import notificationIcon from "../../images/icons/notification.png";
 import userIcon from "../../images/icons/user.png";
@@ -7,7 +8,7 @@ import menuSecond from "../../images/icons/menu_second.png";
 import cashIcon from "../../images/icons/cash.png";
 import settingIcon from "../../images/icons/setting.png";
 import courseIcon from "../../images/icons/course.png";
-
+import lessonIcon from "../../images/icons/lesson.png";
 
 // Har bir modul uchun to‘liq va aniq label va keylar
 const modules = [
@@ -15,7 +16,7 @@ const modules = [
   { key: "students", label: "O‘quvchilar", to: "/students", icon: usersThree },
   { key: "teachers", label: "O‘qituvchilar", to: "/teachers", icon: userIcon },
   { key: "courses", label: "Kurslar", to: "/course", icon: courseIcon },
-  { key: "lessons", label: "Darslar", to: "/lessons", icon: menuSecond },
+  { key: "lessons", label: "Darslar", to: "/lessons", icon: lessonIcon },
   { key: "attendance", label: "Davomat", to: "/attendance", icon: menuSecond },
   { key: "assignments", label: "Topshiriqlar", to: "/assignments", icon: menuSecond },
   { key: "payments", label: "To‘lovlar", to: "/payments", icon: cashIcon },
