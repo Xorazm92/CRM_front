@@ -4,9 +4,8 @@ import Toast from "../../components/Toast";
 import EditCourseModal from "./EditCourseModal";
 import AddCourseModal from "./AddCourseModal";
 import ViewCourseModal from "./ViewCourseModal";
-import { Table, Input, Spin, Button } from "antd";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import icons from "../../images/icons";
+import { Table, Input, Spin, Button, Tag } from "antd";
+import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import ButtonComponent from "../../components/Button/Button";
 import "./Course.css";
 
@@ -74,12 +73,12 @@ const Course: React.FC = () => {
       dataIndex: 'name', 
       key: 'name',
       render: (_: any, record: CourseType) => (
-        <a style={{ cursor: 'pointer' }} onClick={() => { setViewItem(record); setShowView(true); }}>{record.name}</a>
+        <a style={{ cursor: 'pointer', fontWeight: 500 }} onClick={() => { setViewItem(record); setShowView(true); }}>{record.name}</a>
       )
     },
-    { title: 'Izoh', dataIndex: 'description', key: 'description' },
-    { title: 'Davomiyligi', key: 'duration', render: (_: any, record: CourseType) => `${record.duration} oy` },
-    { title: 'Status', key: 'status', render: (_: any, record: CourseType) => record.status === 'ACTIVE' ? 'Faol' : 'Nofaol' },
+    { title: 'Izoh', dataIndex: 'description', key: 'description', render: (text: string) => <span style={{ color: '#555' }}>{text}</span> },
+    { title: 'Davomiyligi', key: 'duration', render: (_: any, record: CourseType) => <Tag color="blue">{record.duration} oy</Tag> },
+    { title: 'Status', key: 'status', render: (_: any, record: CourseType) => record.status === 'ACTIVE' ? <Tag color="green">Faol</Tag> : <Tag color="red">Nofaol</Tag> },
     {
       title: 'Amallar',
       key: 'actions',
@@ -95,12 +94,12 @@ const Course: React.FC = () => {
   return (
     <div className="p-4 bg-white rounded shadow">
       <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: '', type: 'success' })} />
-      <div className="student-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+      <div className="student-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
         <h1 className="text-xl font-bold mb-2 md:mb-0">Kurslar jadvali</h1>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div className="course-header-add-btn">
-            <ButtonComponent showAdd={true} onAddClick={() => setShowAdd(true)} />
-          </div>
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => setShowAdd(true)}>
+            Yangi kurs
+          </Button>
         </div>
       </div>
       <div className="mb-4">
@@ -119,7 +118,7 @@ const Course: React.FC = () => {
         <Table
           columns={columns}
           dataSource={filteredCourses}
-          pagination={false}
+          pagination={{ pageSize: 10 }}
           rowKey={record => String(record.course_id)}
           className="bg-white rounded shadow"
         />

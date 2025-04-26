@@ -1,52 +1,54 @@
 import React, { useEffect, useState } from "react";
 import instance from "../../api/axios";
-import ClipLoader from "react-spinners/ClipLoader";
-import Toast from "../../components/Toast";
+import { Table, Input, Spin, Tag, message } from "antd";
+import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 import AddAssignmentModal from "./AddAssignmentModal";
 import EditAssignmentModal from "./EditAssignmentModal";
 import AssignmentSubmissionsModal from "./AssignmentSubmissionsModal";
 import SubmitAssignmentModal from "./SubmitAssignmentModal";
+import ViewAssignmentModal from "./ViewAssignmentModal";
+import Toast from "../../components/Toast";
+import ButtonComponent from "../../components/Button/Button";
+import dayjs from "dayjs";
 import "./Assignments.css";
+import { showDeadlineNotification } from "../../utils/notification";
 
-interface Assignment {
-  assignment_id?: number;
-  id?: number;
+interface AssignmentType {
+  assignment_id: string | number;
   title: string;
-  group?: { name: string };
-  group_name?: string;
-  teacher?: { name: string };
-  teacher_name?: string;
-  created_at?: string;
-  due_date?: string;
-  status?: string;
-  submissions?: any[];
+  description?: string;
+  due_date: string;
+  group: { name: string };
+  status: string;
+  file_path?: string;
 }
 
-const Assignments = () => {
-  const [assignments, setAssignments] = useState<Assignment[]>([]);
+const Assignments: React.FC = () => {
+  const [assignments, setAssignments] = useState<AssignmentType[]>([]);
   const [loading, setLoading] = useState(false);
-  const [toast, setToast] = useState({ message: '', type: 'success' });
+  const [toast, setToast] = useState<{ message: string; type: "success" | "error" }>({ message: '', type: 'success' });
   const [error, setError] = useState("");
   const [showAdd, setShowAdd] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
-  const [editItem, setEditItem] = useState<Assignment | null>(null);
+  const [editItem, setEditItem] = useState<AssignmentType | null>(null);
   const [showSubmissions, setShowSubmissions] = useState(false);
-  const [submissionsAssignment, setSubmissionsAssignment] = useState<Assignment | null>(null);
+  const [submissionsItem, setSubmissionsItem] = useState<AssignmentType | null>(null);
   const [showSubmit, setShowSubmit] = useState(false);
-  const [submitAssignment, setSubmitAssignment] = useState<Assignment | null>(null);
+  const [submitItem, setSubmitItem] = useState<AssignmentType | null>(null);
+  const [filter, setFilter] = useState("");
+  const [showView, setShowView] = useState(false);
+  const [viewItem, setViewItem] = useState<AssignmentType | null>(null);
 
   const fetchAssignments = async () => {
     setLoading(true);
     try {
       const res = await instance.get("/assignments");
-      let data = res.data;
-      if (!Array.isArray(data)) {
-        data = Array.isArray(data.results) ? data.results : [];
-      }
+      let data = res.data.data;
+      if (!Array.isArray(data)) data = [];
       setAssignments(data);
-    } catch (err) {
-      setError("Vazifalarni olishda xatolik");
-      setToast({ message: err.message || "Vazifalarni olishda xatolik", type: 'error' });
+    } catch (err: any) {
+      setError("Topshiriqlarni olishda xatolik");
+      setToast({ message: err.message || "Topshiriqlarni olishda xatolik", type: 'error' });
     } finally {
       setLoading(false);
     }
@@ -56,98 +58,129 @@ const Assignments = () => {
     fetchAssignments();
   }, []);
 
-  const handleDelete = async (id: number) => {
+  useEffect(() => {
+    assignments.forEach(a => {
+      if (!a.due_date) return;
+      const diff = dayjs(a.due_date).diff(dayjs(), "hour");
+      if (diff > 0 && diff <= 24) {
+        if (!sessionStorage.getItem(`deadline_notify_${a.assignment_id}`)) {
+          showDeadlineNotification(a.title, dayjs(a.due_date).format("YYYY-MM-DD HH:mm"));
+          sessionStorage.setItem(`deadline_notify_${a.assignment_id}`, "1");
+        }
+      }
+    });
+  }, [assignments]);
+
+  const filteredAssignments = assignments.filter(a =>
+    a.title.toLowerCase().includes(filter.toLowerCase()) ||
+    (a.group?.name || '').toLowerCase().includes(filter.toLowerCase())
+  );
+
+  const handleDelete = async (id: string | number) => {
     if (!window.confirm("Haqiqatan ham o'chirmoqchimisiz?")) return;
     setLoading(true);
     try {
       await instance.delete(`/assignments/${id}`);
-      setToast({ message: "Vazifa o'chirildi!", type: 'success' });
+      setToast({ message: "Topshiriq o'chirildi!", type: 'success' });
       fetchAssignments();
-    } catch (err) {
+    } catch (err: any) {
       setToast({ message: err.message || "O'chirishda xatolik", type: 'error' });
     } finally {
       setLoading(false);
     }
   };
 
+  const columns = [
+    { title: '#', key: 'index', render: (_: any, __: any, idx: number) => idx + 1 },
+    { title: 'Sarlavha', dataIndex: 'title', key: 'title', render: (_: any, record: AssignmentType) => (
+      <a
+        style={{ cursor: 'pointer', fontWeight: 500 }}
+        onClick={() => { setViewItem(record); setShowView(true); }}
+      >
+        {record.title}
+      </a>
+    ) },
+    { title: 'Guruh', key: 'group', render: (_: any, record: AssignmentType) => record.group?.name || '-' },
+    { title: 'Deadline', key: 'due_date', render: (_: any, record: AssignmentType) => {
+      const isPast = dayjs(record.due_date).isBefore(dayjs());
+      return <Tag color={isPast ? "red" : "blue"}>{dayjs(record.due_date).format("YYYY-MM-DD HH:mm")}</Tag>;
+    } },
+    { title: 'Status', key: 'status', render: (_: any, record: AssignmentType) => (
+      <Tag color={record.status === 'ACTIVE' ? 'green' : 'red'}>{record.status === 'ACTIVE' ? 'Faol' : 'Nofaol'}</Tag>
+    ) },
+    {
+      title: 'Amallar',
+      key: 'actions',
+      render: (_: any, record: AssignmentType) => (
+        <span className="assignment-table-actions">
+          <ButtonComponent
+            showView={true}
+            showEdit={true}
+            showDelete={true}
+            onViewClick={() => { setViewItem(record); setShowView(true); }}
+            onEditClick={() => { setEditItem(record); setShowEdit(true); }}
+            onDeleteClick={() => handleDelete(record.assignment_id)}
+          />
+        </span>
+      ),
+    },
+  ];
+
   return (
-    <div className="assignments-page">
-      <div className="students-wrapper">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-          <h2 style={{ margin: 0 }}>Vazifalar</h2>
-          <button className="add-btn" style={{ height: '40px', fontWeight: 'bold', fontSize: '16px', cursor: 'pointer' }} onClick={() => setShowAdd(true)}>+ Vazifa qo'shish</button>
-        </div>
-        <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: '', type: 'success' })} />
-        {loading ? (
-          <div className="loader-center"><ClipLoader color="#009688" size={40} /></div>
-        ) : error ? (
-          <div className="error-msg">{error}</div>
-        ) : (
-          <table className="assignments-table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Nomi</th>
-                <th>Guruh</th>
-                <th>O'qituvchi</th>
-                <th>Boshlanish</th>
-                <th>Tugash</th>
-                <th>Status</th>
-                <th>Topshirilganlar</th>
-                <th>O'rtacha baho</th>
-                <th>Amallar</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(!Array.isArray(assignments) || assignments.length === 0) ? (
-                <tr><td colSpan="10">Vazifalar topilmadi</td></tr>
-              ) : assignments.map((a, i) => (
-                <tr key={a.assignment_id || a.id || i}>
-                  <td>{i + 1}</td>
-                  <td>{a.title}</td>
-                  <td>{a.group?.name || a.group_name || '-'}</td>
-                  <td>{a.teacher?.name || a.teacher_name || '-'}</td>
-                  <td>{a.created_at ? new Date(a.created_at).toLocaleDateString() : '-'}</td>
-                  <td>{a.due_date ? new Date(a.due_date).toLocaleDateString() : '-'}</td>
-                  <td>{a.status || (a.due_date && new Date(a.due_date) < new Date() ? 'Yopiq' : 'Ochiq')}</td>
-                  <td>{Array.isArray(a.submissions) ? `${a.submissions.length}` : '-'}</td>
-                  <td>{Array.isArray(a.submissions) && a.submissions.length > 0 ? (
-                    (a.submissions.reduce((sum, s) => sum + (parseFloat(s.grade) || 0), 0) / a.submissions.length).toFixed(2)
-                  ) : '-'}</td>
-                  <td>
-                    <button onClick={() => { setEditItem(a); setShowEdit(true); }}>Tahrirlash</button>
-                    <button onClick={() => handleDelete(a.assignment_id || a.id)} className="delete-btn">O'chirish</button>
-                    <button onClick={() => { setSubmissionsAssignment(a); setShowSubmissions(true); }}>Topshiriqlar</button>
-                    <button onClick={() => { setSubmitAssignment(a); setShowSubmit(true); }}>Topshirish</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-        <AddAssignmentModal
-          open={showAdd}
-          onClose={() => setShowAdd(false)}
-          onSuccess={fetchAssignments}
-        />
-        <EditAssignmentModal
-          open={showEdit}
-          onClose={() => { setShowEdit(false); setEditItem(null); }}
-          onSuccess={fetchAssignments}
-          assignment={editItem}
-        />
-        <AssignmentSubmissionsModal
-          open={showSubmissions}
-          onClose={() => setShowSubmissions(false)}
-          assignment={submissionsAssignment}
-        />
-        <SubmitAssignmentModal
-          open={showSubmit}
-          onClose={() => setShowSubmit(false)}
-          assignment={submitAssignment}
-          onSuccess={fetchAssignments}
+    <div className="p-4 bg-white rounded shadow">
+      <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: '', type: 'success' })} />
+      <div className="assignment-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+        <h1 className="text-xl font-bold mb-2 md:mb-0">Topshiriqlar jadvali</h1>
+        <ButtonComponent showAdd={true} onAddClick={() => setShowAdd(true)} />
+      </div>
+      <div className="mb-4">
+        <Input
+          placeholder="🔍 Sarlavha yoki guruh bo‘yicha qidirish..."
+          value={filter}
+          onChange={e => setFilter(e.target.value)}
+          className="max-w-xs"
         />
       </div>
+      {loading ? (
+        <div className="flex justify-center items-center h-48"><Spin size="large" /></div>
+      ) : error ? (
+        <div className="text-red-600 font-semibold">{error}</div>
+      ) : (
+        <Table
+          columns={columns}
+          dataSource={filteredAssignments}
+          pagination={{ pageSize: 10 }}
+          rowKey={record => String(record.assignment_id)}
+          className="bg-white rounded shadow"
+        />
+      )}
+      <AddAssignmentModal
+        open={showAdd}
+        onClose={() => setShowAdd(false)}
+        onSuccess={fetchAssignments}
+      />
+      <EditAssignmentModal
+        open={showEdit}
+        onClose={() => { setShowEdit(false); setEditItem(null); }}
+        onSuccess={fetchAssignments}
+        assignment={editItem}
+      />
+      <AssignmentSubmissionsModal
+        open={showSubmissions}
+        onClose={() => { setShowSubmissions(false); setSubmissionsItem(null); }}
+        assignment={submissionsItem}
+      />
+      <SubmitAssignmentModal
+        open={showSubmit}
+        onClose={() => { setShowSubmit(false); setSubmitItem(null); }}
+        assignment={submitItem}
+        onSuccess={fetchAssignments}
+      />
+      <ViewAssignmentModal
+        open={showView}
+        onClose={() => { setShowView(false); setViewItem(null); }}
+        assignment={viewItem}
+      />
     </div>
   );
 };

@@ -19,7 +19,6 @@ import imageAdd from './image_add.png';
 import income from './income.png';
 import left from './left.png';
 import leftThin from './left_thin.png';
-import lesson from './lesson.svg';
 import logout from './logout.png';
 import menu from './menu_icon.png';
 import menuSecond from './menu_second.png';
@@ -42,6 +41,7 @@ import x from './x_icon.png';
 import x1 from './x_icon_1.png';
 import lessonIcon from './lesson.png';
 import attendanceIcon from './attendance.png';
+import assignmentIcon from './assignment.png';
 
 
 const icons = {
@@ -64,7 +64,6 @@ const icons = {
   income,
   left,
   leftThin,
-  lesson,
   logout,
   menu,
   menuSecond,
@@ -86,7 +85,8 @@ const icons = {
   x,
   x1,
   lessonIcon,
-  attendanceIcon
+  attendanceIcon,
+  assignmentIcon
 };
 
 export default icons;
