@@ -1,6 +1,5 @@
 import { Route, Routes, Navigate } from "react-router-dom";
 
-import Group from "./Pages/Groups/Groups";
 import Home from "./Pages/Home/Home";
 import AddTeacher from "./Pages/Teachers/Teachers/AddTeacherPage";
 import Teachers from "./Pages/Teachers/Teachers/Teacher";
@@ -31,6 +30,7 @@ import Profile from "./Pages/Profile/Profile";
 import AdminDashboard from "./Pages/Admin/AdminDashboard";
 import AdminsPage from "./Pages/Admin/AdminsPage";
 import UsersManagement from "./Pages/Superadmin/UsersManagement";
+import Groups from "./Pages/Groups/Groups";
 
 function App() {
   const { isLogged } = useAuthStore();
@@ -50,7 +50,11 @@ function App() {
           }
         >
           <Route index element={<Home />} />
-          <Route path="group" element={<Group />} />
+          <Route path="groups" element={
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.MANAGER, ROLES.TEACHER, ROLES.SUPERADMIN]}>
+              <Groups />
+            </ProtectedRoute>
+          } />
           <Route path="report" element={
             <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.MANAGER, ROLES.TEACHER, ROLES.SUPERADMIN]}>
               <Report />
@@ -78,6 +82,7 @@ function App() {
               <Course />
             </ProtectedRoute>
           } />
+
           <Route path="lessons" element={
             <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.MANAGER, ROLES.TEACHER, ROLES.SUPERADMIN]}>
               <Lesson />

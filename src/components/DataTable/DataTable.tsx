@@ -10,6 +10,8 @@ import {
   UserOutlined
 } from "@ant-design/icons";
 import Payment from "../Payment/Payment";
+import images from '../../images/images';
+import CustomButton from '../Button/Button';
 
 interface PersonType {
   id?: string | number;
@@ -38,9 +40,10 @@ interface DataTableProps {
   onDetail?: (person: PersonType) => void;
   onAddMember?: (person: PersonType) => void;
   onAddTeacher?: (person: PersonType) => void;
+  onAddGroup?: () => void;
 }
 
-const DataTable: React.FC<DataTableProps> = ({ data = [], type, person, onEdit, onDelete, onDetail, onAddMember, onAddTeacher }) => {
+const DataTable: React.FC<DataTableProps> = ({ data = [], type, person, onEdit, onDelete, onDetail, onAddMember, onAddTeacher, ...props }) => {
   const [isChecked, setIsChecked] = useState<{ [key: string]: boolean }>({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPersonId, setSelectedPersonId] = useState<string | number | null>(null);
@@ -353,7 +356,7 @@ const DataTable: React.FC<DataTableProps> = ({ data = [], type, person, onEdit, 
   }
 
   return (
-    <div className="overflow-x-auto">
+    <div>
       <Table
         columns={columns}
         dataSource={data}

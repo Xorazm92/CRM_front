@@ -3,7 +3,9 @@ import instance from "../../api/axios";
 import Toast from "../../components/Toast";
 import EditCourseModal from "./EditCourseModal";
 import AddCourseModal from "./AddCourseModal";
+import ViewCourseModal from "./ViewCourseModal";
 import { Table, Input, Spin, Button } from "antd";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import icons from "../../images/icons";
 import ButtonComponent from "../../components/Button/Button";
 import "./Course.css";
@@ -24,6 +26,8 @@ const Course: React.FC = () => {
   const [showEdit, setShowEdit] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
   const [editItem, setEditItem] = useState<CourseType | null>(null);
+  const [viewItem, setViewItem] = useState<CourseType | null>(null);
+  const [showView, setShowView] = useState(false);
   const [filter, setFilter] = useState("");
 
   const fetchCourses = async () => {
@@ -65,7 +69,14 @@ const Course: React.FC = () => {
 
   const columns = [
     { title: '#', key: 'index', render: (_: any, __: any, idx: number) => idx + 1 },
-    { title: 'Nomi', dataIndex: 'name', key: 'name' },
+    { 
+      title: 'Nomi', 
+      dataIndex: 'name', 
+      key: 'name',
+      render: (_: any, record: CourseType) => (
+        <a style={{ cursor: 'pointer' }} onClick={() => { setViewItem(record); setShowView(true); }}>{record.name}</a>
+      )
+    },
     { title: 'Izoh', dataIndex: 'description', key: 'description' },
     { title: 'Davomiyligi', key: 'duration', render: (_: any, record: CourseType) => `${record.duration} oy` },
     { title: 'Status', key: 'status', render: (_: any, record: CourseType) => record.status === 'ACTIVE' ? 'Faol' : 'Nofaol' },
@@ -74,12 +85,8 @@ const Course: React.FC = () => {
       key: 'actions',
       render: (_: any, record: CourseType) => (
         <span className="course-table-actions">
-          <Button type="link" onClick={() => { setEditItem(record); setShowEdit(true); }}>
-            Tahrirlash
-          </Button>
-          <Button type="link" danger onClick={() => handleDelete(record.course_id)}>
-            O'chirish
-          </Button>
+          <Button type="link" icon={<EditOutlined />} onClick={() => { setEditItem(record); setShowEdit(true); }} />
+          <Button type="link" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record.course_id)} />
         </span>
       ),
     },
@@ -127,6 +134,11 @@ const Course: React.FC = () => {
         open={showAdd}
         onClose={() => setShowAdd(false)}
         onSuccess={fetchCourses}
+      />
+      <ViewCourseModal
+        open={showView}
+        onClose={() => { setShowView(false); setViewItem(null); }}
+        course={viewItem}
       />
     </div>
   );

@@ -1,64 +1,24 @@
-// Converted from GroupDetailModal.jsx to GroupDetailModal.tsx with full TypeScript support
-import React, { useEffect, useState } from "react";
-import { Modal, Spin, Table, Typography, Tag } from "antd";
-import instance from "../../api/axios";
+// Migration placeholder for GroupDetailModal.jsx to .tsx
+// The actual code will be migrated from the .jsx file and refactored to TypeScript.
+
+import React from "react";
 
 interface GroupDetailModalProps {
+  groupId?: string;
   isOpen: boolean;
-  groupId: string | number | undefined;
   onClose: () => void;
 }
 
-interface GroupDetail {
-  name: string;
-  description?: string;
-  status?: string;
-  start_date?: string;
-  course?: { name: string };
-  teachers?: { full_name?: string; name?: string }[];
-  students?: { full_name?: string; name?: string }[];
-}
-
-const GroupDetailModal: React.FC<GroupDetailModalProps> = ({ isOpen, groupId, onClose }) => {
-  const [loading, setLoading] = useState(false);
-  const [group, setGroup] = useState<GroupDetail | null>(null);
-
-  useEffect(() => {
-    if (isOpen && groupId) {
-      setLoading(true);
-      instance.get(`/groups/${groupId}`).then(res => {
-        setGroup(res.data.data || res.data);
-      }).catch(() => setGroup(null)).finally(() => setLoading(false));
-    }
-  }, [isOpen, groupId]);
-
+const GroupDetailModal: React.FC<GroupDetailModalProps> = ({ groupId, isOpen, onClose }) => {
+  if (!isOpen) return null;
   return (
-    <Modal open={isOpen} onCancel={onClose} footer={null} title="Guruh tafsilotlari" destroyOnClose width={600}>
-      <Spin spinning={loading}>
-        {group ? (
-          <div>
-            <Typography.Title level={4}>{group.name}</Typography.Title>
-            <p><b>Tavsif:</b> {group.description}</p>
-            <p><b>Holat:</b> <Tag color={group.status === 'ACTIVE' ? 'green' : group.status === 'INACTIVE' ? 'red' : 'blue'}>{group.status}</Tag></p>
-            <p><b>Boshlanish sanasi:</b> {group.start_date}</p>
-            <p><b>Kurs:</b> {group.course?.name}</p>
-            <p><b>O'qituvchilar:</b> {group.teachers?.map(t => t.full_name || t.name).join(", ")}</p>
-            <p><b>O'quvchilar soni:</b> {group.students?.length}</p>
-            <Table
-              dataSource={group.students}
-              columns={[
-                { title: "F.I.Sh.", dataIndex: "full_name", key: "full_name", render: (_: any, r: any) => r.full_name || r.name },
-              ]}
-              rowKey={(r) => r.full_name || r.name}
-              pagination={false}
-              size="small"
-            />
-          </div>
-        ) : (
-          <div className="text-center text-gray-500">Ma'lumot topilmadi</div>
-        )}
-      </Spin>
-    </Modal>
+    <div style={{ background: 'rgba(0,0,0,0.3)', position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ background: '#fff', padding: 32, borderRadius: 8, minWidth: 320 }}>
+        <h3>GroupDetailModal tayyorlanmoqda...</h3>
+        <div>ID: {groupId}</div>
+        <button onClick={onClose}>Yopish</button>
+      </div>
+    </div>
   );
 };
 

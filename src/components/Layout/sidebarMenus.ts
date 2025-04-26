@@ -6,13 +6,14 @@ import groupIcon from "../../images/icons/group.png";
 import menuSecond from "../../images/icons/menu_second.png";
 import cashIcon from "../../images/icons/cash.png";
 import settingIcon from "../../images/icons/setting.png";
+import courseIcon from "../../images/icons/course.png";
 
 // Har bir modul uchun to‘liq va aniq label va keylar
 const modules = [
   { key: "groups", label: "Guruhlar", to: "/groups", icon: groupIcon },
   { key: "students", label: "O‘quvchilar", to: "/students", icon: usersThree },
   { key: "teachers", label: "O‘qituvchilar", to: "/teachers", icon: userIcon },
-  { key: "courses", label: "Kurslar", to: "/course", icon: menuSecond },
+  { key: "courses", label: "Kurslar", to: "/course", icon: courseIcon },
   { key: "lessons", label: "Darslar", to: "/lesson", icon: menuSecond },
   { key: "attendance", label: "Davomat", to: "/attendance", icon: menuSecond },
   { key: "assignments", label: "Topshiriqlar", to: "/assignments", icon: menuSecond },

@@ -1,11 +1,25 @@
-// Converted from AddGroupModal.jsx to AddGroupModal.tsx with full TypeScript support
-import React, { useState, useEffect } from "react";
-import { Modal, Form, Input, Select, Button, message, Spin } from "antd";
-import { createGroup } from "../../api/groups";
-import { fetchTeachers } from "../../api/teachers";
-import { fetchCourses } from "../../api/courses";
-import { Groups, GroupStatus } from "../../types/models";
-import { getEntityId } from "../../utils/getEntityId";
+// Migration placeholder for AddGroupModal.jsx to .tsx
+// The actual code will be migrated from the .jsx file and refactored to TypeScript.
+
+import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
+import ClipLoader from "react-spinners/ClipLoader";
+import Toast from "../../components/Toast";
+import instance from "../../api/axios";
+import "./Groups.css";
+
+// Types for teacher and course objects based on backend schema
+interface Teacher {
+  user_id: string;
+  full_name?: string;
+  name?: string;
+  [key: string]: any;
+}
+
+interface Course {
+  course_id: string;
+  name: string;
+  [key: string]: any;
+}
 
 interface AddGroupModalProps {
   isOpen: boolean;
@@ -13,95 +27,134 @@ interface AddGroupModalProps {
   onGroupAdded?: () => void;
 }
 
-interface TeacherType {
-  user_id: string;
-  name: string;
-  lastname: string;
-}
-
-interface CourseType {
-  course_id: string;
-  name: string;
-}
-
-interface AddGroupForm {
+interface FormState {
   name: string;
   description: string;
   course_id: string;
-  status: GroupStatus;
+  status: string;
+  start_date: string;
   teacher_id: string;
 }
 
 const AddGroupModal: React.FC<AddGroupModalProps> = ({ isOpen, onClose, onGroupAdded }) => {
-  const [form] = Form.useForm<AddGroupForm>();
+  const [form, setForm] = useState<FormState>({
+    name: "",
+    description: "",
+    course_id: "",
+    status: "ACTIVE",
+    start_date: "",
+    teacher_id: ""
+  });
   const [loading, setLoading] = useState(false);
-  const [teachers, setTeachers] = useState<TeacherType[]>([]);
-  const [courses, setCourses] = useState<CourseType[]>([]);
+  const [toast, setToast] = useState<{ message: string; type: string }>({ message: '', type: 'success' });
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
 
   useEffect(() => {
     if (isOpen) {
-      fetchTeachers().then(data => {
-        setTeachers(data.map((t) => ({ ...t, user_id: getEntityId(t), name: t.name, lastname: t.lastname })));
+      instance.get("/teacher").then(res => {
+        let data = res.data;
+        if (!Array.isArray(data)) {
+          if (data && Array.isArray(data.data)) {
+            data = data.data;
+          } else {
+            data = [];
+          }
+        }
+        setTeachers(data);
       });
-      fetchCourses().then(data => {
-        setCourses(data.map((c) => ({ ...c, course_id: getEntityId(c), name: c.name })));
+      instance.get("/course").then(res => {
+        let data = res.data;
+        if (!Array.isArray(data)) {
+          if (data && Array.isArray(data.data)) {
+            data = data.data;
+          } else {
+            data = [];
+          }
+        }
+        setCourses(data);
       });
-      form.resetFields();
     }
-    if (!isOpen) {
-      form.resetFields();
-    }
-  }, [isOpen, form]);
+  }, [isOpen]);
 
-  const handleFinish = async (values: AddGroupForm) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!form.name || !form.course_id || !form.teacher_id || !form.start_date) {
+      setToast({ message: "Barcha majburiy maydonlarni to‘ldiring", type: "error" });
+      return;
+    }
+    if (!form.description || form.description.length < 10) {
+      setToast({ message: "Tavsif kamida 10 ta belgidan iborat bo‘lishi kerak", type: "error" });
+      return;
+    }
     setLoading(true);
     try {
+      // Use backend schema: course_id, teacher_id must match backend IDs
+      const selectedCourse = courses.find(c => c.course_id === form.course_id);
+      const selectedTeacher = teachers.find(t => t.user_id === form.teacher_id);
       const payload = {
-        ...values,
-        course_id: getEntityId(courses.find(c => getEntityId(c) === values.course_id)),
-        teacher_id: getEntityId(teachers.find(t => getEntityId(t) === values.teacher_id)),
+        ...form,
+        course_id: selectedCourse ? selectedCourse.course_id : '',
+        teacher_id: selectedTeacher ? selectedTeacher.user_id : ''
       };
-      await createGroup(payload);
-      message.success("Guruh muvaffaqiyatli qo'shildi!");
-      onClose();
+      // Send only required fields
+      await instance.post("/groups", payload);
+      setToast({ message: "Guruh muvaffaqiyatli qo'shildi!", type: "success" });
+      setForm({
+        name: "",
+        description: "",
+        course_id: "",
+        status: "ACTIVE",
+        start_date: "",
+        teacher_id: ""
+      });
       if (onGroupAdded) onGroupAdded();
+      if (onClose) onClose();
     } catch (err: any) {
-      message.error("Guruhni qo'shishda xatolik: " + (err?.response?.data?.message || err.message));
+      setToast({ message: err.response?.data?.message || err.message || "Xatolik yuz berdi", type: "error" });
     } finally {
       setLoading(false);
     }
   };
 
+  if (!isOpen) return null;
+
   return (
-    <Modal open={isOpen} onCancel={onClose} footer={null} title="Yangi guruh qo'shish" destroyOnClose>
-      <Spin spinning={loading}>
-        <Form form={form} layout="vertical" onFinish={handleFinish} initialValues={{ status: GroupStatus.ACTIVE }}>
-          <Form.Item name="name" label="Guruh nomi" rules={[{ required: true, message: "Guruh nomi majburiy!" }]}> <Input /> </Form.Item>
-          <Form.Item name="description" label="Tavsif" rules={[{ required: true, min: 10, message: "Tavsif kamida 10 ta belgidan iborat bo‘lishi kerak" }]}> <Input.TextArea rows={3} /> </Form.Item>
-          <Form.Item name="course_id" label="Kurs" rules={[{ required: true, message: "Kurs majburiy!" }]}> 
-            <Select 
-              placeholder="Kursni tanlang" 
-              options={courses.map(c => ({ value: getEntityId(c), label: c.name }))}
-              showSearch
-              optionFilterProp="label"
-            /> 
-          </Form.Item>
-          <Form.Item name="teacher_id" label="O'qituvchi" rules={[{ required: true, message: "O'qituvchi majburiy!" }]}> 
-            <Select 
-              placeholder="O'qituvchini tanlang" 
-              options={teachers.map(t => ({ value: getEntityId(t), label: t.name + ' ' + t.lastname }))}
-              showSearch
-              optionFilterProp="label"
-            /> 
-          </Form.Item>
-          <Form.Item name="status" label="Holat"> <Select options={[{ value: GroupStatus.ACTIVE, label: "Aktiv" }, { value: GroupStatus.INACTIVE, label: "Passiv" }]} /> </Form.Item>
-          <div className="flex justify-end gap-2">
-            <Button onClick={onClose}>Bekor qilish</Button>
-            <Button type="primary" htmlType="submit" loading={loading}>Qo'shish</Button>
+    <div className="modal-overlay">
+      <div className="modal add-group-modal">
+        <h2>Yangi guruh qo'shish</h2>
+        <form onSubmit={handleSubmit}>
+          <input name="name" placeholder="Guruh nomi" value={form.name} onChange={handleChange} required />
+          <input name="description" placeholder="Tavsif (kamida 10 ta belgi)" value={form.description} onChange={handleChange} required />
+          <select name="course_id" value={form.course_id} onChange={handleChange} required>
+            <option value="">Kurs tanlang</option>
+            {courses.map(c => (
+              <option key={c.course_id} value={c.course_id}>{c.name}</option>
+            ))}
+          </select>
+          <select name="teacher_id" value={form.teacher_id} onChange={handleChange} required>
+            <option value="">O‘qituvchi tanlang</option>
+            {teachers.map(t => (
+              <option key={t.user_id} value={t.user_id}>{t.full_name || t.name}</option>
+            ))}
+          </select>
+          <input name="start_date" type="date" value={form.start_date} onChange={handleChange} required />
+          <select name="status" value={form.status} onChange={handleChange}>
+            <option value="ACTIVE">Aktiv</option>
+            <option value="INACTIVE">Passiv</option>
+          </select>
+          <div className="modal-actions">
+            <button type="button" onClick={onClose}>Bekor qilish</button>
+            <button type="submit" disabled={loading}>{loading ? <ClipLoader size={16} color="#fff" /> : "Qo'shish"}</button>
           </div>
-        </Form>
-      </Spin>
-    </Modal>
+        </form>
+        <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: '', type: 'success' })} />
+      </div>
+    </div>
   );
 };
 
