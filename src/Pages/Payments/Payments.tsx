@@ -5,8 +5,13 @@ import Toast from "../../components/Toast";
 import AddPaymentModal from "./AddPaymentModal";
 import EditPaymentModal from "./EditPaymentModal";
 import { getEntityId } from "../../utils/getEntityId";
-import { Select, Input, DatePicker, Button } from "antd";
+import { Select, Input, DatePicker, Button, Tabs } from "antd";
 import dayjs from "dayjs";
+import StudentPayments from "./StudentPayments";
+import TeacherPayments from "./TeacherPayments";
+import Debtors from "./Debtors";
+import Discounts from "../../Pages/Discounts/Discounts";
+import Transactions from "./Transactions";
 
 interface Payment {
   id: number;
@@ -156,63 +161,33 @@ const Payments = () => {
 
   return (
     <div className="payments-page">
-      <h2>To‘lovlar</h2>
-      <button className="add-btn" onClick={() => setShowAdd(true)}>+ To‘lov qo‘shish</button>
-      <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: '', type: undefined })} />
-      {filterBar}
-      {loading ? (
-        <div className="loader-center"><ClipLoader color="#009688" size={40} /></div>
-      ) : error ? (
-        <div className="error-msg">{error}</div>
-      ) : (
-        <table className="payments-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Talaba</th>
-              <th>Sana</th>
-              <th>Summasi</th>
-              <th>Status</th>
-              <th>Amallar</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(!Array.isArray(payments) || payments.length === 0) ? (
-              <tr><td colSpan="6">To‘lovlar topilmadi</td></tr>
-            ) : payments.map((p, i) => (
-              <tr key={p.id}>
-                <td>{i + 1}</td>
-                <td>{Number(p.student?.student_id)}</td>
-                <td>{p.createdAt ? new Date(p.createdAt).toLocaleDateString() : (p.date ? p.date.slice(0,10) : '')}</td>
-                <td>{Number(p.amount)}</td>
-                <td>{p.status}</td>
-                <td style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                  <button onClick={() => { setEditItem(p); setShowEdit(true); }} title="Tahrirlash" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-                    ✏️
-                  </button>
-                  <button onClick={() => handleDelete(p.id)} title="O‘chirish" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-                    🗑️
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-      <AddPaymentModal
-        open={showAdd}
-        onClose={() => setShowAdd(false)}
-        onSuccess={fetchPayments}
-      />
-      <EditPaymentModal
-        open={showEdit}
-        onClose={() => { setShowEdit(false); setEditItem(null); }}
-        onSuccess={fetchPayments}
-        payment={editItem && {
-          ...editItem,
-          student_id: Number(getEntityId(editItem.student.student_id))
-        }}
-      />
+      <Tabs defaultActiveKey="student" type="card" items={[
+        {
+          key: "student",
+          label: "O‘quvchi to‘lovlari",
+          children: <StudentPayments studentId="" />,
+        },
+        {
+          key: "teacher",
+          label: "O‘qituvchiga oylik",
+          children: <TeacherPayments teacherId="" isAdmin={true} />,
+        },
+        {
+          key: "debtors",
+          label: "Qarzdorlar",
+          children: <Debtors />,
+        },
+        {
+          key: "discounts",
+          label: "Chegirmalar",
+          children: <Discounts />,
+        },
+        {
+          key: "transactions",
+          label: "Transactionlar",
+          children: <Transactions />,
+        },
+      ]} />
     </div>
   );
 };
