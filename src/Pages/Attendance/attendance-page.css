@@ -1,0 +1,50 @@
+.attendance-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.attendance-stats {
+  background: #f5f7fa;
+  border-radius: 8px;
+  padding: 16px 24px;
+  margin-bottom: 20px;
+  display: flex;
+  gap: 40px;
+  font-size: 16px;
+  color: #333;
+}
+
+.attendance-table .ant-table {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+
+.attendance-table .ant-table-thead > tr > th {
+  background: #f0f2f5;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.attendance-table .ant-table-tbody > tr > td {
+  font-size: 14px;
+}
+
+.attendance-add-btn {
+  margin-bottom: 16px;
+  float: right;
+}
+
+@media (max-width: 768px) {
+  .attendance-filters {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .attendance-add-btn {
+    float: none;
+    width: 100%;
+  }
+}

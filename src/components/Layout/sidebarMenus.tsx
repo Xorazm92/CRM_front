@@ -9,6 +9,7 @@ import cashIcon from "../../images/icons/cash.png";
 import settingIcon from "../../images/icons/setting.png";
 import courseIcon from "../../images/icons/course.png";
 import lessonIcon from "../../images/icons/lesson.png";
+import attendanceIcon from "../../images/icons/attendance.png";
 
 // Har bir modul uchun to‘liq va aniq label va keylar
 const modules = [
@@ -17,7 +18,7 @@ const modules = [
   { key: "teachers", label: "O‘qituvchilar", to: "/teachers", icon: userIcon },
   { key: "courses", label: "Kurslar", to: "/course", icon: courseIcon },
   { key: "lessons", label: "Darslar", to: "/lessons", icon: lessonIcon },
-  { key: "attendance", label: "Davomat", to: "/attendance", icon: menuSecond },
+  { key: "attendance", label: "Davomat", to: "/attendance", icon: attendanceIcon },
   { key: "assignments", label: "Topshiriqlar", to: "/assignments", icon: menuSecond },
   { key: "payments", label: "To‘lovlar", to: "/payments", icon: cashIcon },
   { key: "transactions", label: "Pul o‘tkazmalari", to: "/transactions", icon: cashIcon },

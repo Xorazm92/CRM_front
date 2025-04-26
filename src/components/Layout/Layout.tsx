@@ -13,6 +13,8 @@ import usersThree from "../../images/icons/users-three.png";
 import settingIcon from "../../images/icons/setting.png";
 import logoutIcon from "../../images/icons/logout.png";
 import cashIcon from "../../images/icons/cash.png";
+import attendanceIcon from "../../images/icons/attendance.png";
+
 import { useAuthStore } from "../../store/useAuthStore";
 import { getSidebarMenu } from "./sidebarMenus";
 

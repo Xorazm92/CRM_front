@@ -1,15 +1,9 @@
 // Converted from AttendanceModal.jsx to AttendanceModal.tsx with TypeScript, Ant Design, and professional UX
 import React, { useEffect, useState } from "react";
-import { Modal, Table, Select, Button, Spin, message } from "antd";
+import { Modal, Table, Switch, Button, Spin, message } from "antd";
 import instance from "../../api/axios";
+import { EditOutlined } from "@ant-design/icons";
 import "./attendance-modal.css";
-
-const statusOptions = [
-  { value: "PRESENT", label: "Keldi" },
-  { value: "ABSENT", label: "Kelmadi" },
-  { value: "LATE", label: "Kechikdi" },
-  { value: "EXCUSED", label: "Sababli" },
-];
 
 interface AttendanceModalProps {
   open: boolean;
@@ -25,104 +19,97 @@ interface StudentType {
   name?: string;
   lastname?: string;
 }
-interface AttendanceType {
-  student_id: string;
-  status: string;
-}
 
 const AttendanceModal: React.FC<AttendanceModalProps> = ({ open, onClose, lesson, groupId, onSuccess }) => {
   const [students, setStudents] = useState<StudentType[]>([]);
-  const [attendance, setAttendance] = useState<AttendanceType[]>([]);
+  const [attendance, setAttendance] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
 
   useEffect(() => {
     if (!open || !groupId) return;
     setLoading(true);
-    instance.get(`/groups/${groupId}`)
-      .then(res => {
-        const members = res.data.data.students || [];
-        setStudents(members);
-        return instance.get(`/attendance?lesson_id=${lesson.lesson_id || lesson.id}`);
-      })
-      .then(res => {
-        setAttendance(res.data || []);
-      })
-      .catch(() => setError("Ma'lumotlarni yuklashda xatolik"))
-      .finally(() => setLoading(false));
+    instance.get(`/groups/${groupId}`).then(res => {
+      setStudents(res.data.data.students || []);
+      return instance.get(`/attendance?lesson_id=${lesson.lesson_id || lesson.id}`);
+    }).then(res => {
+      const att: Record<string, boolean> = {};
+      (res.data || []).forEach((a: any) => { att[a.student_id] = a.status === "PRESENT"; });
+      setAttendance(att);
+    }).finally(() => setLoading(false));
   }, [open, groupId, lesson]);
 
-  const handleChange = (student_id: string, status: string) => {
-    setAttendance(prev => {
-      const exists = prev.find(a => a.student_id === student_id);
-      if (exists) {
-        return prev.map(a => a.student_id === student_id ? { ...a, status } : a);
-      } else {
-        return [...prev, { student_id, status }];
-      }
-    });
+  const handleSwitch = (student_id: string, checked: boolean) => {
+    setAttendance(prev => ({
+      ...prev,
+      [student_id]: checked
+    }));
   };
 
   const handleSave = async () => {
     setSaving(true);
     const lessonId = lesson.lesson_id || lesson.id;
-    const payload = attendance
-      .filter(a => a.status && a.student_id && lessonId)
-      .map(a => ({ lesson_id: lessonId, student_id: a.student_id, status: a.status }));
-    if (payload.length === 0) {
-      message.warning("Hech bir o‘quvchiga status tanlanmagan yoki ma'lumotlar to‘liq emas!");
-      setSaving(false);
-      return;
-    }
+    const payload = students.map(s => ({
+      lesson_id: lessonId,
+      student_id: s.user_id || s.id,
+      status: attendance[s.user_id || s.id] ? "PRESENT" : "ABSENT"
+    }));
     try {
       await Promise.all(payload.map(item => instance.post("/attendance", item)));
       message.success("Davomat saqlandi");
       onSuccess && onSuccess();
       onClose();
-    } catch (err: any) {
-      message.error("Saqlashda xatolik: " + (err?.response?.data?.message || ''));
+    } catch (err) {
+      message.error("Saqlashda xatolik");
     } finally {
       setSaving(false);
     }
   };
 
   const columns = [
-    { title: '#', key: 'index', render: (_: any, __: any, i: number) => i + 1 },
-    { title: 'Ism', dataIndex: 'name', key: 'name' },
-    { title: 'Familiya', dataIndex: 'lastname', key: 'lastname' },
+    { title: "#", render: (_: any, __: any, idx: number) => idx + 1, width: 50 },
+    { 
+      title: "O‘quvchi ismi", 
+      render: (_: any, r: StudentType) => (r.name + " " + (r.lastname || "")),
+      width: 250
+    },
+    { 
+      title: "Vaqti", 
+      render: () => lesson.lesson_date ? new Date(lesson.lesson_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "-",
+      width: 80
+    },
     {
-      title: 'Status',
-      key: 'status',
-      render: (_: any, record: StudentType) => (
-        <Select
-          value={attendance.find(a => a.student_id === (record.user_id || record.id))?.status || ""}
-          onChange={val => handleChange(record.user_id || record.id || '', val)}
-          style={{ width: 120 }}
-          disabled={saving || loading}
-        >
-          <Select.Option value="">Tanlang</Select.Option>
-          {statusOptions.map(opt => (
-            <Select.Option key={opt.value} value={opt.value}>{opt.label}</Select.Option>
-          ))}
-        </Select>
-      )
+      title: " ",
+      render: () => (
+        <Button type="link" icon={<EditOutlined />} />
+      ),
+      width: 50
+    },
+    {
+      title: "Keldi",
+      render: (_: any, r: StudentType) => (
+        <Switch
+          checked={!!attendance[r.user_id || r.id]}
+          onChange={checked => handleSwitch(r.user_id || r.id || '', checked)}
+        />
+      ),
+      width: 80
     }
   ];
 
   return (
-    <Modal open={open} onCancel={onClose} footer={null} title="Davomat" destroyOnClose>
-      {loading ? <Spin /> : error ? <div>{error}</div> : (
+    <Modal open={open} onCancel={onClose} footer={null} title="Davomat" destroyOnClose width={700}>
+      {loading ? <Spin /> : (
         <Table
           dataSource={students}
           columns={columns}
-          rowKey={record => record.user_id || record.id}
           pagination={false}
+          rowKey={r => r.user_id || r.id || ""}
         />
       )}
-      <div className="attendance-modal-actions">
+      <div style={{ textAlign: "right", marginTop: 16 }}>
         <Button onClick={onClose} disabled={saving}>Bekor qilish</Button>
-        <Button type="primary" onClick={handleSave} loading={saving || loading}>Saqlash</Button>
+        <Button type="primary" loading={saving} onClick={handleSave} style={{ marginLeft: 8 }}>Saqlash</Button>
       </div>
     </Modal>
   );

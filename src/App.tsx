@@ -14,7 +14,6 @@ import { useAuthStore } from "./store/useAuthStore";
 import ProtectedRoute from "./auth/ProtectedRoute";
 import { ROLES } from "./auth/roles";
 import Forbidden from "./Pages/Forbidden";
-import Attendance from "./Pages/Attendance/Attendance";
 import Assignments from "./Pages/Assignments/Assignments";
 import Payments from "./Pages/Payments/Payments";
 import Course from "./Pages/Courses/Course";
@@ -31,6 +30,7 @@ import AdminDashboard from "./Pages/Admin/AdminDashboard";
 import AdminsPage from "./Pages/Admin/AdminsPage";
 import UsersManagement from "./Pages/Superadmin/UsersManagement";
 import Groups from "./Pages/Groups/Groups";
+import AttendancePage from './Pages/Attendance/AttendancePage';
 
 function App() {
   const { isLogged } = useAuthStore();
@@ -73,8 +73,8 @@ function App() {
           } />
           <Route path="teachers/add" element={<AddTeacherPage />} />
           <Route path="attendance" element={
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.MANAGER, ROLES.TEACHER, ROLES.SUPERADMIN]}>
-              <Attendance />
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SUPERADMIN]}>
+              <AttendancePage />
             </ProtectedRoute>
           } />
           <Route path="course" element={
@@ -90,7 +90,7 @@ function App() {
           } />
           <Route path="payments" element={
             <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.MANAGER, ROLES.TEACHER, ROLES.SUPERADMIN]}>
-              <Payments/>
+              <Payments />
             </ProtectedRoute>
           } />
           <Route path="assignments" element={<Assignments />} />
