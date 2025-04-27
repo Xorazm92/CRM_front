@@ -17,7 +17,7 @@ import Forbidden from "./Pages/Forbidden";
 import Assignments from "./Pages/Assignments/Assignments";
 import Payments from "./Pages/Payments/Payments";
 import Course from "./Pages/Courses/Course";
-import Lesson from "./Pages/Lessons/Lesson";
+
 import Lessons from "./Pages/Lessons/Lessons";
 // import StatisticsDashboard from "./Pages/Dashboard/StatisticsDashboard";
 import { SearchProvider } from "./context/SearchContext";

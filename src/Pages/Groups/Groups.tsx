@@ -8,6 +8,7 @@ import { Table, Input, Spin, Modal } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import ButtonComponent from "../../components/Button/Button";
 import "./Groups.css";
+import AddAttendanceModal from "../Attendance/AddAttendanceModal";
 
 export type GroupType = {
   group_id: string;
@@ -29,6 +30,9 @@ const Groups: React.FC = () => {
   const [editItem, setEditItem] = useState<GroupType | null>(null);
   const [showDetail, setShowDetail] = useState(false);
   const [detailItem, setDetailItem] = useState<GroupType | null>(null);
+  const [showAttendance, setShowAttendance] = useState(false); 
+  const [attendanceItem, setAttendanceItem] = useState<GroupType | null>(null); 
+  const [attendanceModalKey, setAttendanceModalKey] = useState(0); 
   const [filter, setFilter] = useState("");
 
   const fetchGroups = async () => {
@@ -96,6 +100,7 @@ const Groups: React.FC = () => {
         <span className="group-table-actions">
           <button className="edit-btn" onClick={() => { setEditItem(record); setShowEdit(true); }}>Tahrirlash</button>
           <button className="delete-btn" onClick={() => handleDelete(record.group_id)}>O'chirish</button>
+          <button className="edit-btn" onClick={() => { setAttendanceItem(record); setShowAttendance(true); setAttendanceModalKey(prev=>prev+1); }}>Davomat</button>
         </span>
       ),
     },
@@ -148,6 +153,13 @@ const Groups: React.FC = () => {
         groupId={detailItem?.group_id}
         isOpen={showDetail}
         onClose={() => { setShowDetail(false); setDetailItem(null); }}
+      />
+      <AddAttendanceModal
+        key={attendanceModalKey}
+        open={showAttendance}
+        onClose={() => { setShowAttendance(false); setAttendanceItem(null); }}
+        onSuccess={fetchGroups}
+        groups={attendanceItem ? [attendanceItem] : []}
       />
     </div>
   );

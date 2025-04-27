@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import { Modal, Descriptions, Spin, Collapse, List, Typography, Button } from "antd";
 import instance from "../../api/axios";
 import AddStudentToGroupModal from "./AddStudentToGroupModal";
-import AttendanceModal from "./AttendanceModal"; // Import AttendanceModal
+
 
 interface GroupMember {
   group_member_id: string;
@@ -30,7 +30,7 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({ groupId, isOpen, on
   const [group, setGroup] = useState<any>(null);
   const [error, setError] = useState("");
   const [showAddStudent, setShowAddStudent] = useState(false);
-  const [attendanceModalVisible, setAttendanceModalVisible] = useState(false); // Add state for attendance modal visibility
+
 
   useEffect(() => {
     if (isOpen && groupId) {
@@ -95,20 +95,20 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({ groupId, isOpen, on
               )}
             </Collapse.Panel>
           </Collapse>
-          <Button onClick={() => setAttendanceModalVisible(true)} type="primary" style={{ marginLeft: 8 }}>Davomat</Button>
+         
           <AddStudentToGroupModal
             groupId={groupId || ''}
             open={showAddStudent}
             onClose={() => setShowAddStudent(false)}
             onSuccess={handleStudentAdded}
           />
-          {group && (
+          {/* {group && (
             <AttendanceModal
               visible={attendanceModalVisible}
               groupId={group.group_id}
               onClose={() => setAttendanceModalVisible(false)}
             />
-          )}
+          )} */}
         </>
       ) : (
         <div style={{ padding: 24 }}>Ma'lumot topilmadi</div>

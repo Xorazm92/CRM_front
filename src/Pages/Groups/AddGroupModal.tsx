@@ -45,11 +45,18 @@ const AddGroupModal: React.FC<AddGroupModalProps> = ({ isOpen, onClose, onGroupA
   React.useEffect(() => {
     if (isOpen) {
       instance.get("/course").then(res => {
-        setCourses(Array.isArray(res.data.data) ? res.data.data : []);
+        const arr = Array.isArray(res.data.data) ? res.data.data : [];
+        setCourses(arr.map((c: any) => ({
+          course_id: c.course_id || c._id || c.id,
+          name: c.name
+        })));
       });
       instance.get("/users?role=TEACHER").then(res => {
-        console.log("TEACHER users response:", res.data);
-        setTeachers(Array.isArray(res.data.data) ? res.data.data : []);
+        const arr = Array.isArray(res.data.data) ? res.data.data : [];
+        setTeachers(arr.map((t: any) => ({
+          user_id: t.user_id || t._id || t.id,
+          full_name: t.full_name || t.name
+        })));
       }).catch(err => {
         console.log("TEACHER fetch error:", err);
         setTeachers([]);
@@ -62,6 +69,8 @@ const AddGroupModal: React.FC<AddGroupModalProps> = ({ isOpen, onClose, onGroupA
     try {
       const payload = {
         ...values,
+        course_id: values.course_id,
+        teacher_id: values.teacher_id,
         start_date: values.start_date ? dayjs(values.start_date).format("YYYY-MM-DD") : undefined,
       };
       await instance.post("/groups", payload);
@@ -96,7 +105,7 @@ const AddGroupModal: React.FC<AddGroupModalProps> = ({ isOpen, onClose, onGroupA
           <Form.Item name="teacher_id" label="O'qituvchi" rules={[{ required: true, message: "O'qituvchi majburiy!" }]}> 
             <Select placeholder="O'qituvchini tanlang" disabled={loading} showSearch optionFilterProp="children">
               {teachers.map(teacher => (
-                <Select.Option key={teacher.user_id} value={teacher.user_id}>{teacher.full_name || teacher.name}</Select.Option>
+                <Select.Option key={teacher.user_id} value={teacher.user_id}>{teacher.full_name}</Select.Option>
               ))}
             </Select>
           </Form.Item>

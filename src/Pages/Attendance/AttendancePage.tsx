@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Table, Select, DatePicker, Input, Space, message, Tag, Popconfirm, Spin } from "antd";
+import { Table, Select, DatePicker, Input, Space, message, Tag, Popconfirm, Spin, Button } from "antd";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import instance from "../../api/axios";
 import AddAttendanceModal from "./AddAttendanceModal";
 import EditAttendanceModal from "./EditAttendanceModal";
 import Toast from "../../components/Toast";
-import Button from '../../components/Button/Button';
 import "./attendance-page.css";
 
 const { Option } = Select;
@@ -45,7 +45,7 @@ const AttendancePage: React.FC = () => {
     setError("");
     try {
       const res = await instance.get("/attendance", { params: filters });
-      setAttendance(res.data.data || []);
+      setAttendance(Array.isArray(res.data) ? res.data : res.data.data || []);
     } catch (err: any) {
       setError("Davomatlarni olishda xatolik");
       setToast({ message: err.message || "Davomatlarni olishda xatolik", type: 'error' });
@@ -121,15 +121,30 @@ const AttendancePage: React.FC = () => {
       title: "Amallar",
       key: "actions",
       render: (_: any, rec: any) => (
-        <span className="course-table-actions">
-          <Button type="link" onClick={() => setEditModal({ open: true, record: rec })}>Tahrirlash</Button>
+        <Space size="middle">
+          <Button type="link" icon={<EditOutlined />} onClick={() => setEditModal({ open: true, record: rec })}>
+            Tahrirlash
+          </Button>
           <Popconfirm title="O‘chirishni tasdiqlaysizmi?" onConfirm={() => handleDelete(rec.attendance_id)}>
-            <Button type="link" danger>O‘chirish</Button>
+            <Button type="link" danger icon={<DeleteOutlined />}>O‘chirish</Button>
           </Popconfirm>
-        </span>
+        </Space>
       ),
     },
   ];
+
+  const handleAddModalClose = () => setAddModal(false);
+  const handleAddModalSuccess = () => {
+    setFilters({
+      group: undefined,
+      lesson: undefined,
+      student: undefined,
+      date: undefined,
+      status: undefined,
+    });
+    setTimeout(() => setAddModal(false), 0);
+    // fetchAttendance() ni chaqirmaymiz, filterlar o'zgarganda useEffect o'zi chaqiradi
+  };
 
   return (
     <div className="p-4 bg-white rounded shadow">
@@ -211,7 +226,7 @@ const AttendancePage: React.FC = () => {
       ) : (
         <div className="attendance-table">
           <Table
-            rowKey="attendance_id"
+            rowKey={record => record.attendance_id || record.id}
             dataSource={attendance}
             columns={columns}
             bordered
@@ -223,8 +238,8 @@ const AttendancePage: React.FC = () => {
       )}
       <AddAttendanceModal
         open={addModal}
-        onClose={() => setAddModal(false)}
-        onSuccess={fetchAttendance}
+        onClose={handleAddModalClose}
+        onSuccess={handleAddModalSuccess}
         groups={groups}
         lessons={lessons}
         students={students}

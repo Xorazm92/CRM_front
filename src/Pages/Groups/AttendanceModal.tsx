@@ -26,6 +26,7 @@ const AttendanceModal: React.FC<AttendanceModalProps> = ({ visible, groupId, onC
   
   useEffect(() => {
     if (visible) {
+      console.log('AttendanceModal groupId:', groupId);
       fetchAttendance();
       fetchStudents();
     }
@@ -36,6 +37,7 @@ const AttendanceModal: React.FC<AttendanceModalProps> = ({ visible, groupId, onC
     setLoading(true);
     try {
       const res = await instance.get(`/attendance?group_id=${groupId}`);
+      console.log('Attendance data:', res.data.data);
       setData(res.data.data || []);
     } catch (err: any) {
       message.error('Davomatni olishda xatolik');
@@ -47,8 +49,25 @@ const AttendanceModal: React.FC<AttendanceModalProps> = ({ visible, groupId, onC
   const fetchStudents = async () => {
     try {
       const res = await instance.get(`/groups/${groupId}`);
-      const members = res.data.data?.members || [];
-      setStudents(members.map((m: any) => ({ user_id: m.user_id, full_name: m.full_name })));
+      // Universal extraction: data.data, data, group, etc.
+      const groupData =
+        res.data.data ||
+        res.data.group ||
+        res.data ||
+        {};
+      const members =
+        groupData.members ||
+        groupData.group_members ||
+        groupData.students ||
+        groupData.users ||
+        [];
+      console.log('Group students:', members);
+      setStudents(
+        members.map((m: any) => ({
+          user_id: m.user_id || m.id,
+          full_name: m.full_name || m.name || m.user_id || m.id || 'Nomaʼlum'
+        }))
+      );
     } catch (err: any) {
       setStudents([]);
     }
@@ -99,13 +118,21 @@ const AttendanceModal: React.FC<AttendanceModalProps> = ({ visible, groupId, onC
       footer={null}
     >
       {loading ? <Spin /> : (
-        <Table
-          dataSource={rows}
-          columns={columns}
-          rowKey={r => r.date + r.lesson_name}
-          scroll={{ x: true }}
-          pagination={{ pageSize: 10 }}
-        />
+        rows.length === 0 ? (
+          <div style={{ padding: 24, textAlign: 'center', color: '#888' }}>
+            Ushbu guruh uchun davomat ma'lumotlari topilmadi.<br />
+            {students.length === 0 && 'Guruhda talabalar yo‘q.'}
+            {data.length === 0 && students.length > 0 && 'Davomat yozuvlari mavjud emas.'}
+          </div>
+        ) : (
+          <Table
+            dataSource={rows}
+            columns={columns}
+            rowKey={r => r.date + r.lesson_name}
+            scroll={{ x: true }}
+            pagination={{ pageSize: 10 }}
+          />
+        )
       )}
     </Modal>
   );
