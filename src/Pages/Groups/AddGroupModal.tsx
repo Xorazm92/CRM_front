@@ -66,13 +66,16 @@ const AddGroupModal: React.FC<AddGroupModalProps> = ({ isOpen, onClose, onGroupA
 
   const handleFinish = async (values: AddGroupForm) => {
     setLoading(true);
+    // Map selected values to correct IDs
+    const selectedCourse = courses.find(c => c.course_id === values.course_id);
+    const selectedTeacher = teachers.find(t => t.user_id === values.teacher_id);
+    const payload = {
+      ...values,
+      course_id: selectedCourse ? selectedCourse.course_id : '',
+      teacher_id: selectedTeacher ? selectedTeacher.user_id : '',
+      start_date: values.start_date ? dayjs(values.start_date).format("YYYY-MM-DD") : undefined,
+    };
     try {
-      const payload = {
-        ...values,
-        course_id: values.course_id,
-        teacher_id: values.teacher_id,
-        start_date: values.start_date ? dayjs(values.start_date).format("YYYY-MM-DD") : undefined,
-      };
       await instance.post("/groups", payload);
       message.success("Guruh qo'shildi!");
       form.resetFields();

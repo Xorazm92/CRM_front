@@ -9,6 +9,7 @@ import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import ButtonComponent from "../../components/Button/Button";
 import "./Groups.css";
 import AddAttendanceModal from "../Attendance/AddAttendanceModal";
+import { useAuthStore } from "../../store/useAuthStore";
 
 export type GroupType = {
   group_id: string;
@@ -21,6 +22,7 @@ export type GroupType = {
 };
 
 const Groups: React.FC = () => {
+  const { user } = useAuthStore();
   const [groups, setGroups] = useState<GroupType[]>([]);
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" }>({ message: '', type: 'success' });
@@ -38,7 +40,12 @@ const Groups: React.FC = () => {
   const fetchGroups = async () => {
     setLoading(true);
     try {
-      const res = await instance.get("/groups");
+      let url = "/groups";
+      // Agar teacher roli bo'lsa, faqat o'zining guruhlari uchun query qo'shamiz
+      if (user?.role === "teacher" && user?.user_id) {
+        url += `?teacher_id=${user.user_id}`;
+      }
+      const res = await instance.get(url);
       let data = res.data.data;
       if (!Array.isArray(data)) {
         data = [];

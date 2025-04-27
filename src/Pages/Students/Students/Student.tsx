@@ -8,6 +8,7 @@ import Toast from "../../../components/Toast";
 import { Spin } from "antd";
 import { useNavigate } from "react-router-dom";
 import ViewStudentModal from "./ViewStudentModal";
+import { useAuthStore } from '../../../store/useAuthStore';
 
 interface GroupMemberType {
   group?: {
@@ -40,6 +41,7 @@ const StudentPage: React.FC = () => {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [viewStudent, setViewStudent] = useState<StudentType | null>(null);
   const navigate = useNavigate();
+  const user = useAuthStore(state => state.user);
 
   // State for pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -50,7 +52,13 @@ const StudentPage: React.FC = () => {
     setLoading(true);
     setError("");
     try {
-      const res = await getUsers({ role: "STUDENT", page, limit });
+      let params: any = { role: "STUDENT", page, limit };
+      if (user?.role === 'teacher' && user?.user_id) {
+        params.teacher_id = user.user_id;
+      } else if (user?.role === 'student' && user?.user_id) {
+        params.student_id = user.user_id;
+      }
+      const res = await getUsers(params);
       // UNIVERSAL BACKEND RESPONSE HANDLING
       let studentsArr: any[] = [];
       if (Array.isArray(res)) {

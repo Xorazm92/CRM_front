@@ -6,6 +6,7 @@ import dayjs from 'dayjs';
 import AddLessonModal from './AddLessonModal';
 import EditLessonModal from './EditLessonModal';
 import './lessons.css';
+import { useAuthStore } from '../../store/useAuthStore';
 
 interface LessonType {
   lesson_id: string;
@@ -30,10 +31,16 @@ const Lessons: React.FC = () => {
   const [showEdit, setShowEdit] = useState(false);
   const [editItem, setEditItem] = useState<LessonType | null>(null);
 
+  const user = useAuthStore(state => state.user);
+
   const fetchLessons = async () => {
     setLoading(true);
     try {
-      const res = await instance.get('/lesson');
+      let params: any = {};
+      if (user?.role === 'teacher' && user?.user_id) {
+        params.teacher_id = user.user_id;
+      }
+      const res = await instance.get('/lesson', { params });
       setLessons(Array.isArray(res.data) ? res.data : res.data.data || []);
     } catch (err) {
       message.error('Darslarni olishda xatolik');

@@ -5,6 +5,7 @@ import instance from "../../api/axios";
 import AddAttendanceModal from "./AddAttendanceModal";
 import EditAttendanceModal from "./EditAttendanceModal";
 import Toast from "../../components/Toast";
+import { useAuthStore } from '../../store/useAuthStore';
 import "./attendance-page.css";
 
 const { Option } = Select;
@@ -14,6 +15,27 @@ const statusColors: Record<string, string> = {
   ABSENT: "red",
   LATE: "orange",
   EXCUSED: "blue",
+};
+
+type LessonType = {
+  lesson_id: string;
+  topic: string;
+  [key: string]: any;
+};
+
+const extractLessonsFromAssignments = (assignments: any[], groupId?: string) => {
+  // Faqat tanlangan guruh uchun lessonlarni yig'ib, unique qilib beradi
+  const lessons: LessonType[] = [];
+  const lessonMap = new Map();
+  assignments.forEach(a => {
+    if (a.group_id === groupId && a.lesson) {
+      if (!lessonMap.has(a.lesson.lesson_id)) {
+        lessonMap.set(a.lesson.lesson_id, true);
+        lessons.push({ lesson_id: a.lesson.lesson_id, topic: a.lesson.topic });
+      }
+    }
+  });
+  return lessons;
 };
 
 const AttendancePage: React.FC = () => {
@@ -31,12 +53,13 @@ const AttendancePage: React.FC = () => {
   const [addModal, setAddModal] = useState(false);
   const [editModal, setEditModal] = useState<{ open: boolean; record: any | null }>({ open: false, record: null });
   const [groups, setGroups] = useState<any[]>([]);
-  const [lessons, setLessons] = useState<any[]>([]);
+  const [lessons, setLessons] = useState<LessonType[]>([]);
   const [students, setStudents] = useState<any[]>([]);
+  const [assignments, setAssignments] = useState<any[]>([]);
+  const user = useAuthStore(state => state.user);
 
   useEffect(() => {
     instance.get("/groups").then(res => setGroups(res.data.data || []));
-    instance.get("/lesson").then(res => setLessons(res.data.data || []));
     instance.get("/users", { params: { role: "STUDENT" } }).then(res => setStudents(res.data.data || []));
   }, []);
 
@@ -44,7 +67,26 @@ const AttendancePage: React.FC = () => {
     setLoading(true);
     setError("");
     try {
-      const res = await instance.get("/attendance", { params: filters });
+      let params: any = { ...filters };
+      // BACKEND uchun to'g'ri filter param nomlari
+      if (params.student) {
+        params.student_id = params.student;
+        delete params.student;
+      }
+      if (params.lesson) {
+        params.lesson_id = params.lesson;
+        delete params.lesson;
+      }
+      if (params.group) {
+        params.group_id = params.group;
+        delete params.group;
+      }
+      if (user?.role === 'teacher' && user?.user_id) {
+        params.teacher_id = user.user_id;
+      } else if (user?.role === 'student' && user?.user_id) {
+        params.student_id = user.user_id;
+      }
+      const res = await instance.get("/attendance", { params });
       setAttendance(Array.isArray(res.data) ? res.data : res.data.data || []);
     } catch (err: any) {
       setError("Davomatlarni olishda xatolik");
@@ -77,6 +119,40 @@ const AttendancePage: React.FC = () => {
       setLoading(false);
     }
   };
+
+  const fetchGroups = async () => {
+    try {
+      const res = await instance.get('/groups');
+      setGroups(Array.isArray(res.data) ? res.data : res.data.data || []);
+    } catch (err) {
+      setGroups([]);
+    }
+  };
+
+  useEffect(() => {
+    fetchGroups();
+  }, []);
+
+  useEffect(() => {
+    if (filters.group) {
+      setLessons(extractLessonsFromAssignments(assignments, filters.group));
+    } else {
+      setLessons([]);
+    }
+  }, [filters.group, assignments]);
+
+  const fetchAssignments = async () => {
+    try {
+      const res = await instance.get('/assignments');
+      setAssignments(Array.isArray(res.data) ? res.data : res.data.data || []);
+    } catch (err) {
+      setAssignments([]);
+    }
+  };
+
+  useEffect(() => {
+    fetchAssignments();
+  }, []);
 
   const columns = [
     { title: '#', key: 'index', render: (_: any, __: any, idx: number) => idx + 1 },
@@ -153,34 +229,31 @@ const AttendancePage: React.FC = () => {
         <h1 className="text-xl font-bold mb-2 md:mb-0">Davomat jadvali</h1>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <Button
-            showAdd={true}
-            onAddClick={() => setAddModal(true)}
-          />
+            type="primary"
+            onClick={() => setAddModal(true)}
+          >
+            + Qo'shish
+          </Button>
         </div>
       </div>
       <div className="attendance-filters" style={{ marginBottom: 16 }}>
         <Select
+          allowClear
           placeholder="Guruh tanlang"
-          allowClear
-          style={{ width: 150 }}
-          onChange={val => handleFilterChange("group", val)}
+          style={{ width: 200 }}
+          options={groups.map(g => ({ label: g.name, value: g.group_id || g._id || g.id }))}
           value={filters.group}
-        >
-          {groups.map(g => (
-            <Option key={g.group_id} value={g.group_id}>{g.name}</Option>
-          ))}
-        </Select>
+          onChange={val => setFilters(f => ({ ...f, group: val, lesson: undefined }))}
+        />
         <Select
-          placeholder="Dars tanlang"
           allowClear
-          style={{ width: 180 }}
-          onChange={val => handleFilterChange("lesson", val)}
+          placeholder="Dars tanlang"
+          style={{ width: 200 }}
+          options={lessons.map(l => ({ label: l.topic, value: l.lesson_id }))}
           value={filters.lesson}
-        >
-          {lessons.map(l => (
-            <Option key={l.lesson_id} value={l.lesson_id}>{l.topic}</Option>
-          ))}
-        </Select>
+          onChange={val => setFilters(f => ({ ...f, lesson: val }))}
+          disabled={!filters.group}
+        />
         <Select
           placeholder="Talaba tanlang"
           allowClear

@@ -12,6 +12,7 @@ import TeacherPayments from "./TeacherPayments";
 import Debtors from "./Debtors";
 import Discounts from "../../Pages/Discounts/Discounts";
 import Transactions from "./Transactions";
+import { useAuthStore } from '../../store/useAuthStore';
 
 interface Payment {
   id: number;
@@ -159,18 +160,20 @@ const Payments = () => {
     </div>
   );
 
+  const user = useAuthStore(state => state.user);
+
   return (
     <div className="payments-page">
       <Tabs defaultActiveKey="student" type="card" items={[
         {
           key: "student",
           label: "O‘quvchi to‘lovlari",
-          children: <StudentPayments studentId="" />,
+          children: <StudentPayments studentId={user?.role === 'student' ? user.user_id : ''} />, // only own payments
         },
         {
           key: "teacher",
           label: "O‘qituvchiga oylik",
-          children: <TeacherPayments teacherId="" isAdmin={true} />,
+          children: <TeacherPayments teacherId={user?.role === 'teacher' ? user.user_id : ''} isAdmin={user?.role === 'admin'} />, // only own salary
         },
         {
           key: "debtors",

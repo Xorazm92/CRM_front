@@ -17,6 +17,11 @@ interface Lesson {
   id?: string;
   topic: string;
   lesson_date?: string;
+  group_id?: string;
+  group?: {
+    _id?: string;
+    id?: string;
+  };
 }
 
 interface FormValues {
@@ -62,31 +67,35 @@ const AddAssignmentModal: React.FC<Props> = ({ open, onClose, onSuccess }) => {
     }).catch(() => setGroups([]));
   }, [open]);
 
-  useEffect(() => {
-    if (!form.getFieldValue('group_id')) {
+  const fetchLessons = (groupId: string) => {
+    if (!groupId) {
       setLessons([]);
       form.setFieldsValue({ lesson_id: '' });
       return;
     }
-    instance.get(`/lesson?group_id=${form.getFieldValue('group_id')}`).then(res => {
+    instance.get(`/lesson?group_id=${groupId}`).then(res => {
       let data = res.data;
+      let filtered = [];
       if (Array.isArray(data.data)) {
-        setLessons(data.data);
+        filtered = data.data.filter((l: any) => l.group_id === groupId || l.group?._id === groupId || l.group?.id === groupId);
       } else if (Array.isArray(data)) {
-        setLessons(data);
+        filtered = data.filter((l: any) => l.group_id === groupId || l.group?._id === groupId || l.group?.id === groupId);
       } else if (Array.isArray(data.results)) {
-        setLessons(data.results);
-      } else {
-        setLessons([]);
+        filtered = data.results.filter((l: any) => l.group_id === groupId || l.group?._id === groupId || l.group?.id === groupId);
       }
+      setLessons(filtered);
     });
-  }, [form]);
+  };
+
+  useEffect(() => {
+    const groupId = form.getFieldValue('group_id');
+    fetchLessons(groupId);
+  }, [form.getFieldValue('group_id')]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFile(e.target.files?.[0] ?? null);
   };
 
-  // DD.MM.YYYY format uchun yordamchi funksiya
   function formatDateDMY(date: Date | string | null): string {
     if (!date) return '';
     let d = (date instanceof Date) ? date : new Date(date);
@@ -97,41 +106,72 @@ const AddAssignmentModal: React.FC<Props> = ({ open, onClose, onSuccess }) => {
   }
 
   const handleSubmit = async (values: FormValues) => {
-    if (!values.title || !values.due_date) {
-      message.error("Nom va tugash sanasi majburiy!");
-      return;
-    }
-    setLoading(true);
+    // Debug: due_date qiymatini ham ko'rsatish
+    console.log('values.due_date:', values.due_date);
     let deadlineISO = '';
-    if (values.due_date instanceof Date) {
+    if (values.due_date && typeof values.due_date === 'object' && typeof values.due_date.toISOString === 'function') {
       deadlineISO = values.due_date.toISOString();
     } else if (typeof values.due_date === 'string' && values.due_date.length > 0) {
       const d = new Date(values.due_date);
-      deadlineISO = d.toISOString();
+      if (!isNaN(d.getTime())) {
+        deadlineISO = d.toISOString();
+      } else {
+        deadlineISO = '';
+      }
     } else {
       deadlineISO = '';
     }
-    let groupId = undefined;
-    let lessonId = undefined;
-    if (values.group_id) {
-      const g = groups.find(g => g.group_id === values.group_id || g._id === values.group_id || g.id === values.group_id);
-      if (g) groupId = g.group_id || g._id || g.id;
+
+    const groupId = values.group_id;
+    const lessonId = values.lesson_id;
+
+    // Debug: qiymatlarni ko'rsatish
+    console.log({
+      title: values.title,
+      description: values.description,
+      group_id: groupId,
+      lesson_id: lessonId,
+      deadline: deadlineISO
+    });
+
+    if (
+      !values.title ||
+      typeof values.title !== 'string' ||
+      !values.description ||
+      typeof values.description !== 'string' ||
+      !groupId ||
+      !lessonId ||
+      !deadlineISO
+    ) {
+      message.error('Barcha maydonlarni to‘g‘ri to‘ldiring!');
+      setLoading(false);
+      return;
     }
-    if (values.lesson_id) {
-      const l = lessons.find(l => l.lesson_id === values.lesson_id || l._id === values.lesson_id || l.id === values.lesson_id);
-      if (l) lessonId = l.lesson_id || l._id || l.id;
-    }
-    const formData = new FormData();
-    formData.append('title', values.title);
-    formData.append('deadline', deadlineISO);
-    if (values.description) formData.append('description', values.description);
-    if (groupId) formData.append('group_id', groupId);
-    if (lessonId) formData.append('lesson_id', lessonId);
-    if (file) formData.append('file', file);
+    setLoading(true);
     try {
-      await instance.post("/assignments", formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      if (file) {
+        const formData = new FormData();
+        formData.append('title', values.title);
+        formData.append('description', values.description);
+        formData.append('deadline', deadlineISO);
+        formData.append('group_id', groupId);
+        formData.append('lesson_id', lessonId);
+        formData.append('file', file);
+        await instance.post("/assignments", formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+      } else {
+        const payload = {
+          title: values.title,
+          description: values.description,
+          deadline: deadlineISO,
+          group_id: groupId,
+          lesson_id: lessonId
+        };
+        await instance.post("/assignments", payload, {
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
       message.success("Vazifa muvaffaqiyatli qo'shildi!");
       form.resetFields();
       setFile(null);
@@ -139,7 +179,7 @@ const AddAssignmentModal: React.FC<Props> = ({ open, onClose, onSuccess }) => {
       setTimeout(onClose, 1000);
     } catch (err) {
       let uzMessage = "Qo'shishda xatolik";
-      if (err.response && err.response.data && err.response.data.message) {
+      if (err && typeof err === 'object' && 'response' in err && err.response && err.response.data && err.response.data.message) {
         let msg = err.response.data.message;
         if (msg && typeof msg === 'string' && msg.includes('ISO 8601')) {
           uzMessage = "Deadline (tugash sanasi) noto'g'ri formatda. Iltimos, sanani to'g'ri tanlang.";
@@ -179,42 +219,44 @@ const AddAssignmentModal: React.FC<Props> = ({ open, onClose, onSuccess }) => {
       >
         <Form.Item
           name="title"
-          label="Nomi"
-          rules={[{ required: true, message: 'Nomni kiriting' }]}
+          label="Vazifa nomi"
+          rules={[{ required: true, message: 'Vazifa nomini kiriting' }]}
         >
-          <Input />
+          <Input placeholder="Vazifa nomi" />
+        </Form.Item>
+        <Form.Item
+          name="description"
+          label="Tavsif"
+          rules={[{ required: true, message: 'Tavsifni kiriting' }]}
+        >
+          <Input.TextArea placeholder="Tavsif" />
         </Form.Item>
         <Form.Item
           name="group_id"
           label="Guruh"
           rules={[{ required: true, message: 'Guruhni tanlang' }]}
         >
-          <Select>
-            <Select.Option value="">Tanlang</Select.Option>
-            {groups.map((g) => (
-              <Select.Option key={g.group_id || g._id || g.id} value={g.group_id || g._id || g.id}>{g.name}</Select.Option>
-            ))}
-          </Select>
+          <Select
+            showSearch
+            placeholder="Guruhni tanlang"
+            options={groups.map(g => ({ label: g.name, value: g.group_id || g._id || g.id }))}
+            onChange={value => {
+              form.setFieldsValue({ group_id: value, lesson_id: undefined });
+              fetchLessons(value); // Guruh tanlanganda darslarni olib kelish
+            }}
+          />
         </Form.Item>
         <Form.Item
           name="lesson_id"
           label="Dars"
           rules={[{ required: true, message: 'Darsni tanlang' }]}
         >
-          <Select disabled={!form.getFieldValue('group_id')}>
-            <Select.Option value="">Tanlang</Select.Option>
-            {lessons.map((l) => (
-              <Select.Option key={l.lesson_id || l._id || l.id} value={l.lesson_id || l._id || l.id}>
-                {l.topic} ({l.lesson_date ? formatDateDMY(l.lesson_date) : ''})
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
-        <Form.Item
-          name="description"
-          label="Tavsif"
-        >
-          <Input.TextArea />
+          <Select
+            showSearch
+            placeholder="Darsni tanlang"
+            options={lessons.map(l => ({ label: l.topic, value: l.lesson_id || l._id || l.id }))}
+            disabled={!form.getFieldValue('group_id')}
+          />
         </Form.Item>
         <Form.Item
           name="due_date"
@@ -222,9 +264,9 @@ const AddAssignmentModal: React.FC<Props> = ({ open, onClose, onSuccess }) => {
           rules={[{ required: true, message: 'Tugash sanasini tanlang' }]}
         >
           <DatePicker
-            format="DD.MM.YYYY"
-            placeholder="DD.MM.YYYY"
+            showTime
             style={{ width: '100%' }}
+            placeholder="Tugash sanasini tanlang"
           />
         </Form.Item>
         <Form.Item

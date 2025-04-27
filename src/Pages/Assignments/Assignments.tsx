@@ -12,6 +12,7 @@ import ButtonComponent from "../../components/Button/Button";
 import dayjs from "dayjs";
 import "./Assignments.css";
 import { showDeadlineNotification } from "../../utils/notification";
+import { useAuthStore } from "../../store/useAuthStore";
 
 interface AssignmentType {
   assignment_id: string | number;
@@ -39,12 +40,15 @@ const Assignments: React.FC = () => {
   const [showView, setShowView] = useState(false);
   const [viewItem, setViewItem] = useState<AssignmentType | null>(null);
 
+  const user = useAuthStore((state) => state.user);
+  const role = user?.role;
+
   const fetchAssignments = async () => {
     setLoading(true);
     try {
       const res = await instance.get("/assignments");
-      let data = res.data.data;
-      if (!Array.isArray(data)) data = [];
+      // To'g'ri: bevosita massiv
+      let data = Array.isArray(res.data) ? res.data : [];
       setAssignments(data);
     } catch (err: any) {
       setError("Topshiriqlarni olishda xatolik");
@@ -80,11 +84,17 @@ const Assignments: React.FC = () => {
     if (!window.confirm("Haqiqatan ham o'chirmoqchimisiz?")) return;
     setLoading(true);
     try {
+      // assignment_id yoki id ni universal tarzda yuborish
       await instance.delete(`/assignments/${id}`);
       setToast({ message: "Topshiriq o'chirildi!", type: 'success' });
       fetchAssignments();
     } catch (err: any) {
-      setToast({ message: err.message || "O'chirishda xatolik", type: 'error' });
+      // 404 xatolik uchun aniqroq xabar
+      if (err.response && err.response.status === 404) {
+        setToast({ message: "Topshiriq topilmadi yoki allaqachon o'chirilgan!", type: 'error' });
+      } else {
+        setToast({ message: err.message || "O'chirishda xatolik", type: 'error' });
+      }
     } finally {
       setLoading(false);
     }
@@ -100,8 +110,8 @@ const Assignments: React.FC = () => {
         {record.title}
       </a>
     ) },
-    { title: 'Guruh', key: 'group', render: (_: any, record: AssignmentType) => record.group?.name || '-' },
-    { title: 'Deadline', key: 'due_date', render: (_: any, record: AssignmentType) => {
+    { title: 'Guruh', dataIndex: 'group', key: 'group', render: (_: any, record: AssignmentType) => record.group?.name || '-' },
+    { title: 'Deadline', dataIndex: 'due_date', key: 'due_date', render: (_: any, record: AssignmentType) => {
       const isPast = dayjs(record.due_date).isBefore(dayjs());
       return <Tag color={isPast ? "red" : "blue"}>{dayjs(record.due_date).format("YYYY-MM-DD HH:mm")}</Tag>;
     } },
@@ -113,14 +123,42 @@ const Assignments: React.FC = () => {
       key: 'actions',
       render: (_: any, record: AssignmentType) => (
         <span className="assignment-table-actions">
-          <ButtonComponent
-            showView={true}
-            showEdit={true}
-            showDelete={true}
-            onViewClick={() => { setViewItem(record); setShowView(true); }}
-            onEditClick={() => { setEditItem(record); setShowEdit(true); }}
-            onDeleteClick={() => handleDelete(record.assignment_id)}
-          />
+          {(role === 'admin' || role === 'teacher' || role === 'superadmin') && (
+            <>
+              <button
+                className="edit-btn"
+                style={{ background: '#1976d2', color: '#fff', border: 'none', borderRadius: 4, padding: '4px 18px', marginRight: 8, fontWeight: 500, cursor: 'pointer' }}
+                onClick={() => { setEditItem(record); setShowEdit(true); }}
+              >
+                Tahrirlash
+              </button>
+              <button
+                className="delete-btn"
+                style={{ background: '#e53935', color: '#fff', border: 'none', borderRadius: 4, padding: '4px 18px', fontWeight: 500, cursor: 'pointer', marginRight: 8 }}
+                onClick={() => handleDelete(record.assignment_id)}
+              >
+                O'chirish
+              </button>
+            </>
+          )}
+          {role === 'student' && (
+            <button
+              className="submit-btn"
+              style={{ background: '#43a047', color: '#fff', border: 'none', borderRadius: 4, padding: '4px 18px', fontWeight: 500, cursor: 'pointer', marginRight: 8 }}
+              onClick={() => { setSubmitItem(record); setShowSubmit(true); }}
+            >
+              Bajarish
+            </button>
+          )}
+          {(role === 'teacher' || role === 'admin' || role === 'superadmin') && (
+            <button
+              className="submissions-btn"
+              style={{ background: '#1976d2', color: '#fff', border: 'none', borderRadius: 4, padding: '4px 18px', fontWeight: 500, cursor: 'pointer' }}
+              onClick={() => { setSubmissionsItem(record); setShowSubmissions(true); }}
+            >
+              Tekshirish
+            </button>
+          )}
         </span>
       ),
     },
@@ -129,6 +167,8 @@ const Assignments: React.FC = () => {
   return (
     <div className="p-4 bg-white rounded shadow">
       <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: '', type: 'success' })} />
+      <AddAssignmentModal open={showAdd} onClose={() => setShowAdd(false)} onSuccess={fetchAssignments} />
+      <EditAssignmentModal open={showEdit} onClose={() => { setShowEdit(false); setEditItem(null); }} assignment={editItem} onSuccess={fetchAssignments} />
       <div className="assignment-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
         <h1 className="text-xl font-bold mb-2 md:mb-0">Topshiriqlar jadvali</h1>
         <ButtonComponent showAdd={true} onAddClick={() => setShowAdd(true)} />
@@ -154,17 +194,6 @@ const Assignments: React.FC = () => {
           className="bg-white rounded shadow"
         />
       )}
-      <AddAssignmentModal
-        open={showAdd}
-        onClose={() => setShowAdd(false)}
-        onSuccess={fetchAssignments}
-      />
-      <EditAssignmentModal
-        open={showEdit}
-        onClose={() => { setShowEdit(false); setEditItem(null); }}
-        onSuccess={fetchAssignments}
-        assignment={editItem}
-      />
       <AssignmentSubmissionsModal
         open={showSubmissions}
         onClose={() => { setShowSubmissions(false); setSubmissionsItem(null); }}
