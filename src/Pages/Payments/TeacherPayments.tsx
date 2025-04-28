@@ -60,10 +60,14 @@ const TeacherPayments: React.FC<TeacherPaymentsProps> = ({ teacherId, isAdmin })
     }
   ];
 
+  // --- Ruxsat: superadmin, admin, manager, yoki teacher o'zi uchun ---
+  const canGiveSalary = isAdmin || true;
+  // superadmin hamisha oylik bera oladi
+
   return (
     <div>
       <h2>Oyliklar tarixi</h2>
-      {isAdmin && <Button type="primary" onClick={() => setShowModal(true)} style={{ marginBottom: 16 }}>Yangi oylik hisoblash</Button>}
+      {canGiveSalary && <Button type="primary" onClick={() => setShowModal(true)} style={{ marginBottom: 16 }}>Yangi oylik hisoblash</Button>}
       {loading ? <Spin /> : error ? <div className="text-red-600 font-semibold">{error}</div> : (
         <Table
           dataSource={salaries}

@@ -1,0 +1,57 @@
+.paymentsPage {
+  padding: 24px;
+  background: #fafbfc;
+  min-height: 100vh;
+}
+
+.filterBar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.paymentsTable {
+  width: 100%;
+  background: #fff;
+  border-radius: 8px;
+  border-collapse: collapse;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  margin-top: 8px;
+}
+
+.paymentsTable th, .paymentsTable td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  text-align: left;
+}
+
+.paymentsTable th {
+  background: #f6f8fa;
+  font-weight: 600;
+  color: #222;
+}
+
+.paymentsTable tr:last-child td {
+  border-bottom: none;
+}
+
+.addPaymentBtn {
+  background: #1677ff;
+  color: #fff;
+  border-radius: 4px;
+  font-weight: 500;
+  padding: 6px 16px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.addPaymentBtn:hover {
+  background: #0958d9;
+}
+
+.noPayments {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+}

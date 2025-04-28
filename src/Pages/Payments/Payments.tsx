@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import instance from "../../api/axios";
-import ClipLoader from "react-spinners/ClipLoader";
 import Toast from "../../components/Toast";
 import AddPaymentModal from "./AddPaymentModal";
 import EditPaymentModal from "./EditPaymentModal";
@@ -13,6 +12,7 @@ import Debtors from "./Debtors";
 import Discounts from "../../Pages/Discounts/Discounts";
 import Transactions from "./Transactions";
 import { useAuthStore } from '../../store/useAuthStore';
+import styles from './Payments.module.css';
 
 interface Payment {
   id: number;
@@ -43,11 +43,13 @@ const Payments = () => {
   const [editItem, setEditItem] = useState<Payment | null>(null);
 
   // Filter state
-  const [filterStudent, setFilterStudent] = useState<number | undefined>();
+  const [filterStudent, setFilterStudent] = useState<string | undefined>();
   const [filterType, setFilterType] = useState<string | undefined>();
   const [filterStatus, setFilterStatus] = useState<string | undefined>();
   const [filterDate, setFilterDate] = useState<string | undefined>();
   const [searchText, setSearchText] = useState<string>("");
+
+  const [students, setStudents] = useState<{ user_id: string; name: string }[]>([]);
 
   const fetchPayments = async () => {
     setLoading(true);
@@ -60,11 +62,18 @@ const Payments = () => {
       if (searchText) params.q = searchText;
       const res = await instance.get("/payments/student-payments", { params });
       let data = res.data;
-      if (!Array.isArray(data)) {
-        data = Array.isArray(data.results) ? data.results : [];
+      console.log('Payments API response:', data);
+      if (Array.isArray(data)) {
+        setPayments(data);
+      } else if (Array.isArray(data.results)) {
+        setPayments(data.results);
+      } else if (Array.isArray(data.data)) {
+        setPayments(data.data);
+      } else {
+        setPayments([]);
       }
-      setPayments(data);
     } catch (err) {
+      console.error('Payments API error:', err);
       setError("To‘lovlarni olishda xatolik");
       if (err instanceof Error) {
         setToast({ message: err.message, type: 'error' });
@@ -78,6 +87,14 @@ const Payments = () => {
 
   useEffect(() => {
     fetchPayments();
+  }, []);
+
+  useEffect(() => {
+    // Talabalar ro'yxatini yuklab olamiz
+    instance.get("/users?role=STUDENT&limit=1000").then(res => {
+      const arr = Array.isArray(res.data) ? res.data : (res.data?.data || []);
+      setStudents(arr.filter((s: any) => !!(s.user_id || s._id)).map((s: any) => ({ user_id: s.user_id || s._id, name: s.lastname + ' ' + s.name })));
+    }).catch(() => setStudents([]));
   }, []);
 
   const handleDelete = async (id: number) => {
@@ -105,14 +122,11 @@ const Payments = () => {
         placeholder="Talaba tanlang"
         allowClear
         style={{ minWidth: 180 }}
-        onChange={v => setFilterStudent(Number(v))}
+        onChange={v => setFilterStudent(v)}
         value={filterStudent}
-        options={[
-          // Assuming students is an array of objects with id and name properties
-          // Replace with actual data
-          { value: 1, label: 'Student 1' },
-          { value: 2, label: 'Student 2' },
-        ]}
+        options={students
+          .filter(s => !!s.user_id)
+          .map(s => ({ value: s.user_id, label: s.name }))}
         filterOption={(input, option) => typeof option?.label === 'string' && option.label.toLowerCase().includes(input.toLowerCase())}
       />
       <Select
@@ -163,34 +177,85 @@ const Payments = () => {
   const user = useAuthStore(state => state.user);
 
   return (
-    <div className="payments-page">
-      <Tabs defaultActiveKey="student" type="card" items={[
-        {
-          key: "student",
-          label: "O‘quvchi to‘lovlari",
-          children: <StudentPayments studentId={user?.role === 'student' ? user.user_id : ''} />, // only own payments
-        },
-        {
-          key: "teacher",
-          label: "O‘qituvchiga oylik",
-          children: <TeacherPayments teacherId={user?.role === 'teacher' ? user.user_id : ''} isAdmin={user?.role === 'admin'} />, // only own salary
-        },
-        {
-          key: "debtors",
-          label: "Qarzdorlar",
-          children: <Debtors />,
-        },
-        {
-          key: "discounts",
-          label: "Chegirmalar",
-          children: <Discounts />,
-        },
-        {
-          key: "transactions",
-          label: "Transactionlar",
-          children: <Transactions />,
-        },
-      ]} />
+    <div className={styles.paymentsPage}>
+      <Tabs
+        defaultActiveKey="student"
+        type="card"
+        items={[
+          {
+            key: "student",
+            label: "O‘quvchi to‘lovlari",
+            children: (
+              <>
+                <div className="flex items-center gap-2 mb-2">
+                  <button className={styles.addPaymentBtn} onClick={() => setShowAdd(true)}>+ To‘lov qo‘shish</button>
+                  <div className={styles.filterBar}>{filterBar}</div>
+                </div>
+                <table className={styles.paymentsTable}>
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Talaba</th>
+                      <th>Miqdor</th>
+                      <th>To'lov turi</th>
+                      <th>Sana</th>
+                      <th>Status</th>
+                      <th>Izoh</th>
+                      <th>Amallar</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {payments.filter(p => p.student_id || p.student_name || p.full_name || p.fullName).length > 0 ? (
+                      payments.filter(p => p.student_id || p.student_name || p.full_name || p.fullName)
+                        .map((payment, idx) => (
+                          <tr key={payment.id || payment._id}>
+                            <td>{idx + 1}</td>
+                            <td>{payment.student_name || payment.student?.name || payment.full_name || payment.fullName || '-'}</td>
+                            <td>{payment.amount}</td>
+                            <td>{payment.type || payment.payment_type}</td>
+                            <td>{payment.date}</td>
+                            <td>{payment.status}</td>
+                            <td>{payment.description || '-'}</td>
+                            <td>{/* Amallar (edit/delete) */}</td>
+                          </tr>
+                        ))
+                    ) : (
+                      <tr>
+                        <td colSpan={8} className={styles.noPayments}>To‘lovlar topilmadi</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+                <AddPaymentModal
+                  open={showAdd}
+                  onClose={() => setShowAdd(false)}
+                  onSuccess={fetchPayments}
+                />
+              </>
+            ),
+          },
+          {
+            key: "teacher",
+            label: "O‘qituvchiga oylik",
+            children: <TeacherPayments teacherId={user?.role === 'teacher' ? user.user_id || user.id || user._id : ''} isAdmin={user?.role === 'admin'} />, // only own salary
+          },
+          {
+            key: "debtors",
+            label: "Qarzdorlar",
+            children: <Debtors />, // o'z komponenti
+          },
+          {
+            key: "discounts",
+            label: "Chegirmalar",
+            children: <Discounts />, // o'z komponenti
+          },
+          {
+            key: "transactions",
+            label: "Transactionlar",
+            children: <Transactions />, // o'z komponenti
+          },
+        ]}
+      />
     </div>
   );
 };

@@ -11,11 +11,10 @@ interface StudentPaymentsProps {
 
 interface PaymentType {
   id: string;
-  date: string;
+  createdAt: string;
   amount: number;
-  discount?: number;
-  status: string;
-  payment_type?: string;
+  type: string;
+  description: string;
 }
 
 const StudentPayments: React.FC<StudentPaymentsProps> = ({ studentId }) => {
@@ -28,7 +27,14 @@ const StudentPayments: React.FC<StudentPaymentsProps> = ({ studentId }) => {
     setLoading(true);
     setError("");
     try {
-      const data = await getStudentPayments(getEntityId(studentId) || studentId);
+      // TO'G'RI: studentId majburiy, endpoint: payments/student/:id
+      const sid = getEntityId(studentId) || studentId;
+      if (!sid) {
+        setPayments([]);
+        setLoading(false);
+        return;
+      }
+      const data = await getStudentPayments(sid);
       setPayments(Array.isArray(data) ? data : []);
     } catch (err) {
       setError("To‘lovlarni olishda xatolik");
@@ -38,38 +44,31 @@ const StudentPayments: React.FC<StudentPaymentsProps> = ({ studentId }) => {
   };
 
   useEffect(() => {
-    fetchPayments();
+    if (studentId) fetchPayments();
     // eslint-disable-next-line
   }, [studentId]);
 
-  const downloadReceipt = (paymentId: string) => {
-    window.open(`/payment/${paymentId}/receipt`, '_blank');
-  };
-
   const columns = [
-    { title: 'Sana', dataIndex: 'date', key: 'date' },
-    { title: 'To‘lov summasi', dataIndex: 'amount', key: 'amount' },
-    { title: 'Chegirma', dataIndex: 'discount', key: 'discount', render: (v: number) => v || 0 },
-    { title: 'Status', dataIndex: 'status', key: 'status' },
-    { title: 'To‘lov turi', dataIndex: 'payment_type', key: 'payment_type' },
-    {
-      title: 'Chek',
-      key: 'receipt',
-      render: (_: any, record: PaymentType) => (
-        <Button size="small" onClick={() => downloadReceipt(record.id)}>PDF</Button>
-      )
-    }
+    { title: "Sana", dataIndex: "createdAt", key: "createdAt", render: (v: string) => new Date(v).toLocaleDateString() },
+    { title: "Summasi", dataIndex: "amount", key: "amount", render: (v: number) => v || 0 },
+    { title: "Turi", dataIndex: "type", key: "type" },
+    { title: "Izoh", dataIndex: "description", key: "description" },
+    { title: "Harakat", key: "action", render: (_: any, record: any) => (
+      <Button size="small" onClick={() => message.info("PDF chiqish hali yo‘q")}>PDF</Button>
+    ) }
   ];
 
   return (
     <div>
-      <h2>To‘lovlar tarixi</h2>
-      <Button type="primary" onClick={() => setShowModal(true)} style={{ marginBottom: 16 }}>To‘lov qilish</Button>
+      <div className="flex justify-between mb-2">
+        <span className="font-semibold">O‘quvchi to‘lovlari</span>
+        <Button type="primary" onClick={() => setShowModal(true)}>+ To‘lov qo‘shish</Button>
+      </div>
       {loading ? <Spin /> : error ? <div className="text-red-600 font-semibold">{error}</div> : (
         <Table
           dataSource={payments}
           columns={columns}
-          rowKey={record => record.id}
+          rowKey={record => record.id || record._id}
           pagination={false}
         />
       )}
