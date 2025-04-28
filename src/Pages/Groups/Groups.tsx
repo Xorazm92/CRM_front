@@ -4,7 +4,7 @@ import Toast from "../../components/Toast";
 import AddGroupModal from "./AddGroupModal";
 import EditGroupModal from "./EditGroupModal";
 import GroupDetailModal from "./GroupDetailModal";
-import { Table, Input, Spin, Modal } from "antd";
+import { Table, Input, Spin, Modal, Button } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import ButtonComponent from "../../components/Button/Button";
 import "./Groups.css";
@@ -105,6 +105,8 @@ const Groups: React.FC = () => {
       key: 'actions',
       render: (_: any, record: GroupType) => (
         <span className="group-table-actions">
+          <Button type="link" icon={<EditOutlined />} onClick={() => handleEdit(record)} />
+          <Button type="link" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record.course_id)} />
           <button className="edit-btn" onClick={() => { setEditItem(record); setShowEdit(true); }}>Tahrirlash</button>
           <button className="delete-btn" onClick={() => handleDelete(record.group_id)}>O'chirish</button>
           <button className="edit-btn" onClick={() => { setAttendanceItem(record); setShowAttendance(true); setAttendanceModalKey(prev=>prev+1); }}>Davomat</button>

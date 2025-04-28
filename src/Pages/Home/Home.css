@@ -1,6 +1,64 @@
 .home-wrapper {
-    width: calc(100% -237px);
-    display: flex;
-    justify-content: center;
-    margin-top: 150px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 16px 48px 16px;
+  background: #f8fafc;
+  min-height: 100vh;
+}
+
+.stats-cards-row {
+  margin-bottom: 32px;
+}
+
+.mt-4 {
+  margin-top: 32px !important;
+}
+
+.ant-card {
+  border-radius: 18px;
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,0.07);
+}
+
+.ant-typography {
+  font-family: 'Inter', 'Roboto', Arial, sans-serif;
+}
+
+.ant-table {
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.ant-table-thead > tr > th {
+  background: #f0f3f7;
+  font-weight: 600;
+  color: #222;
+}
+
+.ant-table-tbody > tr > td {
+  font-size: 15px;
+}
+
+@media (max-width: 900px) {
+  .stats-cards-row .ant-col {
+    flex: 0 0 100%;
+    max-width: 100%;
+    margin-bottom: 16px;
+  }
+  .home-wrapper {
+    padding: 8px;
+  }
+}
+
+@media (max-width: 600px) {
+  .ant-card {
+    padding: 10px;
+  }
+  .ant-typography {
+    font-size: 18px;
+  }
+  .home-wrapper {
+    padding: 2px;
+  }
 }

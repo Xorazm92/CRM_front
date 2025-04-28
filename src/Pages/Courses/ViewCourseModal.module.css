@@ -1,0 +1,46 @@
+.modalCard {
+  background: #f9fbfd;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+  margin-bottom: 24px;
+  padding: 18px 20px 10px 20px;
+}
+
+.infoIcon {
+  color: #3b82f6;
+  margin-right: 7px;
+  font-size: 18px;
+}
+
+.statusBadge {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.groupCard {
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 8px rgba(60,60,60,0.03);
+  background: #fff;
+  margin-bottom: 12px;
+  transition: box-shadow 0.2s;
+}
+.groupCard:hover {
+  box-shadow: 0 4px 16px rgba(60,60,60,0.07);
+}
+
+.groupTitle {
+  font-size: 16px;
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.groupTeacher {
+  margin-left: 14px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.emptyBlock {
+  margin: 40px 0 30px 0;
+}

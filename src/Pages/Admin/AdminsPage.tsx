@@ -65,10 +65,8 @@ const AdminsPage: React.FC = () => {
       <Modal
         title="Yangi admin yaratish"
         open={modalOpen}
-        onCancel={() => setModalOpen(false)}
-        onOk={() => form.submit()}
-        okText="Saqlash"
-        cancelText="Bekor qilish"
+        onCancel={() => { setModalOpen(false); form.resetFields(); }}
+        footer={null}
       >
         <Form form={form} layout="vertical" onFinish={handleAdd}>
           <Form.Item name="name" label="Ism" rules={[{ required: true, message: "Ism kiriting" }]}>
@@ -82,6 +80,14 @@ const AdminsPage: React.FC = () => {
           </Form.Item>
           <Form.Item name="password" label="Parol" rules={[{ required: true, message: "Parol kiriting" }]}>
             <Input.Password />
+          </Form.Item>
+          <Form.Item>
+            <Button onClick={() => { setModalOpen(false); form.resetFields(); }} style={{ marginRight: 8 }}>
+              Bekor qilish
+            </Button>
+            <Button type="primary" htmlType="submit" loading={loading}>
+              Yaratish
+            </Button>
           </Form.Item>
         </Form>
       </Modal>

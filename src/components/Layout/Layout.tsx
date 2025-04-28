@@ -27,7 +27,7 @@ const AdminLayout = () => {
   } = theme.useToken();
   const location = useLocation();
   const path = location.pathname.split("/")[1];
-  const selectedKey = path;
+  const selectedKey = path === "" ? "dashboard" : path;
 
   // Auth store
   const { isLogged, user, logOut } = useAuthStore();

@@ -4,7 +4,6 @@ import Home from "./Pages/Home/Home";
 import AddTeacher from "./Pages/Teachers/Teachers/AddTeacherPage";
 import Teachers from "./Pages/Teachers/Teachers/Teacher";
 import Report from "./Pages/Report/Report";
-import Layout from "./components/Layout/Layout";
 import Student from "./Pages/Students/Students/Student";
 import Login from "./Pages/Login";
 import AddStudentPage from "./Pages/Students/Students/AddStudentPage";
@@ -28,7 +27,9 @@ import Discounts from "./Pages/Discounts/Discounts";
 import Schedule from "./Pages/Schedule/Schedule";
 import Profile from "./Pages/Profile/Profile";
 import AdminDashboard from "./Pages/Admin/AdminDashboard";
-import AdminsPage from "./Pages/Admin/AdminsPage";
+import AdminsPage from "./Pages/Admin/AdminsPage"; // faqat content uchun
+// universal Layout importi
+import Layout from "./components/Layout/Layout";
 import UsersManagement from "./Pages/Superadmin/UsersManagement";
 import Groups from "./Pages/Groups/Groups";
 import AttendancePage from './Pages/Attendance/AttendancePage';
@@ -51,6 +52,10 @@ function App() {
           }
         >
           <Route index element={<Home />} />
+          {/* ADMIN PANEL SAHIFALARI universal Layout ichida */}
+          <Route path="admin/dashboard" element={<ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SUPERADMIN]}><AdminDashboard /></ProtectedRoute>} />
+          <Route path="admin/admins" element={<ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SUPERADMIN]}><AdminsPage /></ProtectedRoute>} />
+          {/* Qo‘shimcha admin sahifalarini ham shu tarzda qo‘shing */}
           <Route path="groups" element={
             <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.MANAGER, ROLES.TEACHER, ROLES.SUPERADMIN]}>
               <Groups />

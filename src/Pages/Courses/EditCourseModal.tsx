@@ -1,6 +1,6 @@
 // Converted from EditCourseModal.jsx to EditCourseModal.tsx with TypeScript, Ant Design, and professional UX
 import React, { useEffect } from "react";
-import { Modal, Form, Input, Select, Button, message, Spin } from "antd";
+import { Modal, Form, Input, Select, Button, Spin, message } from "antd";
 import instance from "../../api/axios";
 import "./EditCourseModal.css";
 
@@ -10,6 +10,7 @@ interface EditCourseModalProps {
   onSuccess?: () => void;
   course: any;
 }
+
 interface EditCourseForm {
   name: string;
   description: string;
@@ -36,25 +37,47 @@ const EditCourseModal: React.FC<EditCourseModalProps> = ({ open, onClose, onSucc
   const handleFinish = async (values: EditCourseForm) => {
     setLoading(true);
     try {
-      await instance.put(`/course/${course.id || course.course_id}`, values);
-      message.success("Kurs tahrirlandi!");
+      const id = course?.course_id || course?.id;
+      if (!id) throw new Error("Kurs ID aniqlanmadi");
+      const payload = {
+        ...values,
+        duration: Number(values.duration),
+      };
+      await instance.patch(`/course/${id}`, payload);
+      message.success("Kurs muvaffaqiyatli tahrirlandi!");
       onSuccess && onSuccess();
-      setTimeout(onClose, 800);
+      setTimeout(() => {
+        form.resetFields();
+        onClose();
+      }, 800);
     } catch (err: any) {
-      message.error(err.message || "Tahrirlashda xatolik");
+      message.error(
+        err?.response?.data?.message || err.message || "Tahrirlashda xatolik yuz berdi"
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Modal open={open} onCancel={onClose} footer={null} title="Kursni tahrirlash" destroyOnClose>
+    <Modal open={open} onCancel={onClose} footer={null} title="Kursni tahrirlash">
       <Spin spinning={loading}>
         <Form form={form} layout="vertical" onFinish={handleFinish}>
-          <Form.Item name="name" label="Kurs nomi" rules={[{ required: true, message: "Kurs nomi majburiy!" }]}> <Input placeholder="Kurs nomi" disabled={loading} /> </Form.Item>
-          <Form.Item name="description" label="Izoh" rules={[{ required: true, message: "Izoh majburiy!" }]}> <Input placeholder="Izoh" disabled={loading} /> </Form.Item>
-          <Form.Item name="duration" label="Davomiyligi (oy)" rules={[{ required: true, message: "Davomiylik majburiy!" }]}> <Input type="number" min={1} placeholder="Davomiyligi (oy)" disabled={loading} /> </Form.Item>
-          <Form.Item name="status" label="Status" rules={[{ required: true, message: "Status majburiy!" }]}> <Select disabled={loading}> <Select.Option value="ACTIVE">Faol</Select.Option> <Select.Option value="INACTIVE">Nofaol</Select.Option> </Select> </Form.Item>
+          <Form.Item name="name" label="Kurs nomi" rules={[{ required: true, message: "Kurs nomi majburiy!" }]}>
+            <Input placeholder="Kurs nomi" disabled={loading} />
+          </Form.Item>
+          <Form.Item name="description" label="Izoh" rules={[{ required: true, message: "Izoh majburiy!" }]}> 
+            <Input placeholder="Izoh" disabled={loading} /> 
+          </Form.Item>
+          <Form.Item name="duration" label="Davomiyligi (oy)" rules={[{ required: true, message: "Davomiylik majburiy!" }]}> 
+            <Input type="number" min={1} placeholder="Davomiyligi (oy)" disabled={loading} /> 
+          </Form.Item>
+          <Form.Item name="status" label="Status" rules={[{ required: true, message: "Status majburiy!" }]}> 
+            <Select disabled={loading}> 
+              <Select.Option value="ACTIVE">Faol</Select.Option> 
+              <Select.Option value="INACTIVE">Nofaol</Select.Option> 
+            </Select> 
+          </Form.Item>
           <Form.Item>
             <div className="edit-course-modal-footer">
               <Button onClick={onClose} disabled={loading}>Bekor qilish</Button>

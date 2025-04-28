@@ -2,6 +2,7 @@
 import React from "react";
 import { Modal, Form, Input, InputNumber, Select, Button, message, Spin } from "antd";
 import instance from "../../api/axios";
+import AddCourseButton from "../../components/AddCourseButton";
 import "./AddCourseModal.css";
 
 interface AddCourseModalProps {
@@ -71,7 +72,9 @@ const AddCourseModal: React.FC<AddCourseModalProps> = ({ open, onClose, onSucces
           </Form.Item>
           <Form.Item>
             <Button onClick={onClose} disabled={loading} style={{ marginRight: 8 }}>Bekor qilish</Button>
-            <Button type="primary" htmlType="submit" loading={loading}>Qo'shish</Button>
+            <AddCourseButton onClick={() => {}}>
+              <span style={{pointerEvents:'none'}}>Qo'shish</span>
+            </AddCourseButton>
           </Form.Item>
         </Form>
       </Spin>

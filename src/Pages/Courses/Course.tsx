@@ -5,7 +5,8 @@ import EditCourseModal from "./EditCourseModal";
 import AddCourseModal from "./AddCourseModal";
 import ViewCourseModal from "./ViewCourseModal";
 import { Table, Input, Spin, Button, Tag } from "antd";
-import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import AddCourseButton from "../../components/AddCourseButton";
 import ButtonComponent from "../../components/Button/Button";
 import "./Course.css";
 
@@ -18,6 +19,18 @@ interface CourseType {
 }
 
 const Course: React.FC = () => {
+  // ...
+  const handleEdit = (record: CourseType) => {
+    setEditItem({
+      course_id: record.course_id,
+      name: record.name || "",
+      description: record.description || "",
+      duration: record.duration || 1,
+      status: record.status || "ACTIVE",
+    });
+    setShowEdit(true);
+  };
+
   const [courses, setCourses] = useState<CourseType[]>([]);
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" }>({ message: '', type: 'success' });
@@ -84,7 +97,7 @@ const Course: React.FC = () => {
       key: 'actions',
       render: (_: any, record: CourseType) => (
         <span className="course-table-actions">
-          <Button type="link" icon={<EditOutlined />} onClick={() => { setEditItem(record); setShowEdit(true); }} />
+          <Button type="link" icon={<EditOutlined />} onClick={() => handleEdit(record)} />
           <Button type="link" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record.course_id)} />
         </span>
       ),
@@ -97,9 +110,9 @@ const Course: React.FC = () => {
       <div className="student-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
         <h1 className="text-xl font-bold mb-2 md:mb-0">Kurslar jadvali</h1>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => setShowAdd(true)}>
-            Yangi kurs
-          </Button>
+          <div className="group-header-add-btn">
+            <ButtonComponent showAdd={true} onAddClick={() => setShowAdd(true)} />
+          </div>
         </div>
       </div>
       <div className="mb-4">
