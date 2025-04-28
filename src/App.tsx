@@ -24,7 +24,7 @@ import { SearchProvider } from "./context/SearchContext";
 import React from "react";
 import Notifications from "./Pages/Notifications/Notifications";
 import Discounts from "./Pages/Discounts/Discounts";
-import Transactions from "./Pages/Transactions/Transactions";
+
 import Schedule from "./Pages/Schedule/Schedule";
 import Profile from "./Pages/Profile/Profile";
 import AdminDashboard from "./Pages/Admin/AdminDashboard";
@@ -105,11 +105,7 @@ function App() {
               <Discounts />
             </ProtectedRoute>
           } />
-          <Route path="transactions" element={
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.MANAGER, ROLES.SUPERADMIN]}>
-              <Transactions />
-            </ProtectedRoute>
-          } />
+
           <Route path="schedule" element={
             <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.MANAGER, ROLES.TEACHER, ROLES.SUPERADMIN]}>
               <Schedule />

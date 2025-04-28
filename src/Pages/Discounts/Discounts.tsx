@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import instance from "../../api/axios";
-import { List, Spin, Typography, Tag } from "antd";
+import { List, Spin, Typography, Tag, Button } from "antd";
+import AddDiscountModal from "./AddDiscountModal";
 
 interface DiscountType {
   id: string;
@@ -22,9 +23,21 @@ const Discounts: React.FC = () => {
       .finally(() => setLoading(false));
   }, []);
 
+  const [showAdd, setShowAdd] = useState(false);
+
+  const refresh = () => {
+    setLoading(true);
+    instance.get("/discounts")
+      .then(res => setDiscounts(res.data))
+      .finally(() => setLoading(false));
+  };
+
   return (
     <div className="p-4 bg-white rounded shadow">
-      <Typography.Title level={3}>Chegirmalar</Typography.Title>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+        <Typography.Title level={3} style={{ margin: 0 }}>Chegirmalar</Typography.Title>
+        <Button type="primary" onClick={() => setShowAdd(true)}>Chegirma qo‘shish</Button>
+      </div>
       <Spin spinning={loading}>
         <List
           dataSource={discounts}
@@ -41,6 +54,7 @@ const Discounts: React.FC = () => {
           )}
         />
       </Spin>
+      <AddDiscountModal open={showAdd} onClose={() => setShowAdd(false)} onSuccess={refresh} />
     </div>
   );
 };

@@ -22,8 +22,6 @@ const modules = [
   { key: "attendance", label: "Davomat", to: "/attendance", icon: attendanceIcon },
   { key: "assignments", label: "Topshiriqlar", to: "/assignments", icon: assignmentIcon },
   { key: "payments", label: "To‘lovlar", to: "/payments", icon: cashIcon },
-  { key: "transactions", label: "Pul o‘tkazmalari", to: "/transactions", icon: cashIcon },
-  { key: "discounts", label: "Chegirmalar", to: "/discounts", icon: cashIcon },
   { key: "schedule", label: "Dars jadvali", to: "/schedule", icon: menuSecond },
   { key: "report", label: "Hisobotlar", to: "/report", icon: menuSecond },
 ];

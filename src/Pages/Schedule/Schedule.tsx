@@ -22,7 +22,17 @@ const Schedule: React.FC = () => {
   useEffect(() => {
     setLoading(true);
     instance.get("/schedule")
-      .then(res => setSchedules(res.data))
+      .then(res => {
+        // If backend returns { data: [...] }, unwrap it
+        if (Array.isArray(res.data)) setSchedules(res.data);
+        else if (Array.isArray(res.data?.data)) setSchedules(res.data.data);
+        else setSchedules([]);
+      })
+      .catch((err) => {
+        setSchedules([]);
+        window?.console?.error?.("Schedule API error:", err);
+        // Optionally show antd message.error here
+      })
       .finally(() => setLoading(false));
   }, []);
 

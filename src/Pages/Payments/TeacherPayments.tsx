@@ -29,13 +29,22 @@ const TeacherPayments: React.FC<TeacherPaymentsProps> = ({ teacherId, isAdmin })
     setError("");
     try {
       const data = await getTeacherPayments(getEntityId(teacherId) || teacherId);
-      setSalaries(Array.isArray(data) ? data : []);
+      // Mapping: har bir field to‘liq chiqishi uchun
+      const mapped = (Array.isArray(data) ? data : []).map(item => ({
+        ...item,
+        amount: item.amount ?? item.salary ?? 0,
+        date: item.date ?? item.created_at ?? item.createdAt ?? '-',
+        status: item.status ?? '-',
+        paid_date: item.paid_date ?? item.paidAt ?? item.updated_at ?? '-',
+      }));
+      setSalaries(mapped);
     } catch (err) {
       setError("Oyliklarni olishda xatolik");
     } finally {
       setLoading(false);
     }
   };
+
 
   useEffect(() => {
     fetchSalaries();
@@ -47,10 +56,28 @@ const TeacherPayments: React.FC<TeacherPaymentsProps> = ({ teacherId, isAdmin })
   };
 
   const columns = [
-    { title: 'Sana', dataIndex: 'date', key: 'date' },
+    {
+      title: 'Sana',
+      dataIndex: 'date',
+      key: 'date',
+      render: (value: string) => {
+        if (!value || value === '-') return '-';
+        const d = new Date(value);
+        return isNaN(d.getTime()) ? '-' : d.toLocaleDateString();
+      },
+    },
     { title: 'Oylik summasi', dataIndex: 'amount', key: 'amount' },
     { title: 'Status', dataIndex: 'status', key: 'status' },
-    { title: 'To‘langan sana', dataIndex: 'paid_date', key: 'paid_date' },
+    {
+      title: "To‘langan sana",
+      dataIndex: 'paid_date',
+      key: 'paid_date',
+      render: (value: string) => {
+        if (!value || value === '-') return '-';
+        const d = new Date(value);
+        return isNaN(d.getTime()) ? '-' : d.toLocaleDateString();
+      },
+    },
     {
       title: 'Chek',
       key: 'receipt',
@@ -66,8 +93,10 @@ const TeacherPayments: React.FC<TeacherPaymentsProps> = ({ teacherId, isAdmin })
 
   return (
     <div>
-      <h2>Oyliklar tarixi</h2>
-      {canGiveSalary && <Button type="primary" onClick={() => setShowModal(true)} style={{ marginBottom: 16 }}>Yangi oylik hisoblash</Button>}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+        <h2 style={{ margin: 0 }}>Oyliklar tarixi</h2>
+        {canGiveSalary && <Button type="primary" onClick={() => setShowModal(true)}>Yangi oylik hisoblash</Button>}
+      </div>
       {loading ? <Spin /> : error ? <div className="text-red-600 font-semibold">{error}</div> : (
         <Table
           dataSource={salaries}
