@@ -1,0 +1,22 @@
+<svg width="139" height="54" viewBox="0 0 139 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10.25 10.2748C18.5569 10.407 25.2864 17.1189 25.4186 25.4515H10.25V10.2748Z" fill="#3AADA8" stroke="#F9F9F9" stroke-width="0.5"/>
+<path d="M10.252 25.906H25.4206V41.0828C17.1136 40.9505 10.3842 34.2387 10.252 25.906Z" fill="#557C83" stroke="#F9F9F9" stroke-width="0.5"/>
+<path d="M25.9888 10.252C34.3168 10.3843 41.0253 17.1172 41.1574 25.4288H25.9888V10.252Z" fill="#557C83" stroke="#F9F9F9" stroke-width="0.5"/>
+<path d="M41.1574 25.906C41.0252 34.2387 34.2958 40.9505 25.9888 41.0828V25.906H41.1574Z" fill="#3AADA8" stroke="#F9F9F9" stroke-width="0.5"/>
+
+<rect x="2.5" y="2.5" width="136" height="51" stroke="url(#paint1_linear_278_1381)"/>
+
+<text x="48" y="38" font-family="Mada, Arial, sans-serif" font-size="28" font-weight="bold" fill="#3AADA8">RAYA</text>
+<defs>
+<linearGradient id="paint0_linear_278_1381" x1="94.8462" y1="-32.9333" x2="7.53677" y2="48.3287" gradientUnits="userSpaceOnUse">
+<stop stop-color="white"/>
+<stop offset="0.494" stop-color="#557C83"/>
+<stop offset="1" stop-color="white"/>
+</linearGradient>
+<linearGradient id="paint1_linear_278_1381" x1="96.8462" y1="-30.9333" x2="9.53677" y2="50.3287" gradientUnits="userSpaceOnUse">
+<stop stop-color="white"/>
+<stop offset="0.494" stop-color="#557C83"/>
+<stop offset="1" stop-color="white"/>
+</linearGradient>
+</defs>
+</svg>

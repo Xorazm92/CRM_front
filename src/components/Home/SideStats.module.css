@@ -1,0 +1,22 @@
+.sideStats {
+  background: #fff;
+  border-radius: 12px;
+  padding: 18px 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  margin-bottom: 20px;
+}
+.statItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 1.05rem;
+  margin-bottom: 10px;
+}
+.up {
+  color: green;
+  margin-left: 10px;
+}
+.down {
+  color: red;
+  margin-left: 10px;
+}

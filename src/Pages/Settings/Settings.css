@@ -1,0 +1,67 @@
+
+.settings-container {
+    padding: 24px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .settings-card {
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .settings-form {
+    max-width: 400px;
+    margin-top: 24px;
+  }
+  
+  .ant-tabs-tab {
+    padding: 12px 0;
+    font-size: 15px;
+  }
+  
+  .ant-tabs-tab-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .ant-form-item {
+    margin-bottom: 24px;
+  }
+  
+  .ant-input-password {
+    height: 40px;
+  }
+  
+  .ant-select {
+    width: 100%;
+  }
+  
+  .ant-switch {
+    margin-top: 8px;
+  }
+  
+  .ant-btn {
+    height: 40px;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .ant-form-item-label > label {
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.85);
+  }
+  
+  /* Dark mode support */
+  [data-theme='dark'] .settings-card {
+    background: #1f1f1f;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  [data-theme='dark'] .ant-form-item-label > label {
+    color: rgba(255, 255, 255, 0.85);
+  }
+  

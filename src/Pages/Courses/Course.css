@@ -1,0 +1,20 @@
+.course-table-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.course-header-add-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.course-header-add-btn .ant-btn {
+  min-width: 120px;
+}
+
+.course-page .ant-pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}

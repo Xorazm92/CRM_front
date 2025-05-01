@@ -1,0 +1,23 @@
+
+.notifications-page {
+    padding: 20px;
+  }
+  
+  .notification-item {
+    cursor: pointer;
+    padding: 12px;
+    transition: background-color 0.3s;
+  }
+  
+  .notification-item:hover {
+    background-color: #f5f5f5;
+  }
+  
+  .notification-item.unread {
+    background-color: #e6f7ff;
+  }
+  
+  .notification-item.read {
+    opacity: 0.8;
+  }
+  

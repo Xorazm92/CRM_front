@@ -1,0 +1,9 @@
+.edit-student-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.edit-student-modal-datepicker {
+  width: 100%;
+}

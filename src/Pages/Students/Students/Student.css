@@ -1,0 +1,131 @@
+.student-page-wrapper {
+  width: calc(100% - 237px);
+  min-height: 100vh;
+  margin-left: 237px;
+  margin-top: 100px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  padding: 24px 24px 0 24px;
+}
+
+.student-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.student-title {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--color-primary-3, #1a237e);
+  margin: 0;
+}
+
+.student-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.student-spinner-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 180px;
+}
+
+.student-error-message {
+  color: #e53935;
+  font-weight: 600;
+  text-align: center;
+  margin: 24px 0;
+}
+
+.student-pagination {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+  padding-bottom: 24px;
+}
+
+.pagination-btn {
+  padding: 6px 18px;
+  border: 1px solid var(--color-light-gray-2, #e0e0e0);
+  border-radius: 6px;
+  background: #f5f5f5;
+  color: #333;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.pagination-btn:disabled {
+  background: #eee;
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+.footer {
+    padding: 10px 20px;
+    text-align: center;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+.header-student-page {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--color-light-gray-2)
+}
+
+.header-student-page h1 {
+    font-family: Mada;
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 33.8px;
+    text-align: left;
+    color: var(--color-primary-3);
+}
+
+/* Qo'shilishi kerak bo'lgan CSS stillar (mavjud CSS faylingizga) */
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.ant-pagination-item-active {
+  font-weight: 500;
+}
+
+.ant-pagination-item:hover {
+  border-color: #1890ff;
+}
+
+.ant-pagination-item-active a {
+  color: #1890ff;
+}
+
+.student-page-wrapper {
+  padding-bottom: 30px;
+}
+
+/* Mobil qurilmalar uchun */
+@media (max-width: 576px) {
+  .pagination-container {
+    margin-top: 15px;
+  }
+  
+  .ant-pagination-options {
+    display: none;
+  }
+}
