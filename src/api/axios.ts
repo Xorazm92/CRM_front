@@ -3,7 +3,7 @@ import Cookie from "js-cookie";
 import createAuthRefreshInterceptor from "axios-auth-refresh";
 
 export const instance: AxiosInstance = axios.create({
-  baseURL: "http://localhost:3000/api/v1",
+  baseURL: "http://localhost:3030/api/v1",
   // withCredentials: true,
 });
 
