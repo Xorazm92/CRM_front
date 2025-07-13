@@ -1,47 +1,60 @@
 import { Route, Routes, Navigate } from "react-router-dom";
+import React, { Suspense } from "react";
+import { Spin } from "antd";
 
-import Home from "./Pages/Home/Home";
-import AddTeacher from "./Pages/Teachers/Teachers/AddTeacherPage";
-import Teachers from "./Pages/Teachers/Teachers/Teacher";
-import Report from "./Pages/Report/Report";
-import Student from "./Pages/Students/Students/Student";
-import Login from "./Pages/Login";
-import AddStudentPage from "./Pages/Students/Students/AddStudentPage";
-import AddTeacherPage from "./Pages/Teachers/Teachers/AddTeacherPage";
+// Lazy load components for better performance
+const Home = React.lazy(() => import("./Pages/Home/Home"));
+const Teachers = React.lazy(() => import("./Pages/Teachers/Teachers/Teacher"));
+const Report = React.lazy(() => import("./Pages/Report/Report"));
+const Student = React.lazy(() => import("./Pages/Students/Students/Student"));
+const Login = React.lazy(() => import("./Pages/Login"));
+const AddStudentPage = React.lazy(() => import("./Pages/Students/Students/AddStudentPage"));
+const AddTeacherPage = React.lazy(() => import("./Pages/Teachers/Teachers/AddTeacherPage"));
 
 import { useAuthStore } from "./store/useAuthStore";
 import ProtectedRoute from "./auth/ProtectedRoute";
 import { ROLES } from "./auth/roles";
 import Forbidden from "./Pages/Forbidden";
-import Assignments from "./Pages/Assignments/Assignments";
-import Payments from "./Pages/Payments/Payments";
-import Course from "./Pages/Courses/Course";
+// More lazy loaded components
+const Assignments = React.lazy(() => import("./Pages/Assignments/Assignments"));
+const Payments = React.lazy(() => import("./Pages/Payments/Payments"));
+const Course = React.lazy(() => import("./Pages/Courses/Course"));
+const Lessons = React.lazy(() => import("./Pages/Lessons/Lessons"));
+const Notifications = React.lazy(() => import("./Pages/Notifications/Notifications"));
+const Discounts = React.lazy(() => import("./Pages/Discounts/Discounts"));
+const Schedule = React.lazy(() => import("./Pages/Schedule/Schedule"));
+const Profile = React.lazy(() => import("./Pages/Profile/Profile"));
+const AdminDashboard = React.lazy(() => import("./Pages/Admin/AdminDashboard"));
+const AdminsPage = React.lazy(() => import("./Pages/Admin/AdminsPage"));
+const Settings = React.lazy(() => import("./Pages/Settings/Settings"));
+const UsersManagement = React.lazy(() => import("./Pages/Superadmin/UsersManagement"));
+const Groups = React.lazy(() => import("./Pages/Groups/Groups"));
+const AttendancePage = React.lazy(() => import('./Pages/Attendance/AttendancePage'));
 
-import Lessons from "./Pages/Lessons/Lessons";
-// import StatisticsDashboard from "./Pages/Dashboard/StatisticsDashboard";
+// Regular imports for essential components
 import { SearchProvider } from "./context/SearchContext";
-import React from "react";
-import Notifications from "./Pages/Notifications/Notifications";
-import Discounts from "./Pages/Discounts/Discounts";
-
-import Schedule from "./Pages/Schedule/Schedule";
-import Profile from "./Pages/Profile/Profile";
-import AdminDashboard from "./Pages/Admin/AdminDashboard";
-import AdminsPage from "./Pages/Admin/AdminsPage"; // faqat content uchun
-// universal Layout importi
 import Layout from "./components/Layout/Layout";
-import Settings from "./Pages/Settings/Settings";
-import UsersManagement from "./Pages/Superadmin/UsersManagement";
-import Groups from "./Pages/Groups/Groups";
-import AttendancePage from './Pages/Attendance/AttendancePage';
+
+// Loading component
+const LoadingSpinner = () => (
+  <div style={{
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100vh'
+  }}>
+    <Spin size="large" />
+  </div>
+);
 
 function App() {
   const { isLogged } = useAuthStore();
 
   return (
     <SearchProvider>
-      <Routes>
-        <Route path="/login" element={<Login />} />
+      <Suspense fallback={<LoadingSpinner />}>
+        <Routes>
+          <Route path="/login" element={<Login />} />
         <Route
           path="/*"
           element={
@@ -145,7 +158,8 @@ function App() {
           } />
           <Route path="forbidden" element={<Forbidden />} />
         </Route>
-      </Routes>
+        </Routes>
+      </Suspense>
     </SearchProvider>
   );
 }
